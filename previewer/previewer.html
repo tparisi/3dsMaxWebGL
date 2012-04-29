@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>3dsMAX WebGL Previewer</title>
+
+	<link href="./css/previewer.css" rel="stylesheet" /> 
+	<script src="./libs/Three.js"></script>
+	<script src="./libs/jquery-1.6.4.js"></script>
+    <script src="./libs/jquery.mousewheel.js"></script>
+	<script src="./libs/RequestAnimationFrame.js"></script>
+	<script src="./sim/sim.js"></script>
+	<script src="sceneViewer.js"></script>
+	<script src="Loader.js"></script>
+	<script src="sceneLoader.js"></script>
+	<script src="JSONLoader.js"></script>
+	<script src="sceneData.js"></script>
+	<script>
+
+	function onLoadComplete()
+	{
+		// Hide the loader bar
+		var loadStatus = document.getElementById("loadStatus");
+		loadStatus.style.display = 'none';		
+	}
+	
+	$(document).ready(
+		function() {
+			var container = document.getElementById("container");
+			
+			var app = new SceneViewer();
+			app.init({ container: container });
+
+			var sceneData = new SceneData();
+			sceneData.onLoadComplete = onLoadComplete;
+//			sceneData.init({ url : "exports/blenderscene/scene.js", scale:1});			
+			sceneData.init({ url : "exports/boxlightscams/boxLightsCams.js", scale:.01});			
+			app.addContent(sceneData);
+
+			// Hack! Turn up the headlight because scene exporter doesn't give us the
+			// scene lights...
+			// app.headlight.intensity = 2;
+			
+			app.run();
+		}
+	);
+	</script>
+
+</head>
+<body>
+	<center><h1>Loading a Three.js JSON Scene</h1></center>
+    <div id="container" style="width:95%; height:80%; position:absolute;"></div>
+	<div id="loadStatus" style="width:95%; height:6%; top:200px; text-align:center; position:absolute;">
+	Loading scene...
+	</div>
+	<div id="prompt" style="width:95%; height:6%; bottom:30px; text-align:center; position:absolute;">
+	Click the mouse to manipulate the model: Left = rotate, Right = Pan<br></br>
+	</div>
+
+</body>
+</html>
