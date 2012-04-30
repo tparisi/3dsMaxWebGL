@@ -282,7 +282,17 @@ JSONLoader.prototype.createModel = function ( json, callback, texture_path ) {
 
 			if ( hasFaceNormal ) {
 
+				if (!normals)
+				{
+					debugger;
+				}
+
 				normalIndex = faces[ offset ++ ] * 3;
+
+				if (normalIndex >= normals.length)
+				{
+					debugger;
+				}
 
 				normal = new THREE.Vector3();
 
@@ -296,10 +306,21 @@ JSONLoader.prototype.createModel = function ( json, callback, texture_path ) {
 
 			if ( hasFaceVertexNormal ) {
 
+				if (!normals)
+				{
+					debugger;
+				}
+
+
 				for ( i = 0; i < nVertices; i++ ) {
 
 					normalIndex = faces[ offset ++ ] * 3;
 
+					if (normalIndex >= normals.length)
+					{
+						debugger;
+					}
+					
 					normal = new THREE.Vector3();
 
 					normal.x = normals[ normalIndex ++ ];
@@ -315,7 +336,18 @@ JSONLoader.prototype.createModel = function ( json, callback, texture_path ) {
 
 			if ( hasFaceColor ) {
 
+				if (!colors)
+				{
+					debugger;
+				}
+
 				colorIndex = faces[ offset ++ ];
+
+				if (colorIndex >= colors.length)
+				{
+					debugger;
+				}
+
 
 				color = new THREE.Color( colors[ colorIndex ] );
 				face.color = color;
@@ -325,9 +357,19 @@ JSONLoader.prototype.createModel = function ( json, callback, texture_path ) {
 
 			if ( hasFaceVertexColor ) {
 
+				if (!colors)
+				{
+					debugger;
+				}
+
 				for ( i = 0; i < nVertices; i++ ) {
 
 					colorIndex = faces[ offset ++ ];
+
+					if (colorIndex >= colors.length)
+					{
+						debugger;
+					}
 
 					color = new THREE.Color( colors[ colorIndex ] );
 					face.vertexColors.push( color );

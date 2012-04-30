@@ -27,7 +27,7 @@ SceneViewer.prototype.init = function(param)
 
 SceneViewer.prototype.addContent = function(content)
 {	
-	content.object3D.rotation.x = -Math.PI / 2;
+//	content.object3D.rotation.x = -Math.PI / 2;
 	this.root.add(content.object3D);	
 }
 
