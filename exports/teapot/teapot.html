@@ -4,17 +4,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>3dsMAX WebGL Previewer</title>
 
-	<link href="./css/previewer.css" rel="stylesheet" /> 
-	<script src="./libs/Three.js"></script>
-	<script src="./libs/jquery-1.6.4.js"></script>
-    <script src="./libs/jquery.mousewheel.js"></script>
-	<script src="./libs/RequestAnimationFrame.js"></script>
-	<script src="./sim/sim.js"></script>
-	<script src="./viewer/sceneViewer.js"></script>
-	<script src="./viewer/Loader.js"></script>
-	<script src="./viewer/sceneLoader.js"></script>
-	<script src="./viewer/JSONLoader.js"></script>
-	<script src="./viewer/sceneData.js"></script>
+	<link href="../../previewer/css/previewer.css" rel="stylesheet" /> 
+	<script src="../../previewer/libs/Three.js"></script>
+	<script src="../../previewer/libs/jquery-1.6.4.js"></script>
+    <script src="../../previewer/libs/jquery.mousewheel.js"></script>
+	<script src="../../previewer/libs/RequestAnimationFrame.js"></script>
+	<script src="../../previewer/sim/sim.js"></script>
+	<script src="../../previewer/viewer/sceneViewer.js"></script>
+	<script src="../../previewer/viewer/Loader.js"></script>
+	<script src="../../previewer/viewer/sceneLoader.js"></script>
+	<script src="../../previewer/viewer/JSONLoader.js"></script>
+	<script src="../../previewer/viewer/sceneData.js"></script>
 	<script>
 
 	function onLoadComplete()
@@ -33,8 +33,7 @@
 
 			var sceneData = new SceneData();
 			sceneData.onLoadComplete = onLoadComplete;
-			sceneData.init({ url : "../exports/boxPyrsLightsCams/boxPyrsLightsCams.js", scale:.01});			
-//			sceneData.init({ url : "../exports/teapot/teapot.js", scale:.01});			
+			sceneData.init({ url : "./teapot.js", scale:.01});			
 			app.addContent(sceneData);
 
 			// Hack! Turn up the headlight because scene exporter doesn't give us the

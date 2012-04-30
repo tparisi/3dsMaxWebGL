@@ -11,4 +11,25 @@ body {
 
 #container {
 	z-index:-1;
+	width: 95%;
+	height: 80%;
+	position:absolute;
 }
+
+
+#loadStatus {
+	width: 95%;
+	height: 6%;
+	top: 200px;
+	text-align:center;
+	position:absolute;
+}
+
+#prompt {
+	width: 95%;
+	height: 6%;
+	bottom: 30px;
+	text-align:center;
+	position:absolute;
+}
+
