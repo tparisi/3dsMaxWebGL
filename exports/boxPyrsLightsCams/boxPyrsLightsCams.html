@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>3dsMAX WebGL Previewer</title>
+
+	<link href="../../previewer/css/previewer.css" rel="stylesheet" /> 
+	<script src="../../previewer/libs/Three.js"></script>
+	<script src="../../previewer/libs/jquery-1.6.4.js"></script>
+    <script src="../../previewer/libs/jquery.mousewheel.js"></script>
+	<script src="../../previewer/libs/RequestAnimationFrame.js"></script>
+	<script src="../../previewer/sim/sim.js"></script>
+	<script src="../../previewer/viewer/sceneViewer.js"></script>
+	<script src="../../previewer/viewer/Loader.js"></script>
+	<script src="../../previewer/viewer/sceneLoader.js"></script>
+	<script src="../../previewer/viewer/JSONLoader.js"></script>
+	<script src="../../previewer/viewer/sceneData.js"></script>
+	<script>
+
+	function onLoadComplete()
+	{
+		// Hide the loader bar
+		var loadStatus = document.getElementById("loadStatus");
+		loadStatus.style.display = 'none';		
+	}
+	
+	$(document).ready(
+		function() {
+			var container = document.getElementById("container");
+			
+			var app = new SceneViewer();
+			app.init({ container: container });
+
+			var sceneData = new SceneData();
+			sceneData.onLoadComplete = onLoadComplete;
+			sceneData.init({ url : "./boxPyrsLightsCams.js", scale:.01});			
+			app.addContent(sceneData);
+
+			// Hack! Turn up the headlight because scene exporter doesn't give us the
+			// scene lights...
+			// app.headlight.intensity = 2;
+			
+			app.run();
+		}
+	);
+	</script>
+
+</head>
+<body>
+	<center><h1>3dsMAX WebGL Previewer</h1></center>
+    <div id="container"></div>
+	<div id="loadStatus">
+	Loading scene...
+	</div>
+	<div id="prompt">
+	Click the mouse to manipulate the model: Left = rotate, Right = Pan<br></br>
+	</div>
+
+</body>
+</html>
