@@ -1,3 +1,7 @@
+/**
+ * @author Tony Parisi / http://www.tonyparisi.com
+ */
+
 // Sim.js - A Simple Simulator for WebGL (based on Three.js)
 
 Sim = {};

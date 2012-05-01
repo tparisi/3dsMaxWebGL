@@ -1,5 +1,6 @@
 /**
  * @author Tim Knip / http://www.floorplanner.com/ / tim at floorplanner.com
+ * @author Tony Parisi / http://www.tonyparisi.com
  */
 
 Sim.ColladaLoader = function () {

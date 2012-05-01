@@ -1,3 +1,7 @@
+/**
+ * @author Tony Parisi / http://www.tonyparisi.com
+ */
+
 // Simple WebGL Detector
 Sim.WebGLDetector = {
 	

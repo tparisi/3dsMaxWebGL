@@ -1,6 +1,7 @@
 /**
  * @author mrdoob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
+ * @author Tony Parisi / http://www.tonyparisi.com
  */
 
 JSONLoader= function ( showStatus ) {

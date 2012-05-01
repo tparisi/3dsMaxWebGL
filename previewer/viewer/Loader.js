@@ -1,5 +1,6 @@
 /**
  * @author alteredq / http://alteredqualia.com/
+ * @author Tony Parisi / http://www.tonyparisi.com
  */
 
 Loader = function ( showStatus ) {
