@@ -5,7 +5,7 @@
   "sourceFile": "bmw 7.max",
   "generatedBy" : "3D Studio MAX WebGL exporter, Version 14, Revision 1.21"
 },
-"urlBaseType": "relativeToScene",
+"urlBaseType": "",
 
 "lights":
 {
@@ -24,42 +24,42 @@
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_1" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_2" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_3" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_4" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_5" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_6" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_7" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "VehicleBody_8": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -69,12 +69,12 @@
           "opacity": 1
         }
       }
-    ,
+,
       "wire_bmw7_9" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "FrontGrill_10": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -84,7 +84,7 @@
           "opacity": 1
         }
       }
-    ,
+,
       "Grey_Plastic_Body_Trim_11": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -94,7 +94,7 @@
           "opacity": 1
         }
       }
-    ,
+,
       "Black_Plastic_Body_Trim_12": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -104,7 +104,7 @@
           "opacity": 1
         }
       }
-    ,
+,
       "Wheels_13": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -114,7 +114,7 @@
           "opacity": 1
         }
       }
-    ,
+,
       "Tires_14": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -124,22 +124,22 @@
           "opacity": 1
         }
       }
-    ,
+,
       "wire_bmw7_15" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "Windows_Glass_16": {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 9868950,
           "colorSpecular": 13750737,
           "specularCoef": 0.515,
-          "opacity": 0.05
+          "opacity": 1
         }
       }
-    ,
+,
       "HeadLights_17": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -149,7 +149,7 @@
           "opacity": 1
         }
       }
-    ,
+,
       "Indicator_18": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -159,12 +159,12 @@
           "opacity": 1
         }
       }
-    ,
+,
       "wire_bmw7_19" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "Material #9_20": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -175,7 +175,7 @@
           "opacity": 1
         }
       }
-    ,
+,
       "License_Plate_Back_21": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -186,7 +186,7 @@
           "opacity": 1
         }
       }
-    ,
+,
       "Chrome_22": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -196,17 +196,17 @@
           "opacity": 1
         }
       }
-    ,
+,
       "wire_bmw7_23" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_24" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "Vehicle_Interior_Geometry_25": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -216,27 +216,27 @@
           "opacity": 1
         }
       }
-    ,
+,
       "wire_bmw7_26" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_27" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_28" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "wire_bmw7_29" : {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 427526        }
-      },
+        },
       "break_lights_30": {
         "type": "MeshLambertMaterial",
         "parameters": {
@@ -246,7 +246,7 @@
           "opacity": 1
         }
       }
-    
+
 },
 
 "objects":
@@ -264,13 +264,13 @@
 
 "textures":
 {
-                                    
-        "license plates.jpg" : {
+
+        "license plates.jpg" : {1
         "url" : "license plates.jpg"
-      }    ,
-        "license plates.jpg" : {
+      },
+        "license plates.jpg" : {1
         "url" : "license plates.jpg"
-      }                
+      }
 },
 
 
@@ -388,8 +388,8 @@
               "colorSpecular": [0,0,0],
               "specularCoef": 0.145000,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 427526,
               "DbgIndex": 9,
@@ -410,8 +410,8 @@
               "colorSpecular": [0.756,0.756,0.756],
               "specularCoef": 0.145000,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 9868950,
               "DbgIndex": 11,
@@ -421,8 +421,8 @@
               "colorSpecular": [0,0,0],
               "specularCoef": 0.145000,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 1184274,
               "DbgIndex": 12,
@@ -432,8 +432,8 @@
               "colorSpecular": [0.792,0.792,0.792],
               "specularCoef": 0.610500,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 9868950,
               "DbgIndex": 13,
@@ -443,8 +443,8 @@
               "colorSpecular": [0.882,0.882,0.882],
               "specularCoef": 0.544000,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 0,
               "DbgIndex": 14,
@@ -454,8 +454,8 @@
               "colorSpecular": [0.279,0.279,0.279],
               "specularCoef": 0.487000,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 427526,
               "DbgIndex": 15,
@@ -475,9 +475,9 @@
               "colorDiffuse": [0.588,0.588,0.588],
               "colorSpecular": [0.819,0.819,0.819],
               "specularCoef": 0.515500,
-              "transparency": 0.05,
-              "vertexColors": false
-            }        ,
+              "transparency": 1,
+          }
+,
             {
               "DbgColor": 16579836,
               "DbgIndex": 17,
@@ -487,8 +487,8 @@
               "colorSpecular": [0.864,0.864,0.864],
               "specularCoef": 0.392000,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 14909472,
               "DbgIndex": 18,
@@ -498,8 +498,8 @@
               "colorSpecular": [0.819,0.819,0.819],
               "specularCoef": 0.496500,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 427526,
               "DbgIndex": 19,
@@ -520,8 +520,8 @@
               "colorSpecular": [0,0,0],
               "specularCoef": 0.145000,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 16777215,
               "DbgIndex": 21,
@@ -531,8 +531,8 @@
               "colorSpecular": [0,0,0],
               "specularCoef": 0.145000,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 9868950,
               "DbgIndex": 22,
@@ -542,8 +542,8 @@
               "colorSpecular": [0.909,0.909,0.909],
               "specularCoef": 0.667500,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 427526,
               "DbgIndex": 23,
@@ -575,8 +575,8 @@
               "colorSpecular": [0.801,0.801,0.801],
               "specularCoef": 0.629500,
               "transparency": 1,
-              "vertexColors": false
-            }        ,
+          }
+,
             {
               "DbgColor": 427526,
               "DbgIndex": 26,
@@ -630,8 +630,8 @@
               "colorSpecular": [0.927,0.927,0.927],
               "specularCoef": 0.753000,
               "transparency": 1,
-              "vertexColors": false
-            }        ],
+          }
+],
           "metadata" : { "formatVersion" : 3 },
         "vertices" : [
           35.039,6.806,45.753, 34.253,6.486,-36.498, 34.205,14.879,43.777, 

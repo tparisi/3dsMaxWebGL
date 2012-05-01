@@ -183,9 +183,14 @@ SceneLoader.prototype.createScene = function ( json, callbackFinished, url ) {
 						// not anymore support for multiple materials
 						// shouldn't really be array
 
+						if (o.materials.length)
+						{
+							materials = [];
+						}
+						
 						for( i = 0; i < o.materials.length; i ++ ) {
 
-							materials = result.materials[ o.materials[ i ] ];
+							materials.push(result.materials[ o.materials[ i ] ]);
 
 							hasNormals = materials instanceof THREE.ShaderMaterial;
 

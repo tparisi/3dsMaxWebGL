@@ -59,7 +59,6 @@
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 9868950,
-          "shading": "flat",
           "colorSpecular": 0,
           "specularCoef": 0.145,
           "map" : "testpattern.png",
@@ -71,7 +70,6 @@
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 16711680,
-          "shading": "flat",
           "colorSpecular": 0,
           "specularCoef": 0.145,
           "opacity": 1
@@ -82,7 +80,6 @@
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 255,
-          "shading": "flat",
           "colorSpecular": 0,
           "specularCoef": 0.145,
           "opacity": 1
@@ -93,7 +90,6 @@
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 65280,
-          "shading": "flat",
           "colorSpecular": 0,
           "specularCoef": 0.145,
           "opacity": 1
@@ -104,7 +100,6 @@
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 16776960,
-          "shading": "flat",
           "colorSpecular": 0,
           "specularCoef": 0.145,
           "opacity": 1
