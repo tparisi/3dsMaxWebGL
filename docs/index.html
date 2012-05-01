@@ -25,8 +25,24 @@ sloppy that way).
 </li>
 </ul>
 
-<h2>Exporting the Model</h2>
-Writeup TBD<p></p>
+<h2>Exporting a Model</h2>
+<ol>
+<li>
+On the 'file' menu (well there is no file menu, it's the rather large logo icon top-left
+ of the window), choose Export.
+</li>
+<li>
+From the list of export file types, choose WebGL (.html).
+</li>
+<li>
+Enter a file name ending in .html, and hit OK. This will generate a folder of that name without 
+the extension, and put an html and JavaScript file of that name in the new folder.
+</li> 
+<li>
+To preview the exported file, copy the new folder in its entirety to the 'exports' folder
+of the Previewer application (see below).
+</li>
+</ol>
 
 <h2>The Previewer</h2>
 The Previewer is a web application that uses Three.js to render the JSON model files. 
@@ -34,13 +50,18 @@ It requires a running web server to operate. To set it up:
 
 <ol>
 <li>
-Copy the entire contents of the 'previewer' folder to your web server.
+Copy the entire contents of the 'previewer' folder to somewhere your web server.
 </li>
 <li>
 Make an empty folder called 'exports' at the same level as 'previewer.'
 </li>
 <li>
-Copy any folders, in their entirety, from the 3dsMax 'export' folder where they were exported to.
+To preview an exported file, copy the folder, in its entirety, from the 3dsMax 'export' folder into
+the 'exports' folder on the web server.
+</li>
+<li>
+If you're not sure how the folder structure should be laid out, refer to the 
+<a href="../">top-level folder</a> of this project and have a look at the <a href="../exports/">sample exports</a>.
 </li>
 </ol>
 
