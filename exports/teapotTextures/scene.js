@@ -59,60 +59,60 @@
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 9868950,
-          "shading": "flat",
           "colorSpecular": 0,
           "specularCoef": 0.145,
           "map" : "testpattern.jpg",
+          "vertexColors": false,
           "opacity": 1
         }
       }
-    ,
+,
       "01 - Default_-1": {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 9868950,
-          "shading": "flat",
           "colorSpecular": 0,
           "specularCoef": 0.145,
           "map" : "testpattern.jpg",
+          "vertexColors": false,
           "opacity": 1
         }
       }
-    ,
+,
       "04 - Default_-1": {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 255,
-          "shading": "flat",
           "colorSpecular": 0,
           "specularCoef": 0.145,
+          "vertexColors": false,
           "opacity": 1
         }
       }
-    ,
+,
       "03 - Default_-1": {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 65280,
-          "shading": "flat",
           "colorSpecular": 0,
           "specularCoef": 0.145,
+          "vertexColors": false,
           "opacity": 1
         }
       }
-    ,
+,
       "01 - Default_-1": {
         "type": "MeshLambertMaterial",
         "parameters": {
           "color": 9868950,
-          "shading": "flat",
           "colorSpecular": 0,
           "specularCoef": 0.145,
           "map" : "testpattern.jpg",
+          "vertexColors": false,
           "opacity": 1
         }
       }
-    
+
 },
 
 "objects":
@@ -164,14 +164,14 @@
 {
 
         "testpattern.jpg" : {
-        "url" : "testpattern.jpg"
-      }    ,
+        "url" : "testpattern.jpg",
+      "wrap" : ["repeat", "repeat"]      },
         "testpattern.jpg" : {
-        "url" : "testpattern.jpg"
-      }            ,
+        "url" : "testpattern.jpg",
+      "wrap" : ["repeat", "repeat"]      },
         "testpattern.jpg" : {
-        "url" : "testpattern.jpg"
-      }    
+        "url" : "testpattern.jpg",
+      "wrap" : ["repeat", "repeat"]      }
 },
 
 
@@ -206,7 +206,21 @@
 
       "Box001_emb" : {
           "scale" : 1.0,
-          "materials" : [],
+          "materials" : [
+
+            {
+              "DbgColor": 9868950,
+              "DbgIndex": -1,
+              "DbgName": "01 - Default_-1",
+              "colorAmbient": [0,0,0],
+              "colorDiffuse": [0.588,0.588,0.588],
+              "colorSpecular": [0,0,0],
+              "specularCoef": 0.145000,
+              "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
+          }
+],
           "metadata" : { "formatVersion" : 3 },
         "vertices" : [
           -61.905,0.000,48.299, 61.905,0.000,48.299, -61.905,0.000,-48.299, 
@@ -229,7 +243,21 @@
       },
       "Pyramid001_emb" : {
           "scale" : 1.0,
-          "materials" : [],
+          "materials" : [
+
+            {
+              "DbgColor": 9868950,
+              "DbgIndex": -1,
+              "DbgName": "01 - Default_-1",
+              "colorAmbient": [0,0,0],
+              "colorDiffuse": [0.588,0.588,0.588],
+              "colorSpecular": [0,0,0],
+              "specularCoef": 0.145000,
+              "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
+          }
+],
           "metadata" : { "formatVersion" : 3 },
         "vertices" : [
           0.000,93.933,-0.000, -75.256,0.000,84.738, 75.256,0.000,84.738, 
@@ -250,7 +278,21 @@
       },
       "Pyramid002_emb" : {
           "scale" : 1.0,
-          "materials" : [],
+          "materials" : [
+
+            {
+              "DbgColor": 255,
+              "DbgIndex": -1,
+              "DbgName": "04 - Default_-1",
+              "colorAmbient": [0,0,0],
+              "colorDiffuse": [0,0,1],
+              "colorSpecular": [0,0,0],
+              "specularCoef": 0.145000,
+              "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
+          }
+],
           "metadata" : { "formatVersion" : 3 },
         "vertices" : [
           0.000,45.374,-0.000, -33.408,0.000,35.384, 33.408,0.000,35.384, 
@@ -268,7 +310,21 @@
       },
       "Pyramid003_emb" : {
           "scale" : 1.0,
-          "materials" : [],
+          "materials" : [
+
+            {
+              "DbgColor": 65280,
+              "DbgIndex": -1,
+              "DbgName": "03 - Default_-1",
+              "colorAmbient": [0,0,0],
+              "colorDiffuse": [0,1,0],
+              "colorSpecular": [0,0,0],
+              "specularCoef": 0.145000,
+              "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
+          }
+],
           "metadata" : { "formatVersion" : 3 },
         "vertices" : [
           0.000,-38.095,-0.000, -24.176,0.000,17.582, 24.176,0.000,17.582, 
@@ -286,7 +342,21 @@
       },
       "Teapot001_emb" : {
           "scale" : 1.0,
-          "materials" : [],
+          "materials" : [
+
+            {
+              "DbgColor": 9868950,
+              "DbgIndex": -1,
+              "DbgName": "01 - Default_-1",
+              "colorAmbient": [0,0,0],
+              "colorDiffuse": [0.588,0.588,0.588],
+              "colorSpecular": [0,0,0],
+              "specularCoef": 0.145000,
+              "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
+          }
+],
           "metadata" : { "formatVersion" : 3 },
         "vertices" : [
           21.081,36.138,-0.000, 20.787,37.250,-0.000, 21.128,37.620,-0.000, 

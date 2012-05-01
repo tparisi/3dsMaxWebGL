@@ -66,6 +66,7 @@
           "color": 16711680,
           "colorSpecular": 0,
           "specularCoef": 0.145,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -81,6 +82,7 @@
           "color": 9868950,
           "colorSpecular": 12698049,
           "specularCoef": 0.145,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -91,6 +93,7 @@
           "color": 9868950,
           "colorSpecular": 0,
           "specularCoef": 0.145,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -101,6 +104,7 @@
           "color": 1184274,
           "colorSpecular": 13290186,
           "specularCoef": 0.61,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -111,6 +115,7 @@
           "color": 9868950,
           "colorSpecular": 14803425,
           "specularCoef": 0.544,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -121,6 +126,7 @@
           "color": 0,
           "colorSpecular": 4671303,
           "specularCoef": 0.487,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -136,6 +142,7 @@
           "color": 9868950,
           "colorSpecular": 13750737,
           "specularCoef": 0.515,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -146,6 +153,7 @@
           "color": 16579836,
           "colorSpecular": 14474460,
           "specularCoef": 0.392,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -156,6 +164,7 @@
           "color": 14909472,
           "colorSpecular": 13750737,
           "specularCoef": 0.497,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -172,6 +181,7 @@
           "colorSpecular": 0,
           "specularCoef": 0.145,
           "map" : "license plates.jpg",
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -183,6 +193,7 @@
           "colorSpecular": 0,
           "specularCoef": 0.145,
           "map" : "license plates.jpg",
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -193,6 +204,7 @@
           "color": 9868950,
           "colorSpecular": 15263976,
           "specularCoef": 0.667,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -213,6 +225,7 @@
           "color": 5329233,
           "colorSpecular": 13421772,
           "specularCoef": 0.63,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -243,6 +256,7 @@
           "color": 10878976,
           "colorSpecular": 15527148,
           "specularCoef": 0.753,
+          "vertexColors": false,
           "opacity": 1
         }
       }
@@ -265,12 +279,12 @@
 "textures":
 {
 
-        "license plates.jpg" : {1
-        "url" : "license plates.jpg"
-      },
-        "license plates.jpg" : {1
-        "url" : "license plates.jpg"
-      }
+        "license plates.jpg" : {
+        "url" : "license plates.jpg",
+      "wrap" : ["repeat", "repeat"]      },
+        "license plates.jpg" : {
+        "url" : "license plates.jpg",
+      "wrap" : ["repeat", "repeat"]      }
 },
 
 
@@ -384,10 +398,12 @@
               "DbgIndex": 8,
               "DbgName": "VehicleBody_8",
               "colorAmbient": [0,0,0],
-              "colorDiffuse": [0,0,1],
+              "colorDiffuse": [1,0,0],
               "colorSpecular": [0,0,0],
               "specularCoef": 0.145000,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -410,6 +426,8 @@
               "colorSpecular": [0.756,0.756,0.756],
               "specularCoef": 0.145000,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -421,6 +439,8 @@
               "colorSpecular": [0,0,0],
               "specularCoef": 0.145000,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -432,6 +452,8 @@
               "colorSpecular": [0.792,0.792,0.792],
               "specularCoef": 0.610500,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -443,6 +465,8 @@
               "colorSpecular": [0.882,0.882,0.882],
               "specularCoef": 0.544000,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -454,6 +478,8 @@
               "colorSpecular": [0.279,0.279,0.279],
               "specularCoef": 0.487000,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -476,6 +502,8 @@
               "colorSpecular": [0.819,0.819,0.819],
               "specularCoef": 0.515500,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -487,6 +515,8 @@
               "colorSpecular": [0.864,0.864,0.864],
               "specularCoef": 0.392000,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -494,10 +524,12 @@
               "DbgIndex": 18,
               "DbgName": "Indicator_18",
               "colorAmbient": [0,0,0],
-              "colorDiffuse": [0.125,0.502,0.89],
+              "colorDiffuse": [0.89,0.502,0.125],
               "colorSpecular": [0.819,0.819,0.819],
               "specularCoef": 0.496500,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -520,6 +552,8 @@
               "colorSpecular": [0,0,0],
               "specularCoef": 0.145000,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -531,6 +565,8 @@
               "colorSpecular": [0,0,0],
               "specularCoef": 0.145000,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -542,6 +578,8 @@
               "colorSpecular": [0.909,0.909,0.909],
               "specularCoef": 0.667500,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -575,6 +613,8 @@
               "colorSpecular": [0.801,0.801,0.801],
               "specularCoef": 0.629500,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ,
             {
@@ -626,10 +666,12 @@
               "DbgIndex": 30,
               "DbgName": "break_lights_30",
               "colorAmbient": [0,0,0],
-              "colorDiffuse": [0,0,0.651],
+              "colorDiffuse": [0.651,0,0],
               "colorSpecular": [0.927,0.927,0.927],
               "specularCoef": 0.753000,
               "transparency": 1,
+              "vertexColors": false,
+              "opacity": 1
           }
 ],
           "metadata" : { "formatVersion" : 3 },
