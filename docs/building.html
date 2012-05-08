@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>3dsMax WebGL Exporter - Building the Plugin</title>
+</head>
+<body>
+<h1>3dsMax WebGL Exporter - Building the Plugin</h1>
+<h2>Building the Plugin</h2>
+
+<ol>
+<li>
+Open Visual C++ 2010 (any version; Express OK too).
+</li>
+<li>
+Drop the webgl2012 folder into the SDK's 'samples/import_export' folder. (it will be at peer level with asciiexp and vrmlexp).
+</li>
+<li>
+Open 'samples' solution.
+</li>
+<li>
+Select <b>Add Project</b>, choose the webgl2013 project file.
+</li>
+<li>
+Choose your configuration (Debug, Release etc.)
+</li>
+<li>
+Build
+</li>
+<li>
+webgl.dle file is deposited into Max's stdplugs folder.
+<ul>
+<li>
+64 bit under "Program Files Max folder"
+</li>
+<li>32 bit under "Program Files (x86) Max folder"
+</li>
+</ul>
+</li>
+
+</ol>
+
+</body>
+
+</html>
