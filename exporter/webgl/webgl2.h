@@ -31,7 +31,7 @@ enum ClassToFind {
 	UVS,
 	FACES
 };
-
+/*
 struct AnimRoute {
 	AnimRoute() { mToNode = NULL; }
 	AnimRoute(TCHAR* from, TCHAR* to, INode* fromNode, INode* node)
@@ -104,7 +104,7 @@ class ObjectHashTable {
 
 	Tab<ObjectBucket*> mTable;
 };
-
+*/
 
 class WebGL2Export {
 public:
@@ -281,8 +281,8 @@ private:
 	TSTR           mTimer;      // Name of active TimeSensor
 	Tab<int>       mInterpTypes;// Type of interpolator nodes
 	float          mCycleInterval; // Length of animation in seconds
-	Tab<InterpRoute> mInterpRoutes; // Routes for Intpolator nodes
-	Tab<AnimRoute> mAnimRoutes;  // route nodes from anim
+//	Tab<InterpRoute> mInterpRoutes; // Routes for Intpolator nodes
+//	Tab<AnimRoute> mAnimRoutes;  // route nodes from anim
 	BOOL           mZUp;        // Z axis if true, Y axis otherwise
 	int            mDigits;     // Digits of precision on output
 	BOOL           mCoordInterp;// Generate coordinate interpolators
@@ -293,7 +293,7 @@ private:
 	int            mTformSampleRate; // Custom sample rate
 	BOOL           mCoordSample; // TRUE for once per frame
 	int            mCoordSampleRate; // Custom sample rate
-	ObjectHashTable mObjTable;    // Hash table of all objects in the scene
+//	ObjectHashTable mObjTable;    // Hash table of all objects in the scene
 	Box3           mBoundBox;     // Bounding box for the whole scene
 	TSTR           mTitle;        // Title of world
 	TSTR           mInfo;         // Info for world
@@ -306,7 +306,7 @@ private:
 	BOOL            mEnableProgressBar;      // this is used by the progress bar
 	BOOL            mPreLight;      // should we calculate the color per vertex
 	BOOL            mCPVSource;     // 1 if MAX's; 0 if should we need to calculate the color per vertex
-	CallbackTable*  mCallbacks;     // export callback methods
+//	CallbackTable*  mCallbacks;     // export callback methods
 };
 
 float GetLosProxDist(INode* node, TimeValue t);

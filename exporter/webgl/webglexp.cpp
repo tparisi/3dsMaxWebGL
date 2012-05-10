@@ -1,7 +1,7 @@
 /**********************************************************************
  *<
    FILE: webglexp.cpp
-
+   
    DESCRIPTION:  WebGL .js file export module
 
    CREATED BY: Scott Morrison
@@ -10,28 +10,18 @@
 
  *>   Copyright (c) 1996, 1997 All Rights Reserved.
  **********************************************************************/
+#include <afx.h>
 
 #include <time.h>
 #include "webgl.h"
 #include "simpobj.h"
 #include "istdplug.h"
-//#include "inline.h"
-//#include "lod.h"
-//#include "inlist.h"
 #include "notetrck.h"
-//#include "bookmark.h"
 #include "stdmat.h"
 #include "normtab.h"
-#include "webgl_api.h"
+//#include "webgl_api.h"
 #include "webglexp.h"
 #include "appd.h"
-//#include "timer.h"
-//#include "navinfo.h"
-//#include "backgrnd.h"
-//#include "fog.h"
-//#include "sound.h"
-//#include "touch.h"
-//#include "prox.h"
 #include "webgl2.h"
 #include "helpsys.h"
 
@@ -47,7 +37,8 @@ inline float
 round(float f)
 {
 	// This is used often, so we avoid calling fabs
-	if (f < 0.0f) {
+	if (f < 0.0f)
+	{
 		if (f > -1.0e-5)
 			return 0.0f;
 		return f;
@@ -66,13 +57,16 @@ TCHAR*
 WebGLExport::point(Point3& p)
 {
 	static TCHAR buf[50];
+	/*
 	TCHAR format[20];
-	sprintf(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
+	SPRINTF(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
 	if (mZUp)
 		sprintf(buf, format, round(p.x), round(p.y), round(p.z));
 	else
 		sprintf(buf, format, round(p.x), round(p.z), round(-p.y));
 	CommaScan(buf);
+	*/
+	assert (0);
 	return buf;
 }
 
@@ -80,10 +74,13 @@ TCHAR*
 WebGLExport::color(Color& c)
 {
 	static TCHAR buf[50];
+	/*
 	TCHAR format[20];
 	sprintf(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
 	sprintf(buf, format, round(c.r), round(c.g), round(c.b));
 	CommaScan(buf);
+	*/
+	assert (0);
 	return buf;
 }
 
@@ -91,10 +88,13 @@ TCHAR*
 WebGLExport::color(Point3& c)
 {
 	static TCHAR buf[50];
+	/*
 	TCHAR format[20];
 	sprintf(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
 	sprintf(buf, format, round(c.x), round(c.y), round(c.z));
 	CommaScan(buf);
+	*/
+	assert (0);
 	return buf;
 }
 
@@ -103,10 +103,13 @@ TCHAR*
 WebGLExport::floatVal(float f)
 {
 	static TCHAR buf[50];
+	/*
 	TCHAR format[20];
 	sprintf(format, _T("%%.%dg"), mDigits);
 	sprintf(buf, format, round(f));
 	CommaScan(buf);
+	*/
+	assert (0);
 	return buf;
 }
 
@@ -115,10 +118,13 @@ TCHAR*
 WebGLExport::texture(UVVert& uv)
 {
 	static TCHAR buf[50];
+	/*
 	TCHAR format[20];
 	sprintf(format, _T("%%.%dg %%.%dg"), mDigits, mDigits, mDigits);
 	sprintf(buf, format, round(uv.x), round(uv.y));
 	CommaScan(buf);
+	*/
+	assert (0);
 	return buf;
 }
 
@@ -127,6 +133,7 @@ TCHAR*
 WebGLExport::scalePoint(Point3& p)
 {
 	static TCHAR buf[50];
+	/*
 	TCHAR format[20];
 	// SR NOTE64: Was missing one mDigits argument
 	// Cpnsider replacing with '*' width specifier
@@ -136,6 +143,8 @@ WebGLExport::scalePoint(Point3& p)
 	else
 		sprintf(buf, format, round(p.x), round( p.z), round(p.y));
 	CommaScan(buf);
+	*/
+	assert(0);
 	return buf;
 }
 
@@ -144,6 +153,7 @@ TCHAR*
 WebGLExport::normPoint(Point3& p)
 {
 	static TCHAR buf[50];
+	/*
 	TCHAR format[20];
 	sprintf(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
 	if (mZUp)
@@ -151,6 +161,8 @@ WebGLExport::normPoint(Point3& p)
 	else
 		sprintf(buf, format, round(p.x), round(p.z), round(-p.y));
 	CommaScan(buf);
+	*/
+	assert(0);
 	return buf;
 }
 
@@ -159,6 +171,7 @@ TCHAR*
 WebGLExport::axisPoint(Point3& p, float angle)
 {
 	static TCHAR buf[50];
+	/*
 	TCHAR format[20];
 	sprintf(format, _T("%%.%dg %%.%dg %%.%dg %%.%dg"),
 			mDigits, mDigits, mDigits, mDigits);
@@ -169,6 +182,8 @@ WebGLExport::axisPoint(Point3& p, float angle)
 		sprintf(buf, format, round(p.x), round(p.z), round(-p.y),
 				round(angle));
 	CommaScan(buf);
+	*/
+	assert(0);
 	return buf;
 }
 
@@ -190,9 +205,9 @@ class WebGLClassDesc:public ClassDesc {
 public:
 	int    IsPublic()                   { return TRUE; }
 	void*  Create(BOOL loading = FALSE) { return new WebGLExport; }
-	const  TCHAR* ClassName()           {return _T(GetString(IDS_WEBGL_EXPORT_CLASS));}
+	const  TCHAR* ClassName()           {return GetString(IDS_WEBGL_EXPORT_CLASS);}
 	SClass_ID   SuperClassID()         { return SCENE_EXPORT_CLASS_ID; }
-	Class_ID    ClassID()    { return Class_ID(WEBGL_EXPORT_CLASS_ID,0); }
+	Class_ID    ClassID()    { return WEBGL_EXPORT_CLASS_ID; }
 	const TCHAR* Category()   { return GetString(IDS_TH_SCENEEXPORT); }
 };
 
@@ -208,10 +223,12 @@ ClassDesc* GetWebGLDesc() { return &WebGLDesc; }
 void 
 WebGLExport::Indent(int level)
 {
+	assert (0); /*
 	if (!mIndent) return;
 	assert(level >= 0);
 	for(; level; level--)
 		fprintf(mStream, _T("  "));
+		*/
 }
 	
 // Translates name (if necessary) to WebGL compliant name.
@@ -220,6 +237,8 @@ WebGLExport::Indent(int level)
 #define CTL_CHARS      31
 static TCHAR * WebGLName(TCHAR *name)
 {
+		assert (0); /*
+
 	static char buffer[256];
 	TCHAR* cPtr;
 	int firstCharacter = 1;
@@ -245,25 +264,31 @@ static TCHAR * WebGLName(TCHAR *name)
 		firstCharacter = 0;
 		cPtr++;
 	}
-	
 	return buffer;
+*/
+return NULL;
 }
 
 // Return true if it has a mirror transform
 BOOL
 WebGLExport::IsMirror(INode* node)
 {
+	assert (0); /*
 	Matrix3 tm = GetLocalTM(node, mStart);
 	AffineParts parts;
 	decomp_affine(tm, &parts);
 
 	return parts.f < 0.0f;
+	*/
+	return 0;
 }
 
 // Write beginning of the Separator node.
 void
 WebGLExport::StartNode(INode* node, Object* obj, int level, BOOL outputName)
 {
+		assert (0); /*
+
 	if (node->IsRootNode()) {
 		fprintf(mStream, _T("Separator {\n"));
 		return;
@@ -302,21 +327,24 @@ WebGLExport::StartNode(INode* node, Object* obj, int level, BOOL outputName)
 			}
 		}
 	}
+	*/
 }
 
 // Write end of the separator node.
 void
 WebGLExport::EndNode(INode *node, int level, BOOL lastChild)
 {
+	assert (0); /*
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
-}
+*/}
 
 // Write out the transform from the local coordinate system to the
 // parent coordinate system
 void
 WebGLExport::OutputNodeTransform(INode* node, int level)
 {
+	assert (0); /*
 	// Root node is always identity
 	if (node->IsRootNode())
 		return;
@@ -376,6 +404,7 @@ WebGLExport::OutputNodeTransform(INode* node, int level)
 			fprintf(mStream, _T("Scale { scaleFactor %s }\n"), scalePoint(s));
 		}
 	}
+	*/
 }
 
 // Initialize the normal table
@@ -454,15 +483,15 @@ NormalTable::PrintStats(FILE* mStream)
 				buckets++;
 		}
 	}
-	fprintf(mStream,_T("# slots = %d, buckets = %d, avg. chain length = %.5g\n"),
+	fwprintf(mStream,_T("# slots = %d, buckets = %d, avg. chain length = %.5g\n"),
 			slots, buckets, ((double) buckets / (double) slots));
-			
 }
 
 // Returns true IFF the mesh is all in the same smoothing group
 static BOOL
 MeshIsAllOneSmoothingGroup(Mesh& mesh)
 {
+	assert (0); /*
 	int numfaces = mesh.getNumFaces();
 	unsigned int sg = 0;
 	int i;
@@ -478,6 +507,7 @@ MeshIsAllOneSmoothingGroup(Mesh& mesh)
 				return FALSE;
 		}
 	}
+	*/
 	return TRUE;
 }
 
@@ -485,6 +515,7 @@ MeshIsAllOneSmoothingGroup(Mesh& mesh)
 void
 WebGLExport::OutputNormalIndices(Mesh& mesh, NormalTable* normTab, int level)
 {
+	assert (0); /*
 	Point3 n;
 	int numfaces = mesh.getNumFaces();
 	int i = 0, j = 0, v = 0, norCnt = 0;
@@ -521,6 +552,7 @@ WebGLExport::OutputNormalIndices(Mesh& mesh, NormalTable* normTab, int level)
 	}
 	Indent(level);
 	fprintf(mStream, _T("]\n"));
+*/
 }
 
 // Create the hash table of normals for the given mesh, and
@@ -528,6 +560,7 @@ WebGLExport::OutputNormalIndices(Mesh& mesh, NormalTable* normTab, int level)
 NormalTable*
 WebGLExport::OutputNormals(Mesh& mesh, int level)
 {
+	assert (0); /*
 	int norCnt = 0;
 	int numverts = mesh.getNumVerts();
 	int numfaces = mesh.getNumFaces();
@@ -591,6 +624,8 @@ WebGLExport::OutputNormals(Mesh& mesh, int level)
 #endif
 
 	return normTab;
+	*/
+	return NULL;
 }
 
 // Write out the data for a single triangle mesh
@@ -598,6 +633,7 @@ void
 WebGLExport::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 							BOOL twoSided, int level)
 {
+	assert (0); /*
 	assert(obj);
 	Mesh &mesh = obj->GetMesh();
 	int numverts = mesh.getNumVerts();
@@ -720,6 +756,7 @@ WebGLExport::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
 	delete td;
+*/
 }
 
 // Returns TRUE iff the node has an attached standard material with
@@ -739,6 +776,7 @@ WebGLExport::HasTexture(INode* node)
 TextureDesc*
 WebGLExport::GetMatTex(INode* node)
 {
+	assert (0); /*
 	Mtl* mtl = node->GetMtl();
 	if (!mtl)
 		return NULL;
@@ -787,12 +825,15 @@ WebGLExport::GetMatTex(INode* node)
 		url = fileName;
 	TextureDesc* td = new TextureDesc(bm, fileName, url, path);
 	return td;
+*/
+	return NULL;
 }
 
 // Write out the colors for a multi/sub-object material
 void
 WebGLExport::OutputMultiMtl(Mtl* mtl, int level)
 {
+	assert (0); /*
 	int i;
 	Mtl* sub;
 	Color c;
@@ -882,19 +923,25 @@ WebGLExport::OutputMultiMtl(Mtl* mtl, int level)
 		
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
+*/
 }
 
 void
 WebGLExport::OutputNoTexture(int level)
 {
+	assert (0); /*
+
 	Indent(level);
 	fprintf(mStream, _T("Texture2 {}\n"));
+	*/
 }
 
 // Output the matrial definition for a node.
 BOOL
 WebGLExport::OutputMaterial(INode* node, BOOL& twoSided, int level)
 {
+		assert (0); /*
+
 	Mtl* mtl = node->GetMtl();
 	twoSided = FALSE;
 
@@ -1006,6 +1053,7 @@ WebGLExport::OutputMaterial(INode* node, BOOL& twoSided, int level)
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
 
+	*/
 	return FALSE;
 }
 
@@ -1014,6 +1062,7 @@ WebGLExport::OutputMaterial(INode* node, BOOL& twoSided, int level)
 BOOL
 WebGLExport::WebGLOutSphere(INode * node, Object *obj, int level)
 {
+	assert (0); /*
 	SimpleObject* so = (SimpleObject*) obj;
 	float radius, hemi;
 	int basePivot, genUV, smooth;
@@ -1032,8 +1081,9 @@ WebGLExport::WebGLOutSphere(INode * node, Object *obj, int level)
 	Indent(level);
 
 	fprintf(mStream, _T("Sphere { radius %s }\n"), floatVal(radius));
- 
+ */
 	return TRUE;
+
 }
 
 // Create a VRMNL primitive cylinder, if appropriate.  
@@ -1041,6 +1091,8 @@ WebGLExport::WebGLOutSphere(INode * node, Object *obj, int level)
 BOOL
 WebGLExport::WebGLOutCylinder(INode* node, Object *obj, int level)
 {
+		assert (0); /*
+
 	SimpleObject* so = (SimpleObject*) obj;
 	float radius, height;
 	int sliceOn, genUV, smooth;
@@ -1073,7 +1125,7 @@ WebGLExport::WebGLOutCylinder(INode* node, Object *obj, int level)
 	fprintf(mStream, _T("height %s }\n"), floatVal(float(fabs(height))));
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
-	
+*/	
 	return TRUE;
 }
 
@@ -1082,6 +1134,8 @@ WebGLExport::WebGLOutCylinder(INode* node, Object *obj, int level)
 BOOL
 WebGLExport::WebGLOutCone(INode* node, Object *obj, int level)
 {
+		assert (0); /*
+
 	SimpleObject* so = (SimpleObject*) obj;
 	float radius1, radius2, height;
 	int sliceOn, genUV, smooth;
@@ -1122,6 +1176,7 @@ WebGLExport::WebGLOutCone(INode* node, Object *obj, int level)
 	
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
+	*/
 	return TRUE;
 }
 
@@ -1130,6 +1185,7 @@ WebGLExport::WebGLOutCone(INode* node, Object *obj, int level)
 BOOL
 WebGLExport::WebGLOutCube(INode* node, Object *obj, int level)
 {
+	assert (0); /*
 	Mtl* mtl = node->GetMtl();
 	// Multi materials need meshes
 	if (mtl && mtl->IsMultiMtl())
@@ -1175,7 +1231,7 @@ WebGLExport::WebGLOutCube(INode* node, Object *obj, int level)
 	}
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
-	
+*/	
 	return TRUE;
 }
 
@@ -1183,6 +1239,8 @@ WebGLExport::WebGLOutCube(INode* node, Object *obj, int level)
 BOOL
 WebGLExport::WebGLOutCamera(INode* node, Object* obj, int level)
 {
+		assert (0); /*
+
 	// compute camera transform
 	ViewParams vp;
 	CameraState cs;
@@ -1204,7 +1262,7 @@ WebGLExport::WebGLOutCamera(INode* node, Object* obj, int level)
 	}
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
-
+*/
 	return TRUE;
 }
 
@@ -1212,6 +1270,8 @@ WebGLExport::WebGLOutCamera(INode* node, Object* obj, int level)
 BOOL
 WebGLExport::WebGLOutPointLight(INode* node, LightObject* light, int level)
 {
+		assert (0); /*
+
 	LightState ls;
 	Interval iv = FOREVER;
 
@@ -1232,6 +1292,7 @@ WebGLExport::WebGLOutPointLight(INode* node, LightObject* light, int level)
 	fprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
+	*/
 	return TRUE;
 }
 
@@ -1239,6 +1300,8 @@ WebGLExport::WebGLOutPointLight(INode* node, LightObject* light, int level)
 BOOL
 WebGLExport::WebGLOutDirectLight(INode* node, LightObject* light, int level)
 {
+		assert (0); /*
+
 	LightState ls;
 	Interval iv = FOREVER;
 
@@ -1258,6 +1321,7 @@ WebGLExport::WebGLOutDirectLight(INode* node, LightObject* light, int level)
 	fprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
+	*/
 	return TRUE;
 }
 
@@ -1265,6 +1329,7 @@ WebGLExport::WebGLOutDirectLight(INode* node, LightObject* light, int level)
 BOOL
 WebGLExport::WebGLOutSpotLight(INode* node, LightObject* light, int level)
 {
+	assert (0); /*
 	LightState ls;
 	Interval iv = FOREVER;
 
@@ -1292,6 +1357,7 @@ WebGLExport::WebGLOutSpotLight(INode* node, LightObject* light, int level)
 	fprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
+	*/
 	return TRUE;
 }
 
@@ -1299,6 +1365,8 @@ WebGLExport::WebGLOutSpotLight(INode* node, LightObject* light, int level)
 BOOL
 WebGLExport::WebGLOutTopPointLight(INode* node, LightObject* light)
 {
+		assert (0); /*
+
 	LightState ls;
 	Interval iv = FOREVER;
 
@@ -1320,6 +1388,7 @@ WebGLExport::WebGLOutTopPointLight(INode* node, LightObject* light)
 	fprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
 	Indent(1);
 	fprintf(mStream, _T("}\n"));
+	*/
 	return TRUE;
 }
 
@@ -1327,6 +1396,7 @@ WebGLExport::WebGLOutTopPointLight(INode* node, LightObject* light)
 BOOL
 WebGLExport::WebGLOutTopDirectLight(INode* node, LightObject* light)
 {
+	assert (0); /*
 	LightState ls;
 	Interval iv = FOREVER;
 
@@ -1358,6 +1428,7 @@ WebGLExport::WebGLOutTopDirectLight(INode* node, LightObject* light)
 	fprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
 	Indent(1);
 	fprintf(mStream, _T("}\n"));
+	*/
 	return TRUE;
 }
 
@@ -1365,6 +1436,7 @@ WebGLExport::WebGLOutTopDirectLight(INode* node, LightObject* light)
 BOOL
 WebGLExport::WebGLOutTopSpotLight(INode* node, LightObject* light)
 {
+	assert (0); /*
 	LightState ls;
 	Interval iv = FOREVER;
 
@@ -1404,6 +1476,7 @@ WebGLExport::WebGLOutTopSpotLight(INode* node, LightObject* light)
 	fprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
 	Indent(1);
 	fprintf(mStream, _T("}\n"));
+	*/
 	return TRUE;
 }
 
@@ -1411,6 +1484,7 @@ WebGLExport::WebGLOutTopSpotLight(INode* node, LightObject* light)
 void
 WebGLExport::OutputTopLevelLight(INode* node, LightObject *light)
 {
+	assert (0); /*
 	Class_ID id = light->ClassID();
 	if (id == Class_ID(OMNI_LIGHT_CLASS_ID, 0))
 		WebGLOutTopPointLight(node, light);
@@ -1419,7 +1493,7 @@ WebGLExport::OutputTopLevelLight(INode* node, LightObject *light)
 	else if (id == Class_ID(SPOT_LIGHT_CLASS_ID, 0) ||
 			 id == Class_ID(FSPOT_LIGHT_CLASS_ID, 0))
 		WebGLOutTopSpotLight(node, light);
-	
+*/	
 }
 /*
 // Output a WebGL Inline node.
@@ -1496,6 +1570,7 @@ WebGLExport::WebGLOutLOD(INode *node, LODObject* obj, int level)
 BOOL
 WebGLExport::WebGLOutTarget(INode* node, int level)
 {
+	assert (0); /*
 	INode* lookAt = node->GetLookatNode();
 	if (!lookAt)
 		return TRUE;
@@ -1518,7 +1593,7 @@ WebGLExport::WebGLOutTarget(INode* node, int level)
 	  fprintf(mStream, _T("aimer \"%s\"\n"), mNodes.GetNodeName(lookAt));
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
-	return TRUE;
+*/	return TRUE;
 }
 
 // Write out the WebGL for nodes we know about, including WebGL helper nodes, 
@@ -1527,62 +1602,7 @@ BOOL
 WebGLExport::WebGLOutSpecial(INode* node, INode* parent,
 							 Object* obj, int level)
 {
-	Class_ID id = obj->ClassID();
-
-	/*
-	if (id == Class_ID(MR_BLUE_CLASS_ID1, MR_BLUE_CLASS_ID2)) {
-		level++;
-		WebGLOutMrBlue(node, parent, (MrBlueObject*) obj,
-					  &level, FALSE);
-	}
-	*/
-
-	if (id == Class_ID(OMNI_LIGHT_CLASS_ID, 0))
-		return WebGLOutPointLight(node, (LightObject*) obj, level+1);
-
-	if (id == Class_ID(DIR_LIGHT_CLASS_ID, 0))
-		return WebGLOutDirectLight(node, (LightObject*) obj, level+1);
-
-	if (id == Class_ID(SPOT_LIGHT_CLASS_ID, 0) ||
-		id == Class_ID(FSPOT_LIGHT_CLASS_ID, 0))
-		return WebGLOutSpotLight(node, (LightObject*) obj, level+1);
-
-//    if (id == Class_ID(WebGL_INS_CLASS_ID1, WebGL_INS_CLASS_ID2))
-//        return WebGLOutInline((WebGLInsObject*) obj, level+1);
-
-//    if (id == Class_ID(LOD_CLASS_ID1, LOD_CLASS_ID2))
-//        return WebGLOutLOD(node, (LODObject*) obj, level+1);
-
-	if (id == Class_ID(SIMPLE_CAM_CLASS_ID, 0) ||
-		id == Class_ID(LOOKAT_CAM_CLASS_ID, 0))
-		return WebGLOutCamera(node, obj, level+1);
-
-	if (id == Class_ID(TARGET_CLASS_ID, 0))
-		return WebGLOutTarget(node, level+1);
-
-	// If object has modifiers or WSMs attached, do not output as
-	// a primitive
-	SClass_ID sid = node->GetObjectRef()->SuperClassID();
-	if (sid == WSM_DERIVOB_CLASS_ID ||
-		sid == DERIVOB_CLASS_ID)
-		return FALSE;
-
-	if (!mPrimitives)
-		return FALSE;
-
-	// Otherwise look for the primitives we know about
-	if (id == Class_ID(SPHERE_CLASS_ID, 0))
-		return WebGLOutSphere(node, obj, level+1);
-
-	if (id == Class_ID(CYLINDER_CLASS_ID, 0))
-		return WebGLOutCylinder(node, obj, level+1);
-
-	if (id == Class_ID(CONE_CLASS_ID, 0))
-		return WebGLOutCone(node, obj, level+1);
-
-	if (id == Class_ID(BOXOBJ_CLASS_ID, 0))
-		return WebGLOutCube(node, obj, level+1);
-
+	assert (0);
 	return FALSE;
 		
 }
@@ -1598,6 +1618,7 @@ IsLODObject(Object* obj)
 static BOOL
 IsEverAnimated(INode* node)
 {
+	assert (0); /*
  // need to sample transform
 	Class_ID id = node->EvalWorldState(0).obj->ClassID();
 	if (id == Class_ID(SIMPLE_CAM_CLASS_ID, 0) ||
@@ -1606,6 +1627,7 @@ IsEverAnimated(INode* node)
 	for (; !node->IsRootNode(); node = node->GetParentNode())
 		if (node->IsAnimated())
 			return TRUE;
+			*/
 	return FALSE;
 }
 
@@ -1734,6 +1756,7 @@ BOOL
 WebGLExport::WriteTCBKeys(INode* node, Control *cont,
 						 int type, int level)
 {
+	assert (0); /*
 	ITCBFloatKey fkey, ofkey;
 	ITCBPoint3Key pkey, opkey;
 	ITCBRotKey rkey, orkey;
@@ -1988,6 +2011,7 @@ WebGLExport::WriteTCBKeys(INode* node, Control *cont,
 			break; }
 		}
 	}
+	*/
 	return TRUE;
 }
 
@@ -2002,6 +2026,7 @@ WebGLExport::WriteLinearKeys(INode* node,
 							 Tab<Point3>& sclKeys,
 							 int type, int level)
 {
+	assert (0); /*
 	AngAxis rval;
 	Point3 p, po, s;
 	int i;
@@ -2128,12 +2153,14 @@ WebGLExport::WriteLinearKeys(INode* node,
 	}
 			
 	return;
+*/
 }
 
 int
 WebGLExport::WriteAllControllerData(INode* node, int flags, int level,
 								   Control* lc)
 {
+	assert (0); /*
 	int i;
 	TimeValue t;
 	TimeValue end = mIp->GetAnimRange().End();
@@ -2283,12 +2310,15 @@ WebGLExport::WriteAllControllerData(INode* node, int flags, int level,
 		}
 	}
 	return retVal;
+*/
+return 0;
 }
 
 // Write out the initial position key, relative to the parent.
 void
 WebGLExport::WritePositionKey0(INode* node, TimeValue t, int level, BOOL force)
 {
+	assert (0); /*
 	Matrix3 tm = GetLocalTM(node, mStart);
 	Point3 p = tm.GetTrans();
 
@@ -2308,13 +2338,14 @@ WebGLExport::WritePositionKey0(INode* node, TimeValue t, int level, BOOL force)
 	fprintf(mStream, _T("translation %s\n"), point(p));
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
-	
+*/	
 }
 
 // Write out the initial rotation key, relative to the parent.
 void
 WebGLExport::WriteRotationKey0(INode* node, TimeValue t, int level, BOOL force)
 {
+	assert (0); /*
 	Matrix3 tm = GetLocalTM(node, mStart);
 	Point3 p, s, axis;
 	Quat q;
@@ -2343,12 +2374,14 @@ WebGLExport::WriteRotationKey0(INode* node, TimeValue t, int level, BOOL force)
 	fprintf(mStream, _T("rotation %s\n"), axisPoint(axis, ang));
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
+	*/
 }
 
 // Write out the initial scale key, relative to the parent.
 void
 WebGLExport::WriteScaleKey0(INode* node, TimeValue t, int level, BOOL force)
 { 
+	assert (0); /*
 	Matrix3 tm = GetLocalTM(node, mStart);
 	AffineParts parts;
 	decomp_affine(tm, &parts);
@@ -2373,10 +2406,12 @@ WebGLExport::WriteScaleKey0(INode* node, TimeValue t, int level, BOOL force)
 	fprintf(mStream, _T("scale %s\n"), scalePoint(s));
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
+*/
 }
 
 void
 WebGLExport::WriteVisibilityData(INode *node, int level) {
+	assert (0); /*
 	int i;
 	TimeValue t;
 	int frames = mIp->GetAnimRange().End()/GetTicksPerFrame();
@@ -2400,17 +2435,21 @@ WebGLExport::WriteVisibilityData(INode *node, int level) {
 		}
 		lastVis = vis;
 	}    
+*/
 }
 
 BOOL
 WebGLExport::IsLight(INode* node)
 {
+	assert (0); /*
 	Object* obj = node->EvalWorldState(mStart).obj;
 	if (!obj)
 		return FALSE;
 
 	SClass_ID sid = obj->SuperClassID();
 	return sid == LIGHT_CLASS_ID;
+	*/
+	return 0;
 }
 
 Control *
@@ -2490,6 +2529,7 @@ WebGLExport::WebGLOutControllers(INode* node, int level)
 void
 WebGLExport::WebGLOutTopLevelCamera(int level, INode* node, BOOL topLevel)
 {
+	assert (0); /*
 	if (!topLevel && node == mCamera)
 		return;
 		
@@ -2531,7 +2571,7 @@ WebGLExport::WebGLOutTopLevelCamera(int level, INode* node, BOOL topLevel)
 	fprintf(mStream, _T("heightAngle %s\n"), floatVal(vp.fov));
 	Indent(level);
 	fprintf(mStream, _T("}\n"));
-
+*/
 }
 
 // From dllmain.cpp
@@ -2541,6 +2581,7 @@ extern HINSTANCE hInstance;
 void
 WebGLExport::WebGLOutFileInfo()
 {
+	assert (0); /*
 	char filename[MAX_PATH];
 	DWORD size, dummy;
 	float vernum = 1.0f;
@@ -2570,8 +2611,8 @@ WebGLExport::WebGLOutFileInfo()
 	time( &ltime );
 	char * time = ctime(&ltime);
 	// strip the CR
-	time[strlen(time)-1] = '\0';
-	TCHAR* fn = mIp->GetCurFileName();
+	time[wcslen(time)-1] = '\0';
+	const TCHAR* fn = (const TCHAR *)mIp->GetCurFileName();
 	if (fn && _tcslen(fn) > 0) {
 		Indent(1);
 		fprintf(mStream, _T("Info { string \"MAX File: %s, Date: %s\" }\n"), fn, time);
@@ -2589,6 +2630,7 @@ WebGLExport::WebGLOutFileInfo()
 	fprintf(mStream, _T("faceType CONVEX\n"));
 	Indent(1);
 	fprintf(mStream, _T("}\n"));
+*/
 }
 
 // Output a single node as WebGL and recursively output the children of
@@ -2597,6 +2639,7 @@ void
 WebGLExport::WebGLOutNode(INode* node, INode* parent, int level, BOOL isLOD,
 						BOOL lastChild)
 {
+	assert (0); /*
 	// Don't gen code for LOD references, only LOD nodes
 	if (!isLOD && ObjectIsLODRef(node))
 		return;
@@ -2639,12 +2682,14 @@ WebGLExport::WebGLOutNode(INode* node, INode* parent, int level, BOOL isLOD,
 			WebGLOutAnimationFrames();
 		EndNode(node, level, lastChild);
 	}
+	*/
 }
 
 // Write the "AnimationFrames" WebGL node
 void
 WebGLExport::WebGLOutAnimationFrames()
 {
+	assert (0); /*
 	if (mType == Export_ThreeJS && mHadAnim) {
 		Indent(1);
 		fprintf(mStream, _T("AnimationFrames_ktx_com {\n"));
@@ -2660,6 +2705,7 @@ WebGLExport::WebGLOutAnimationFrames()
 		Indent(1);
 		fprintf(mStream, _T("}\n"));
 	}
+	*/
 }
 
 
@@ -2667,6 +2713,7 @@ WebGLExport::WebGLOutAnimationFrames()
 void
 WebGLExport::TraverseNode(INode* node)
 {
+	assert (0); /*
 	if (!node) return;
 	Object* obj = node->EvalWorldState(mStart).obj;
 
@@ -2687,6 +2734,7 @@ WebGLExport::TraverseNode(INode* node)
 	int n = node->NumberOfChildren();
 	for(int i = 0; i < n; i++)
 		TraverseNode(node->GetChildNode(i));
+		*/
 }
 
 void
@@ -2771,7 +2819,7 @@ void
 GetAppData(Interface * ip, int id, TCHAR* def, TCHAR* val, int len)
 {
 	SoundObj *node = ip->GetSoundObject();
-	AppDataChunk *ad = node->GetAppDataChunk(Class_ID(WEBGL_EXPORT_CLASS_ID,0),
+	AppDataChunk *ad = node->GetAppDataChunk(WEBGL_EXPORT_CLASS_ID,
 											 SCENE_EXPORT_CLASS_ID, id);
 	if (!ad)
 		_tcscpy(val, def);
@@ -2784,12 +2832,12 @@ void
 WriteAppData(Interface* ip, int id, TCHAR* val)
 {
 	SoundObj *node = ip->GetSoundObject();
-	node->RemoveAppDataChunk(Class_ID(WEBGL_EXPORT_CLASS_ID,0),
+	node->RemoveAppDataChunk(WEBGL_EXPORT_CLASS_ID,
 							 SCENE_EXPORT_CLASS_ID, id);
 	int size = static_cast<int>((_tcslen(val)+1) * sizeof(TCHAR));
 	TCHAR* buf = (TCHAR*) MAX_malloc(size);
 	_tcscpy(buf, val);
-	node->AddAppDataChunk(Class_ID(WEBGL_EXPORT_CLASS_ID,0),
+	node->AddAppDataChunk(WEBGL_EXPORT_CLASS_ID,
 						  SCENE_EXPORT_CLASS_ID, id,
 						  size, buf);
 	SetSaveRequiredFlag(TRUE);
@@ -2805,6 +2853,7 @@ ISpinnerControl* WebGLExport::flipbookSpin = NULL;
 static INT_PTR CALLBACK
 SampleRatesDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) 
 {
+	assert (0); /*
 	TCHAR text[MAX_PATH];
 	WebGLExport *exp;
 	if (msg == WM_INITDIALOG) {
@@ -2823,7 +2872,7 @@ SampleRatesDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		EnableWindow(GetDlgItem(hDlg, IDC_TFORM_SPIN), !once);
 		
 		GetAppData(exp->mIp, TFORM_SAMPLE_RATE_ID, _T("10"), text, MAX_PATH);
-		int sampleRate = atoi(text);
+		int sampleRate = _wtoi(text);
 
 		exp->tformSpin = GetISpinner(GetDlgItem(hDlg, IDC_TFORM_SPIN));
 		exp->tformSpin->SetLimits(1, 100);
@@ -2840,7 +2889,7 @@ SampleRatesDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		EnableWindow(GetDlgItem(hDlg, IDC_COORD_SPIN), !once);
 		
 		GetAppData(exp->mIp, COORD_SAMPLE_RATE_ID, _T("3"), text, MAX_PATH);
-		sampleRate = atoi(text);
+		sampleRate = _wtoi(text);
 
 		exp->coordSpin = GetISpinner(GetDlgItem(hDlg, IDC_COORD_SPIN));
 		exp->coordSpin->SetLimits(1, 100);
@@ -2857,7 +2906,7 @@ SampleRatesDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		EnableWindow(GetDlgItem(hDlg, IDC_FLIPBOOK_SPIN), !once);
 		
 		GetAppData(exp->mIp, FLIPBOOK_SAMPLE_RATE_ID, _T("10"), text, MAX_PATH);
-		sampleRate = atoi(text);
+		sampleRate = _wtoi(text);
 
 		exp->flipbookSpin = GetISpinner(GetDlgItem(hDlg, IDC_FLIPBOOK_SPIN));
 		exp->flipbookSpin->SetLimits(1, 100);
@@ -2929,6 +2978,7 @@ SampleRatesDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		}
 	}
+*/
 	return FALSE;
 }
 
@@ -3001,46 +3051,46 @@ WebGLExportDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		SetWindowContextHelpId(hDlg, idh_webglexp_export);
 		CenterWindow(hDlg, GetParent(hDlg));
 		GetAppData(exp->mIp, NORMALS_ID, _T("no"), text, MAX_PATH);
-		BOOL gen = _tcscmp(text, "yes") == 0;
+		BOOL gen = _tcscmp(text, _T("yes")) == 0;
 		CheckDlgButton(hDlg, IDC_GENNORMALS, gen);
 		GetAppData(exp->mIp, INDENT_ID, _T("yes"), text, MAX_PATH);
-		gen = _tcscmp(text, "yes") == 0;
+		gen = _tcscmp(text, _T("yes")) == 0;
 		CheckDlgButton(hDlg, IDC_INDENT, gen);
 		GetAppData(exp->mIp, FIELDS_ID, _T("yes"), text, MAX_PATH);
-		gen = _tcscmp(text, "yes") == 0;
+		gen = _tcscmp(text, _T("yes")) == 0;
 		//CheckDlgButton(hDlg, IDC_GEN_FIELDS, gen);
 		GetAppData(exp->mIp, UPDIR_ID, _T("Y"), text, MAX_PATH);
-		gen = _tcscmp(text, "Z") == 0;
+		gen = _tcscmp(text, _T("Z")) == 0;
 		//CheckDlgButton(hDlg, IDC_Z_UP, gen);
 		//CheckDlgButton(hDlg, IDC_Y_UP, !gen);
 		GetAppData(exp->mIp, COORD_INTERP_ID, _T("no"), text, MAX_PATH);
-		gen = _tcscmp(text, "yes") == 0;
+		gen = _tcscmp(text, _T("yes")) == 0;
 		CheckDlgButton(hDlg, IDC_COORD_INTERP, gen);
 		GetAppData(exp->mIp, EXPORT_HIDDEN_ID, _T("no"), text, MAX_PATH);
-		gen = _tcscmp(text, "yes") == 0;
+		gen = _tcscmp(text, _T("yes")) == 0;
 		CheckDlgButton(hDlg, IDC_EXPORT_HIDDEN, gen);
 		GetAppData(exp->mIp, ENABLE_PROGRESS_BAR_ID, _T("yes"), text, MAX_PATH);
-		gen = _tcscmp(text, "yes") == 0;
+		gen = _tcscmp(text, _T("yes")) == 0;
 		CheckDlgButton(hDlg, IDC_ENABLE_PROGRESS_BAR, gen);
 
 		GetAppData(exp->mIp, PRIMITIVES_ID, _T("yes"), text, MAX_PATH);
-		gen = _tcscmp(text, "yes") == 0;
+		gen = _tcscmp(text, _T("yes")) == 0;
 		CheckDlgButton(hDlg, IDC_PRIM, gen);
 
 		GetAppData(exp->mIp, EXPORT_PRE_LIGHT_ID, _T("no"), text, MAX_PATH);
-		gen = _tcscmp(text, "yes") == 0;
+		gen = _tcscmp(text, _T("yes")) == 0;
 		CheckDlgButton(hDlg, IDC_COLOR_PER_VERTEX, gen);
 		EnableWindow(GetDlgItem(hDlg, IDC_CPV_CALC), gen);
 		EnableWindow(GetDlgItem(hDlg, IDC_CPV_MAX),  gen);
 
 		GetAppData(exp->mIp, CPV_SOURCE_ID, _T("max"), text, MAX_PATH);
-		gen = _tcscmp(text, "max") == 0;
+		gen = _tcscmp(text, _T("max")) == 0;
 		CheckDlgButton(hDlg, IDC_CPV_MAX, gen);
 		CheckDlgButton(hDlg, IDC_CPV_CALC, !gen);
 
 #ifdef _LEC_
 		GetAppData(exp->mIp, FLIP_BOOK_ID, _T("no"), text, MAX_PATH);
-		gen = _tcscmp(text, "yes") == 0;
+		gen = _tcscmp(text, _T("yes")) == 0;
 		CheckDlgButton(hDlg, IDC_FLIP_BOOK, gen);
 #endif
 
@@ -3158,13 +3208,13 @@ WebGLExportDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		ComboBox_SelectString(cb, 0, text);
 
 		cb = GetDlgItem(hDlg, IDC_POLYGON_TYPE);
-		ComboBox_AddString(cb, _T(GetString(IDS_OUT_TRIANGLES)));
+		ComboBox_AddString(cb,(GetString(IDS_OUT_TRIANGLES)));
 #if TRUE   // outputing higher order polygons
-		ComboBox_AddString(cb, _T(GetString(IDS_OUT_QUADS)));
-		ComboBox_AddString(cb, _T(GetString(IDS_OUT_NGONS)));
-		ComboBox_AddString(cb, _T(GetString(IDS_OUT_VIS_EDGES)));
+		ComboBox_AddString(cb,(GetString(IDS_OUT_QUADS)));
+		ComboBox_AddString(cb,(GetString(IDS_OUT_NGONS)));
+		ComboBox_AddString(cb,(GetString(IDS_OUT_VIS_EDGES)));
 #endif
-		GetAppData(exp->mIp, POLYGON_TYPE_ID, _T(GetString(IDS_OUT_TRIANGLES)), text, MAX_PATH);
+		GetAppData(exp->mIp, POLYGON_TYPE_ID,(GetString(IDS_OUT_TRIANGLES)), text, MAX_PATH);
 		ComboBox_SelectString(cb, 0, text);
 
 	 // make sure the appropriate things are enabled
@@ -3307,17 +3357,17 @@ WebGLExportDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			} else
 				exp->SetFog(NULL);
 
-			WriteAppData(exp->mIp, OUTPUT_LANG_ID, "WebGL");
+			WriteAppData(exp->mIp, OUTPUT_LANG_ID, _T("WebGL"));
 			exp->SetExportType(Export_ThreeJS);
 
 			ComboBox_GetText(GetDlgItem(hDlg, IDC_POLYGON_TYPE), text, MAX_PATH);
 			WriteAppData(exp->mIp, POLYGON_TYPE_ID, text);
 		 // some following strings moved to resources, 010809  --prs.
-			if (_tcscmp(text, _T(GetString(IDS_VISIBLE_EDGES))) == 0)
+			if (_tcscmp(text,(GetString(IDS_VISIBLE_EDGES))) == 0)
 				exp->SetPolygonType(OUTPUT_VISIBLE_EDGES);
-			else if (_tcscmp(text, _T(GetString(IDS_NGONS))) == 0)
+			else if (_tcscmp(text,(GetString(IDS_NGONS))) == 0)
 				exp->SetPolygonType(OUTPUT_NGONS);
-			else if (_tcscmp(text, _T(GetString(IDS_QUADS))) == 0)
+			else if (_tcscmp(text,(GetString(IDS_QUADS))) == 0)
 				exp->SetPolygonType(OUTPUT_QUADS);
 			else
 				exp->SetPolygonType(OUTPUT_TRIANGLES);
@@ -3336,9 +3386,9 @@ WebGLExportDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			Edit_GetText(GetDlgItem(hDlg, IDC_URL_PREFIX), text, MAX_PATH);
 			TSTR prefix = text;
 			exp->SetUrlPrefix(prefix);
-			WriteAppData(exp->mIp, URL_PREFIX_ID, exp->GetUrlPrefix());
+			WriteAppData(exp->mIp, URL_PREFIX_ID, (TCHAR *)(const TCHAR *)exp->GetUrlPrefix());
 			ComboBox_GetText(GetDlgItem(hDlg, IDC_DIGITS), text, MAX_PATH);
-			exp->SetDigits(atoi(text));
+			exp->SetDigits(_wtoi(text));
 			WriteAppData(exp->mIp, DIGITS_ID, text);
 
 			GetAppData(exp->mIp, TFORM_SAMPLE_ID, _T("custom"), text,
@@ -3347,7 +3397,7 @@ WebGLExportDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			exp->SetTformSample(once);
 			GetAppData(exp->mIp, TFORM_SAMPLE_RATE_ID, _T("10"), text,
 					   MAX_PATH);
-			int sampleRate = atoi(text);
+			int sampleRate = _wtoi(text);
 			exp->SetTformSampleRate(sampleRate);
 
 			GetAppData(exp->mIp, COORD_SAMPLE_ID, _T("custom"), text,
@@ -3356,7 +3406,7 @@ WebGLExportDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			exp->SetCoordSample(once);
 			GetAppData(exp->mIp, COORD_SAMPLE_RATE_ID, _T("3"), text,
 					   MAX_PATH);
-			sampleRate = atoi(text);
+			sampleRate = _wtoi(text);
 			exp->SetCoordSampleRate(sampleRate);
 
 			GetAppData(exp->mIp, FLIPBOOK_SAMPLE_ID, _T("custom"), text,
@@ -3365,7 +3415,7 @@ WebGLExportDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			exp->SetFlipbookSample(once);
 			GetAppData(exp->mIp, FLIPBOOK_SAMPLE_RATE_ID, _T("10"), text,
 					   MAX_PATH);
-			sampleRate = atoi(text);
+			sampleRate = _wtoi(text);
 			exp->SetFlipbookSampleRate(sampleRate);
 
 			GetAppData(exp->mIp, TITLE_ID, _T(""), text, MAX_PATH);
@@ -3411,7 +3461,7 @@ WebGLExport::DoExport(const TCHAR *filename, ExpInterface *ei, Interface *i, BOO
 	if (true)//IsWebGL2())
 	{
 	 // generate the callback table of third party dlls
-		mCallbacks.GetCallbackMethods(i);
+//		mCallbacks.GetCallbackMethods(i);
 
 #ifdef NOThanks//_LEC_
 		if (this->GetFlipBook()) {
@@ -3473,36 +3523,36 @@ WebGLExport::initializeDefaults() {
 	TCHAR text[MAX_PATH];
 
 	GetAppData(mIp, NORMALS_ID, _T("no"), text, MAX_PATH);
-	BOOL gen = _tcscmp(text, "yes") == 0;
+	BOOL gen = _tcscmp(text, _T("yes")) == 0;
 	SetGenNormals(gen);
 	GetAppData(mIp, INDENT_ID, _T("yes"), text, MAX_PATH);
-	gen = _tcscmp(text, "yes") == 0;
+	gen = _tcscmp(text, _T("yes")) == 0;
 	SetIndent(gen);
 	SetZUp(FALSE);
 	GetAppData(mIp, COORD_INTERP_ID, _T("no"), text, MAX_PATH);
-	gen = _tcscmp(text, "yes") == 0;
+	gen = _tcscmp(text, _T("yes")) == 0;
 	SetCoordInterp(gen);
 	GetAppData(mIp, EXPORT_HIDDEN_ID, _T("no"), text, MAX_PATH);
-	gen = _tcscmp(text, "yes") == 0;
+	gen = _tcscmp(text, _T("yes")) == 0;
 	SetExportHidden(gen);
 	GetAppData(mIp, ENABLE_PROGRESS_BAR_ID, _T("yes"), text, MAX_PATH);
-	gen = _tcscmp(text, "yes") == 0;
+	gen = _tcscmp(text, _T("yes")) == 0;
 	SetEnableProgressBar(gen);
 
 	GetAppData(mIp, PRIMITIVES_ID, _T("yes"), text, MAX_PATH);
-	gen = _tcscmp(text, "yes") == 0;
+	gen = _tcscmp(text, _T("yes")) == 0;
 	SetPrimitives(gen);
 
 	GetAppData(mIp, EXPORT_PRE_LIGHT_ID, _T("no"), text, MAX_PATH);
-	gen = _tcscmp(text, "yes") == 0;
+	gen = _tcscmp(text, _T("yes")) == 0;
 	SetPreLight(gen);
 	GetAppData(mIp, CPV_SOURCE_ID, _T("max"), text, MAX_PATH);
-	gen = _tcscmp(text, "max") == 0;
+	gen = _tcscmp(text, _T("max")) == 0;
 	SetCPVSource(gen);
 
 #ifdef _LEC_
 	GetAppData(mIp, FLIP_BOOK_ID, _T("no"), text, MAX_PATH);
-	gen = _tcscmp(text, "yes") == 0;
+	gen = _tcscmp(text, _T("yes")) == 0;
 	SetFlipBook(gen);
 #endif
 	GetAppData(mIp, USE_PREFIX_ID, _T("yes"), text, MAX_PATH);
@@ -3511,15 +3561,15 @@ WebGLExport::initializeDefaults() {
 	TSTR prefix = text;
 	SetUrlPrefix(prefix);
 	GetAppData(mIp, DIGITS_ID, _T("4"), text, MAX_PATH);
-	SetDigits(atoi(text));
+	SetDigits(_wtoi(text));
 
 	GetAppData(mIp, POLYGON_TYPE_ID, _T("Triangles"), text, MAX_PATH);
    // some following strings moved to resources, 010809  --prs.
-	if (_tcscmp(text, _T(GetString(IDS_VISIBLE_EDGES))) == 0)
+	if (_tcscmp(text,(GetString(IDS_VISIBLE_EDGES))) == 0)
 		SetPolygonType(OUTPUT_VISIBLE_EDGES);
-	else if (_tcscmp(text, _T(GetString(IDS_NGONS))) == 0)
+	else if (_tcscmp(text,(GetString(IDS_NGONS))) == 0)
 		SetPolygonType(OUTPUT_NGONS);
-	else if (_tcscmp(text, _T(GetString(IDS_QUADS))) == 0)
+	else if (_tcscmp(text,(GetString(IDS_QUADS))) == 0)
 		SetPolygonType(OUTPUT_QUADS);
 	else
 		SetPolygonType(OUTPUT_TRIANGLES);
@@ -3604,19 +3654,19 @@ WebGLExport::initializeDefaults() {
 	BOOL once = _tcscmp(text, _T("once")) == 0;
 	SetTformSample(once);
 	GetAppData(mIp, TFORM_SAMPLE_RATE_ID, _T("10"), text, MAX_PATH);
-	SetTformSampleRate(atoi(text));
+	SetTformSampleRate(_wtoi(text));
 
 	GetAppData(mIp, COORD_SAMPLE_ID, _T("custom"), text, MAX_PATH);
 	once = _tcscmp(text, _T("once")) == 0;
 	SetCoordSample(once);
 	GetAppData(mIp, COORD_SAMPLE_RATE_ID, _T("3"), text, MAX_PATH);
-	SetCoordSampleRate(atoi(text));
+	SetCoordSampleRate(_wtoi(text));
 
 	GetAppData(mIp, FLIPBOOK_SAMPLE_ID, _T("custom"), text, MAX_PATH);
 	once = _tcscmp(text, _T("once")) == 0;
 	SetFlipbookSample(once);        
 	GetAppData(mIp, FLIPBOOK_SAMPLE_RATE_ID, _T("10"), text, MAX_PATH);
-	SetFlipbookSampleRate(atoi(text));
+	SetFlipbookSampleRate(_wtoi(text));
 
 	GetAppData(mIp, TITLE_ID, _T(""), text, MAX_PATH);
 	SetTitle(text);
@@ -3780,10 +3830,14 @@ TCHAR* NodeTable::GetNodeName(INode* node)
 	DWORD hash = HashNode(node, NODE_HASH_TABLE_SIZE);
 	NodeList* nList;
 	
-	for(nList = mTable[hash]; nList; nList = nList->next) {
-		if (nList->node == node) {
-			if (nList->hasName) return nList->name;
-		 else return NULL; // if it wasn't created
+	for(nList = mTable[hash]; nList; nList = nList->next)\
+	{
+		if (nList->node == node)
+		{
+			if (nList->hasName)
+				return (TCHAR *)(const TCHAR *)nList->name;
+			else
+				return NULL; // if it wasn't created
 		}
 	}
 	return NULL;  // if for some unknown reason we dont find it
@@ -3799,31 +3853,31 @@ TCHAR* NodeTable::AddName(TCHAR* name)
    int        matchVal;
 
    for (nList = mNames[hashVal]; nList; nList = nList->next) {
-	  if (nList->name && !strcmp(name, nList->name)) { // found a match
+	  if (nList->name && !wcscmp(name, nList->name)) { // found a match
 	   // checkout name for "_0xxx" that is our tag
-		 matchStr = strrchr(name, '_');
+		 matchStr = wcsrchr(name, '_');
 		 if (matchStr) {      // possible additional duplicate names
 			if (matchStr[1] == '0') {     // assume additional duplicate names
-			   matchVal = atoi(matchStr + 1);   // get number
-			   strncpy(buf, name, strlen(name) - strlen(matchStr)); // first part
-			   buf[strlen(name) - strlen(matchStr)] = '\0'; // terminate
+			   matchVal = _wtoi(matchStr + 1);   // get number
+			   wcsncpy(buf, name, wcslen(name) - wcslen(matchStr)); // first part
+			   buf[wcslen(name) - wcslen(matchStr)] = '\0'; // terminate
 			   //sprintf(newName.name, "%s_0%d", buf, matchVal+1);   // add one
 					TSTR newName(buf);
-					sprintf(buf, "_0%d", matchVal+1);   // add one
+					SPRINTF(buf, _T("_0%d"), matchVal+1);   // add one
 					newName.Append(TSTR(buf));
-			   return AddName(newName.data()); // check for unique new name
+			   return AddName((TCHAR *)newName.data()); // check for unique new name
 			}
 		 }
 		 //sprintf(newName.name, "%s_0", name); // first duplicate name
 			TSTR newName(name);
-			newName.Append(TSTR("_0"));
-		 return AddName(newName.data()); // check for unique new name
+			newName.Append(_T("_0"));
+		 return AddName((TCHAR *)newName.data()); // check for unique new name
 	  }
    }
    nList = new NameList(name);
    nList->next = mNames[hashVal];
    mNames[hashVal] = nList;
-   return nList->name;
+   return (TCHAR *)(const TCHAR *)nList->name;
 }
 
 // Traverse the scene graph generating Unique Node Names
@@ -3835,7 +3889,7 @@ WebGLExport::GenerateUniqueNodeNames(INode* node)
    NodeList* nList = mNodes.AddNode(node);
    if (!nList->hasName) {
 	// take mangled name and get a unique name
-	  nList->name    = mNodes.AddName(WebGLName(node->GetName()));
+	  nList->name    = mNodes.AddName((TCHAR *)WebGLName((TCHAR *)node->GetName()));
 	  nList->hasName = TRUE;
    }
 	

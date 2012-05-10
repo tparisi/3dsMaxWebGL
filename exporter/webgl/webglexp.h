@@ -29,7 +29,7 @@
 #define KEY_SCL_ORI  (1<<8)
 
 
-#define WEBGL_EXPORT_CLASS_ID 0xACAD9220
+#define WEBGL_EXPORT_CLASS_ID Class_ID(0x3ba7061,0x34e70b57)
 
 // Enum indicating the type of export we are performing
 //------------------------------------------------------
@@ -72,17 +72,23 @@ struct NameList {
 
 class NodeTable {
 public:
-    NodeTable() {
+    NodeTable()
+	{
 		mTable.SetCount(NODE_HASH_TABLE_SIZE);
-        for (int i = 0; i < NODE_HASH_TABLE_SIZE; i++) mTable[i] = NULL;
+        for (int i = 0; i < NODE_HASH_TABLE_SIZE; i++)
+			mTable[i] = NULL;
 		mNames.SetCount(NODE_HASH_TABLE_SIZE);
-        for (int i = 0; i < NODE_HASH_TABLE_SIZE; i++) mNames[i] = NULL;
+        for (int i = 0; i < NODE_HASH_TABLE_SIZE; i++)
+			mNames[i] = NULL;
     }
     
-	~NodeTable() {
+	~NodeTable()
+	{
 		int cnt = mNames.Count();
-      for (int i = 0; i < NODE_HASH_TABLE_SIZE; i++) delete mTable[i];
-		for (int i = 0; i < cnt; i++) delete mNames[i];
+		for (int i = 0; i < NODE_HASH_TABLE_SIZE; i++)
+			delete mTable[i];
+		for (int i = 0; i < cnt; i++)
+			delete mNames[i];
     }
     
 	NodeList*	AddNode(INode* node);
@@ -184,7 +190,7 @@ public:
     inline int  GetCPVSource() { return mCPVSource; }
     inline void SetCPVSource(int i) { mCPVSource = i; }
 
-    CallbackTable*  GetCallbacks() { return &mCallbacks; }
+//    CallbackTable*  GetCallbacks() { return &mCallbacks; }
 
     Interface* mIp;         // MAX interface pointer
 
@@ -312,7 +318,7 @@ private:
     BOOL       mPreLight;       // should we calculate the color per vertex
     BOOL       mCPVSource;  // 1 if MAX; 0 if we should calculate the color per vertex
 	NodeTable	mNodes;		// hash table of all nodes' name in the scene
-    CallbackTable   mCallbacks; // callback methods
+//    CallbackTable   mCallbacks; // callback methods
 };
 
 // Handy file class

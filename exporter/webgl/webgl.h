@@ -28,5 +28,7 @@
 #endif
 
 TCHAR *GetString(int id);
+// NOTE: There may be some exising macro or function for this?
+#define SPRINTF(buf,...) swprintf(buf,(sizeof(buf)/sizeof(TCHAR)),##__VA_ARGS__)
 
 #endif

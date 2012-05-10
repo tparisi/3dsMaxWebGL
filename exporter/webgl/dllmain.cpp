@@ -15,32 +15,10 @@
 
 #include "webgl.h"
 
-//extern ClassDesc* GetMrBlueDesc();
-//extern ClassDesc* GetLODDesc();
 extern ClassDesc* GetWebGLDesc();
-extern ClassDesc* GetWebGLInsertDesc();
-extern ClassDesc* GetWebGLMtlDesc();
-extern ClassDesc *GetOmniLightDesc();
-extern ClassDesc *GetTSpotLightDesc();
-extern ClassDesc *GetDirLightDesc();
-extern ClassDesc *GetFSpotLightDesc();
-extern ClassDesc* GetPolyCounterDesc();
-//extern ClassDesc* GetTimeSensorDesc();
-//extern ClassDesc* GetNavInfoDesc();
-//extern ClassDesc* GetBackgroundDesc();
-#ifndef NO_HELPER_FOG
-extern ClassDesc* GetFogDesc();
-#endif // NO_HELPER_FOG
-//extern ClassDesc* GetAudioClipDesc();
-//extern ClassDesc* GetSoundDesc();
-//extern ClassDesc* GetTouchSensorDesc();
-//extern ClassDesc* GetProxSensorDesc();
-//extern ClassDesc* GetAnchorDesc();
-//extern ClassDesc* GetBillboardDesc();
-//extern ClassDesc* GetCppOutDesc();
 
 HINSTANCE hInstance;
-int controlsInit = FALSE;
+//int controlsInit = FALSE;
 
 TCHAR
 *GetString(int id)
@@ -52,7 +30,7 @@ TCHAR
 	return NULL;
 }
 
-#define MAX_PRIM_OBJECTS 13
+#define MAX_PRIM_OBJECTS 1
 
 #ifdef _DEBUG
 #define NUM_CLASSES (MAX_PRIM_OBJECTS + 1)
@@ -65,37 +43,19 @@ int classDescCount = 0;
 
 void initClassDescArray()
 {
-   if( !classDescCount )
-   {
-	   /*
-	classDescArray[classDescCount++] = GetAnchorDesc();
-	classDescArray[classDescCount++] = GetTouchSensorDesc();
-	classDescArray[classDescCount++] = GetProxSensorDesc();
-	classDescArray[classDescCount++] = GetTimeSensorDesc();
-	classDescArray[classDescCount++] = GetNavInfoDesc();
-	classDescArray[classDescCount++] = GetBackgroundDesc();
-#ifndef NO_HELPER_FOG
-	classDescArray[classDescCount++] = GetFogDesc();
-#endif // NO_HELPER_FOG
-	classDescArray[classDescCount++] = GetAudioClipDesc();
-	classDescArray[classDescCount++] = GetSoundDesc();
-	classDescArray[classDescCount++] = GetBillboardDesc();
-	classDescArray[classDescCount++] = GetLODDesc();
-	*/
-	classDescArray[classDescCount++] = GetWebGLDesc();
-//	classDescArray[classDescCount++] = GetWebGLInsertDesc();
-}
+	if (!classDescCount)
+		classDescArray[classDescCount++] = GetWebGLDesc();
 }
 
 /** public functions **/
 BOOL WINAPI
 DllMain(HINSTANCE hinstDLL,ULONG fdwReason,LPVOID lpvReserved)
 {
-   if( fdwReason == DLL_PROCESS_ATTACH )
-   {
-      hInstance = hinstDLL;            // Hang on to this DLL's instance handle.
-      DisableThreadLibraryCalls(hInstance);
-		}
+	if( fdwReason == DLL_PROCESS_ATTACH )
+	{
+		hInstance = hinstDLL;            // Hang on to this DLL's instance handle.
+		DisableThreadLibraryCalls(hInstance);
+	}
 
 	return(TRUE);
 }

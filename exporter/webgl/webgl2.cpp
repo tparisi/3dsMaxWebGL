@@ -10,7 +10,6 @@
 
  *>	Copyright (c) 1996, All Rights Reserved.
  **********************************************************************/
-
 #include <time.h>
 #include <direct.h>
 #include <stdlib.h>
@@ -18,19 +17,14 @@
 #include "webgl.h"
 #include "simpobj.h"
 #include "istdplug.h"
-//#include "inline.h"
-//#include "lod.h"
-//#include "inlist.h"
 #include "notetrck.h"
-//#include "bookmark.h"
 #include "stdmat.h"
 #include "normtab.h"
-#include "webgl_api.h"
+#include "webgl.h"
 #include "webglexp.h"
 #include "decomp.h"
 #include "appd.h"
 #include "webgl2.h"
-#include "pmesh.h"
 #include <maxscript/maxscript.h>
 #include <maxscript/maxwrapper/maxclasses.h>
 
@@ -145,11 +139,11 @@ WebGL2Export::point(Point3& p)
 {
 	static TCHAR buf[50];
 	TCHAR format[20];
-	sprintf(format, _T("%%.%df %%.%df %%.%df"), mDigits, mDigits, mDigits);
+	SPRINTF(format, _T("%%.%df %%.%df %%.%df"), mDigits, mDigits, mDigits);
 	if (mZUp)
-		sprintf(buf, format, round(p.x), round(p.y), round(p.z));
+		SPRINTF(buf, format, round(p.x), round(p.y), round(p.z));
 	else
-		sprintf(buf, format, round(p.x), round(p.z), -round(p.y));
+		SPRINTF(buf, format, round(p.x), round(p.z), -round(p.y));
 	CommaScan(buf); // NOTE!: International numbers may contain commas
 	return buf;
 }
@@ -163,7 +157,7 @@ WebGL2Export::color(Color& c)
 	sprintf(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
 	sprintf(buf, format, round(c.r), round(c.g), round(c.b));
 	*/
-	sprintf (buf, "%d",RGB(FLto255(c.b),FLto255(c.g), FLto255(c.r)));
+	SPRINTF (buf, _T("%d"), RGB(FLto255(c.b),FLto255(c.g), FLto255(c.r)));
 	CommaScan(buf);
 	return buf;
 }
@@ -174,8 +168,8 @@ WebGL2Export::colorString(Color& c)
 	static TCHAR buf[50];
 
 	TCHAR format[20];
-	sprintf(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
-	sprintf(buf, format, round(c.r), round(c.g), round(c.b));
+	SPRINTF(format,  _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
+	SPRINTF(buf, format, round(c.r), round(c.g), round(c.b));
 	CommaScan(buf);
 	return buf;
 }
@@ -202,8 +196,8 @@ WebGL2Export::floatVal(float f)
 {
 	static TCHAR buf[50];
 	TCHAR format[20];
-	sprintf(format, _T("%%.%dg"), mDigits);
-	sprintf(buf, format, round(f));
+	SPRINTF(format, _T("%%.%dg"), mDigits);
+	SPRINTF(buf, format, round(f));
 	CommaScan(buf);
 	return buf;
 }
@@ -214,8 +208,8 @@ WebGL2Export::texture(UVVert& uv)
 {
 	static TCHAR buf[50];
 	TCHAR format[20];
-	sprintf(format, _T("%%.%dg %%.%dg"), mDigits, mDigits);
-	sprintf(buf, format, round(uv.x), round(1.0-uv.y));
+	SPRINTF(format, _T("%%.%dg %%.%dg"), mDigits, mDigits);
+	SPRINTF(buf, format, round(uv.x), round(1.0-uv.y));
 	CommaScan(buf);
 	return buf;
 }
@@ -226,11 +220,11 @@ WebGL2Export::scalePoint(Point3& p)
 {
 	static TCHAR buf[50];
 	TCHAR format[20];
-	sprintf(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
+	SPRINTF(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
 	if (mZUp)
-		sprintf(buf, format, round(p.x), round( p.y), round(p.z));
+		SPRINTF(buf, format, round(p.x), round( p.y), round(p.z));
 	else
-		sprintf(buf, format, round(p.x), round( p.z), round(p.y));
+		SPRINTF(buf, format, round(p.x), round( p.z), round(p.y));
 	CommaScan(buf);
 	return buf;
 }
@@ -241,11 +235,11 @@ WebGL2Export::normPoint(Point3& p)
 {
 	static TCHAR buf[50];
 	TCHAR format[20];
-	sprintf(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
+	SPRINTF(format, _T("%%.%dg %%.%dg %%.%dg"), mDigits, mDigits, mDigits);
 	if (mZUp)
-		sprintf(buf, format, round(p.x), round(p.y), round(p.z));
+		SPRINTF(buf, format, round(p.x), round(p.y), round(p.z));
 	else
-		sprintf(buf, format, round(p.x), round(p.z), round(-p.y));
+		SPRINTF(buf, format, round(p.x), round(p.z), round(-p.y));
 	CommaScan(buf);
 	return buf;
 }
@@ -258,12 +252,12 @@ WebGL2Export::axisPoint(Point3& p, float angle)
 		p = Point3(1., 0., 0.); // default direction
 	static TCHAR buf[50];
 	TCHAR format[20];
-	sprintf(format, _T("%%.%dg %%.%dg %%.%dg %%.%dg"),
+	SPRINTF(format, _T("%%.%dg %%.%dg %%.%dg %%.%dg"),
 			mDigits, mDigits, mDigits, mDigits);
 	if (true || mZUp)
-		sprintf(buf, format, round(p.x), round(p.y), round(p.z), round(angle));
+		SPRINTF(buf, format, round(p.x), round(p.y), round(p.z), round(angle));
 	else
-		sprintf(buf, format, round(p.x), round(p.z), round(-p.y), round(angle));
+		SPRINTF(buf, format, round(p.x), round(p.z), round(-p.y), round(angle));
 	CommaScan(buf);
 	return buf;
 }
@@ -275,12 +269,12 @@ WebGL2Export::quat(Quat &q)
 	TCHAR format[20];
 	float X,  Y, Z;
 	q.GetEuler(&X, &Y, &Z);
-	 sprintf(format, _T("%%.%dg %%.%dg %%.%dg"),
+	SPRINTF(format, _T("%%.%dg %%.%dg %%.%dg"),
 			mDigits, mDigits, mDigits);
 	if (mZUp)
-		sprintf(buf, format, round(X), round(Y), round(Z));
+		SPRINTF(buf, format, round(X), round(Y), round(Z));
 	else
-		sprintf(buf, format, round(X), round(Z), round(-Y));
+		SPRINTF(buf, format, round(X), round(Z), round(-Y));
 	CommaScan(buf);
 	return buf;
 }
@@ -289,10 +283,11 @@ WebGL2Export::quat(Quat &q)
 void 
 WebGL2Export::Indent(int level)
 {
-	if (!mIndent) return;
+	if (!mIndent)
+		return;
 	assert(level >= 0);
-	for(; level; level--)
-		fprintf(mStream, _T("  "));
+	for (; level; level--)
+		fwprintf(mStream, _T("  "));
 }
 	
 // Translates name (if necessary) to WebGL compliant name.
@@ -300,16 +295,17 @@ WebGL2Export::Indent(int level)
 // the previous contents.
 #define CTL_CHARS      31
 #define SINGLE_QUOTE   39
-static TCHAR * WebGLName(TCHAR *name)
+static TCHAR * WebGLName(const TCHAR *name)
 {
-	static char buffer[256];
+	static TCHAR buffer[256];
 	static int seqnum = 0;
 	TCHAR* cPtr;
 	int firstCharacter = 1;
 
 	_tcscpy(buffer, name);
 	cPtr = buffer;
-	while(*cPtr) {
+	while(*cPtr)
+	{
 		if( *cPtr <= CTL_CHARS ||
 			*cPtr == ' ' ||
 			*cPtr == SINGLE_QUOTE ||
@@ -331,7 +327,7 @@ static TCHAR * WebGLName(TCHAR *name)
 	if (firstCharacter) {       // if empty name, quick, make one up!
 		*cPtr++ = '_';
 		*cPtr++ = '_';
-		sprintf(cPtr, "%d", seqnum++);
+		SPRINTF(cPtr, _T("%d"), seqnum++);
 	}
 	
 	return buffer;
@@ -343,9 +339,9 @@ WebGL2Export::StartNode(INode* node, int level, BOOL *isFirst)
 {
 //	if (!node->IsRootNode())
 	if (!*isFirst)
-		fprintf (mStream, _T(","));
+		fwprintf (mStream, _T(","));
 	*isFirst = FALSE;
-	fprintf (mStream, _T("\n"));
+	fwprintf (mStream, _T("\n"));
 /*    
 	TCHAR *nodnam = mNodes.GetNodeName(node);
 	Indent(level);
@@ -373,9 +369,9 @@ WebGL2Export::EndNode(INode *node, Object* obj, int level, BOOL lastChild)
 {
 	Indent(level);
 	if (lastChild || node->GetParentNode()->IsRootNode())
-		fprintf(mStream, _T("}\n"));
+		fwprintf(mStream, _T("}\n"));
 	else
-		fprintf(mStream, _T("},\n"));    
+		fwprintf(mStream, _T("},\n"));    
 }
 
 /* test
@@ -431,11 +427,11 @@ WebGL2Export::OutputNodeTransform(INode* node, int level, BOOL mirrored)
 			p = - p;
 #endif
 		Indent(level);
-		fprintf(mStream, _T("\"position\": [%s],\n"), point(p));
+		fwprintf(mStream, _T("\"position\": [%s],\n"), point(p));
 		Indent(level);
-		fprintf(mStream, _T("\"rotation\": [0,0,0],\n"));
+		fwprintf(mStream, _T("\"rotation\": [0,0,0],\n"));
 		Indent(level);
-		fprintf(mStream, _T("\"scale\": [1,1,1],\n"));
+		fwprintf(mStream, _T("\"scale\": [1,1,1],\n"));
 		return FALSE;
 	}
 	AffineParts parts;
@@ -452,14 +448,14 @@ WebGL2Export::OutputNodeTransform(INode* node, int level, BOOL mirrored)
 			p = - p;
 #endif
 	Indent(level);
-	fprintf(mStream, _T("\"position\": [%s],\n"), point(p));
+	fwprintf(mStream, _T("\"position\": [%s],\n"), point(p));
 	Control*rc = node->GetTMController()->GetRotationController();
 
 	Indent(level);
 	if (ang != 0.0f && ang != -0.0f)
-		fprintf(mStream, _T("\"rotation\": [%s],\n"), quat(q));
+		fwprintf(mStream, _T("\"rotation\": [%s],\n"), quat(q));
 	else
-		fprintf(mStream, _T("\"rotation\": [0,0,0],\n"));
+		fwprintf(mStream, _T("\"rotation\": [0,0,0],\n"));
 	ScaleValue sv(parts.k, parts.u);
 	s = sv.s;
 #ifndef MIRROR_BY_VERTICES
@@ -468,9 +464,9 @@ WebGL2Export::OutputNodeTransform(INode* node, int level, BOOL mirrored)
 #endif
 	Indent(level);
 	if (!(AEQ(s.x, 1.0)) || !(AEQ(s.y, 1.0)) || !(AEQ(s.z, 1.0)))
-		fprintf(mStream, _T("\"scale\": [%s],\n"), scalePoint(s));
+		fwprintf(mStream, _T("\"scale\": [%s],\n"), scalePoint(s));
 	else
-		fprintf(mStream, _T("\"scale\": [1,1,1],\n"));
+		fwprintf(mStream, _T("\"scale\": [1,1,1],\n"));
 	return parts.f < 0.0f;
 }
 
@@ -503,8 +499,9 @@ MeshIsAllOneSmoothingGroup(Mesh& mesh)
 int
 WebGL2Export::MaybeNewLine(int width, int level)
 {
-	if (width > MAX_WIDTH) {
-		fprintf(mStream, _T("\n"));
+	if (width > MAX_WIDTH)
+	{
+		fwprintf(mStream, _T("\n"));
 		Indent(level);
 		return CurrentWidth();
 	}
@@ -522,40 +519,50 @@ WebGL2Export::OutputNormalIndices(Mesh& mesh, NormalTable* normTab, int level,
 
 	Indent(level);
 	
-	fprintf(mStream, _T("normalIndex [\n"));
+	fwprintf(mStream, _T("normalIndex [\n"));
 	Indent(level+1);
-	for (i = 0; i < numfaces; i++) {
+	for (i = 0; i < numfaces; i++)
+	{
 		int id = mesh.faces[i].getMatID();
-		if (textureNum == -1 || id == textureNum) {
+		if (textureNum == -1 || id == textureNum)
+		{
 			int smGroup = mesh.faces[i].getSmGroup();
 			for(v = 0; v < 3; v++) {
 				int cv = mesh.faces[i].v[v];
 				RVertex * rv = mesh.getRVertPtr(cv);
-				if (rv->rFlags & SPECIFIED_NORMAL) {
+				if (rv->rFlags & SPECIFIED_NORMAL)
+				{
 					n = rv->rn.getNormal();
 					continue;
 				}
-				else if((norCnt = (int)(rv->rFlags & NORCT_MASK)) != 0 && smGroup) {
+				else if((norCnt = (int)(rv->rFlags & NORCT_MASK)) != 0 && smGroup)
+				{
 					if (norCnt == 1)
 						n = rv->rn.getNormal();
-					else for(j = 0; j < norCnt; j++) {
-						if (rv->ern[j].getSmGroup() & smGroup) {
-							n = rv->ern[j].getNormal();
-							break;
+					else
+					{
+						for(j = 0; j < norCnt; j++)
+						{
+							if (rv->ern[j].getSmGroup() & smGroup)
+							{
+								n = rv->ern[j].getNormal();
+								break;
+							}
 						}
 					}
-				} else
+				}
+				else
 					n = mesh.getFaceNormal(i);
 				int index = normTab->GetIndex(n);
 				assert (index != -1);
-				width += fprintf(mStream, _T("%d, "), index);
+				width += fwprintf(mStream, _T("%d, "), index);
 				width = MaybeNewLine(width, level+1);
 			}
-			width += fprintf(mStream, _T("-1, "));
+			width += fwprintf(mStream, _T("-1, "));
 			width = MaybeNewLine(width, level+1);
 		}
 	}
-	fprintf(mStream, _T("]\n"));
+	fwprintf(mStream, _T("]\n"));
 }
 
 NormalTable*
@@ -604,7 +611,7 @@ WebGL2Export::OutputNormals(Mesh& mesh, int level)
 
 	NormalDesc* nd;
 	Indent(level);
-	fprintf(mStream, _T("\"normals\" : [\n"));
+	fwprintf(mStream, _T("\"normals\" : [\n"));
 	int width = CurrentWidth();
 	Indent(level+1);
 
@@ -616,13 +623,13 @@ WebGL2Export::OutputNormals(Mesh& mesh, int level)
 			nd->index = index++;
 			Point3 p = nd->n / NUM_NORMS;
 			if (!isFirstNormal)
-				fprintf (mStream, _T(", "));
+				fwprintf (mStream, _T(", "));
 			isFirstNormal = FALSE;
-			width += fprintf(mStream, _T("%s"), normPoint(p));
+			width += fwprintf(mStream, _T("%s"), normPoint(p));
 			width = MaybeNewLine(width, level+1);
 		}
 	}
-	fprintf(mStream, _T("],\n"));
+	fwprintf(mStream, _T("],\n"));
 	/*
 	Indent(level);
 	fprintf(mStream, _T("normalPerVertex TRUE\n"));
@@ -681,12 +688,12 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 	if (mSceneFile)
 	{
 		Indent(level++);
-		fprintf(mStream, _T("\"%s_emb\" : {\n"), mNodes.GetNodeName(node)); // open emb
+		fwprintf(mStream, _T("\"%s_emb\" : {\n"), mNodes.GetNodeName(node)); // open emb
 	}
 	Indent(level+1);
-	fprintf(mStream, _T("\"scale\" : 1.0,\n"));
+	fwprintf(mStream, _T("\"scale\" : 1.0,\n"));
 	Indent(level+1);
-	fprintf(mStream, _T("\"materials\" : [\n"));
+	fwprintf(mStream, _T("\"materials\" : [\n"));
 
 	BOOL isFirstMat = TRUE;
 	int numTextures = NumTextures(node);
@@ -711,9 +718,9 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 		multiMat = OutputMaterial(node, isWire, twoSided, level+1, i, &isFirstMat, EMBEDS);
 	}
 
-	fprintf(mStream, _T("],\n"));
+	fwprintf(mStream, _T("],\n"));
 	Indent(level+1);
-	fprintf(mStream, _T("\"metadata\" : { \"formatVersion\" : 3 },\n"));
+	fwprintf(mStream, _T("\"metadata\" : { \"formatVersion\" : 3 },\n"));
 
 /*
 	if (!isWire)
@@ -732,23 +739,23 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 		{
 			VertColor vColor;
 			Indent(level);
-			fprintf(mStream, _T("\"vertexColors\": true // THIS GOES IN MATERIAL!\n"));
+			fwprintf(mStream, _T("\"vertexColors\": true // THIS GOES IN MATERIAL!\n"));
 			Indent(level);
 			width = CurrentWidth();
-			fprintf(mStream, _T("\"colors\" : [\n"));
+			fwprintf(mStream, _T("\"colors\" : [\n"));
 			Indent(level+1);
 			// FIXME need to add colorlist to PMesh
 			for (i = 0; i < numverts; i++)
 			{
 				vColor = mesh.vertCol[i];
 				if (i == numverts - 1)
-					width += fprintf(mStream, _T("%s "), color(vColor));
+					width += fwprintf(mStream, _T("%s "), color(vColor));
 				else
-					width += fprintf(mStream, _T("%s, "), color(vColor));
+					width += fwprintf(mStream, _T("%s, "), color(vColor));
 				width = MaybeNewLine(width, level+1);
 			}
 			Indent(level);
-			fprintf(mStream, _T("],\n"));
+			fwprintf(mStream, _T("],\n"));
 /*
 			Indent(level);
 			fprintf(mStream, _T("colorIndex [\n"));
@@ -783,13 +790,13 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 	{
 		Color c;
 		Indent(level);
-		fprintf(mStream, _T("\"vertexColors\" : false // THIS BELONGS IN MATERIAL\n"));
+		fwprintf(mStream, _T("\"vertexColors\" : false // THIS BELONGS IN MATERIAL\n"));
 		Mtl *sub, *mtl = node->GetMtl();
 		assert (mtl->IsMultiMtl());
 		int num = mtl->NumSubMtls();
 		Indent(level);
 		width = CurrentWidth();
-		fprintf(mStream, _T("\"colors\" : [\n"));
+		fwprintf(mStream, _T("\"colors\" : [\n"));
 		Indent(level+1);
 		for (i = 0; i < num; i++)
 		{
@@ -799,21 +806,21 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 			numColors++;
 			c = sub->GetDiffuse(mStart);
 			if (i == num - 1)
-				width += fprintf(mStream, _T("%s "), color(c));
+				width += fwprintf(mStream, _T("%s "), color(c));
 			else
-				width += fprintf(mStream, _T("%s, "), color(c));
+				width += fwprintf(mStream, _T("%s, "), color(c));
 			width = MaybeNewLine(width, level+1);
 		}
 		Indent(level);
-		fprintf(mStream, _T("],\n"));
+		fwprintf(mStream, _T("],\n"));
 	}
 
 	if (textureNum < 1)
 	{
 		// Output the vertices
 		Indent(level);
-		fprintf(mStream, _T("\"vertices\" : [\n"));
-		
+		fwprintf(mStream, _T("\"vertices\" : [\n"));
+
 		width = CurrentWidth();
 		Indent(level+1);
 		for (i = 0; i < numverts; i++)
@@ -823,14 +830,14 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 			if (pMirror)
 				p = - p;
 #endif
-			width += fprintf(mStream, _T("%s"), point(p));
+			width += fwprintf(mStream, _T("%s"), point(p));
 			if (i == numverts-1)
 			{
-				fprintf(mStream, _T("],\n"));
+				fwprintf(mStream, _T("],\n"));
 			}
 			else
 			{
-				width += fprintf(mStream, _T(", "));
+				width += fwprintf(mStream, _T(", "));
 				width = MaybeNewLine(width, level+1);
 			}
 		}
@@ -838,7 +845,7 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 	else // texture num > 0
 	{
 		Indent(level);
-		fprintf(mStream, _T("TO DO AROUND LINE 774\n"),mNodes.GetNodeName(node));
+		fwprintf(mStream, _T("TO DO AROUND LINE 774\n"),mNodes.GetNodeName(node));
 	}
 	// Output the normals
 	// FIXME share normals on multi-texture objects
@@ -849,7 +856,7 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 
 	// Output Texture coordinates (UV's)
 	Indent(level);
-	fprintf(mStream, _T("\"uvs\" : [[\n"),mNodes.GetNodeName(node));
+	fwprintf(mStream, _T("\"uvs\" : [[\n"),mNodes.GetNodeName(node));
 	if (numtverts > 0 && (td || textureNum == 0) && !isWire)
 	{
 		if (textureNum < 1)
@@ -860,12 +867,12 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 			{
 				if (i > 0)
 				{
-					width += fprintf(mStream, _T(", "));
+					width += fwprintf(mStream, _T(", "));
 					width = MaybeNewLine(width, level+1);
 				}
 				Point3 uvw = mesh.tVerts[i];
 				UVVert p = mesh.getTVert(i);
-				width += fprintf(mStream, _T("%s"), texture(p));
+				width += fwprintf(mStream, _T("%s"), texture(p));
 			}
 		}
 		/*
@@ -876,9 +883,9 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 		}
 		*/
 	}
-	fprintf(mStream, _T("\n"));
+	fwprintf(mStream, _T("\n"));
 	Indent(level);
-	fprintf(mStream, _T("]],\n"));
+	fwprintf(mStream, _T("]],\n"));
 
 	/*
 	if (numtverts > 0 && td && !isWire) {
@@ -931,7 +938,7 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 		
 	// Output the triangles
 	Indent(level);
-	fprintf(mStream, _T("\"faces\" : [\n"));
+	fwprintf(mStream, _T("\"faces\" : [\n"));
 	Indent(level+1);
 	width = CurrentWidth();
 
@@ -960,11 +967,11 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 
 			if (i > 0)
 			{
-				width += fprintf(mStream, _T(","));
+				width += fwprintf(mStream, _T(","));
 				width = MaybeNewLine(width, level+1);
 			}
 			// NOTE! This 5th item is 'material index'
-			width += fprintf(mStream, _T("%d, %d, %d, %d, %d"), bitField,
+			width += fwprintf(mStream, _T("%d, %d, %d, %d, %d"), bitField,
 								mesh.faces[i].v[0], mesh.faces[i].v[1],
 								mesh.faces[i].v[2], id);
 			if (numtverts > 0) // has UVs
@@ -972,7 +979,7 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 				int id = mesh.faces[i].getMatID();
 				if (!(mesh.faces[i].flags & FACE_HIDDEN))
 				{
-					width += fprintf(mStream, _T(", %d,%d,%d"),
+					width += fwprintf(mStream, _T(", %d,%d,%d"),
 										mesh.tvFace[i].t[0], mesh.tvFace[i].t[1],
 										mesh.tvFace[i].t[2]);
 				}
@@ -1005,16 +1012,16 @@ WebGL2Export::OutputTriObject(INode* node, TriObject* obj, BOOL isMulti,
 					n = mesh.getFaceNormal(i);
 				int index = normTab->GetIndex(n);
 				assert (index != -1);
-				width += fprintf(mStream, _T(",%d"), index);
+				width += fwprintf(mStream, _T(",%d"), index);
 				width = MaybeNewLine(width, level+1);
 			}
 		}
 	}
-	fprintf(mStream, _T("]\n"));
-
+	fwprintf(mStream, _T("]\n"));
+	
 	Indent(--level);
 	//if (mSceneFile)
-		fprintf(mStream, _T("}")); // close emb
+		fwprintf(mStream, _T("}")); // close emb
 	delete td;
 
 }
@@ -1032,11 +1039,14 @@ WebGL2Export::HasTexture(INode* node, BOOL &isWire)
 TSTR
 WebGL2Export::PrefixUrl(TSTR& fileName)
 {
-	if (mUsePrefix && mUrlPrefix.Length() > 0) {
-		if (mUrlPrefix[mUrlPrefix.Length() - 1] != '/') {
-			TSTR slash = "/";
+	if (mUsePrefix && mUrlPrefix.Length() > 0)
+	{
+		if (mUrlPrefix[mUrlPrefix.Length() - 1] != '/')
+		{
+			TSTR slash = _T("/");
 			return mUrlPrefix + slash + fileName;
-		} else
+		}
+		else
 			return mUrlPrefix + fileName;
 	}
 	else
@@ -1075,8 +1085,8 @@ WebGL2Export::GetMtlTex(Mtl* mtl, BOOL& isWire)
 		return NULL;
 	BitmapTex* bm = (BitmapTex*) tm;
 
-	TSTR bitmapFile;
-	TSTR fileName;
+	MSTR bitmapFile;
+	MSTR fileName;
 
 	bitmapFile = bm->GetMapName();
 	if (bitmapFile.data() == NULL)
@@ -1085,8 +1095,8 @@ WebGL2Export::GetMtlTex(Mtl* mtl, BOOL& isWire)
 	if (l < 0)
 		return NULL;
 	
-	TSTR path;
-	SplitPathFile(bitmapFile, &path, &fileName);
+	MSTR path;
+	SplitPathFile((const MSTR&)bitmapFile, &path, &fileName);
 
 	TSTR url = PrefixUrl(fileName);
 	TextureDesc* td = new TextureDesc(bm, fileName, url, path);
@@ -1101,7 +1111,7 @@ WebGL2Export::OutputMaterial(INode* node, BOOL& isWire, BOOL& twoSided,
 	BOOL isMulti = FALSE;
 	isWire = FALSE;
 	twoSided = FALSE;
-	TCHAR *nodeName = node->GetName();
+	const TCHAR *nodeName = node->GetName();
 	Color c;
 
 	if (mtl && mtl->IsMultiMtl())
@@ -1130,60 +1140,60 @@ WebGL2Export::OutputMaterial(INode* node, BOOL& isWire, BOOL& twoSided,
 		if (targetClass == OBJECTS)
 		{
 			if (!*isFirst)
-				fprintf (mStream, _T(","));
+				fwprintf (mStream, _T(","));
 			*isFirst = FALSE;
-			fprintf (mStream, _T("\"wire_%s_%d\""), nodeName, textureNum);
+			fwprintf (mStream, _T("\"wire_%s_%d\""), nodeName, textureNum);
 			return FALSE; // just here for the name
 		}
 		else if (targetClass == MATERIALS)// || targetClass == EMBEDS)
 		{
 			StartNode (node, level, isFirst);
 			Indent(level);
-			fprintf (mStream, _T("\"wire_%s_%d\" : {\n"), nodeName, textureNum); // open mat
+			fwprintf (mStream, _T("\"wire_%s_%d\" : {\n"), nodeName, textureNum); // open mat
 			Indent(level+1);
 //		"type": "MeshBasicMaterial",
 //		"parameters": { "color": 6710886, "wireframe": true }
-			fprintf(mStream, _T("\"type\": \"MeshLambertMaterial\",\n"));
+			fwprintf(mStream, _T("\"type\": \"MeshLambertMaterial\",\n"));
 			Indent(level+1);
-			fprintf(mStream, _T("\"parameters\": {\n"));  // open params
+			fwprintf(mStream, _T("\"parameters\": {\n"));  // open params
 			Indent(level+2);
-			fprintf(mStream, _T("\"color\": %s"), color(col));
+			fwprintf(mStream, _T("\"color\": %s"), color(col));
 //			Indent(level+2);
 //			fprintf(mStream, _T("\"shading\": \"flat\"\n"));
 			Indent(level+1);
-			fprintf(mStream, _T("}\n")); // close params
+			fwprintf(mStream, _T("}\n")); // close params
 		}
 		else if (targetClass == EMBEDS)
 		{
 			if (!*isFirst)
-				fprintf (mStream, _T(","));
+				fwprintf (mStream, _T(","));
 			*isFirst = FALSE;
-			fprintf(mStream, _T("\n"));
+			fwprintf(mStream, _T("\n"));
 			Indent(level+1);
-			fprintf(mStream, _T("{\n")); // open mat
+			fwprintf(mStream, _T("{\n")); // open mat
 			Indent(level+2);
-			fprintf(mStream, _T("\"DbgColor\": %s,\n"), color(col));
+			fwprintf(mStream, _T("\"DbgColor\": %s,\n"), color(col));
 			Indent(level+2);
-			fprintf(mStream, _T("\"DbgIndex\": %d,\n"), textureNum);
+			fwprintf(mStream, _T("\"DbgIndex\": %d,\n"), textureNum);
 			Indent(level+2);
-			fprintf(mStream, _T("\"DbgName\": \"wire_%s_%d\",\n"), nodeName, textureNum);
+			fwprintf(mStream, _T("\"DbgName\": \"wire_%s_%d\",\n"), nodeName, textureNum);
 			Indent(level+2);
-			fprintf(mStream, _T("\"colorAmbient\": [0,0,0],\n"));
+			fwprintf(mStream, _T("\"colorAmbient\": [0,0,0],\n"));
 			Indent(level+2);
-			fprintf(mStream, _T("\"colorDiffuse\": [%s],\n"), colorString(col));
+			fwprintf(mStream, _T("\"colorDiffuse\": [%s],\n"), colorString(col));
 			Indent(level+2);
-			fprintf(mStream, _T("\"colorSpecular\": [%s],\n"), colorString(col));
+			fwprintf(mStream, _T("\"colorSpecular\": [%s],\n"), colorString(col));
 			Indent(level+2);
-			fprintf(mStream, _T("\"specularCoef\": 0,\n"));
+			fwprintf(mStream, _T("\"specularCoef\": 0,\n"));
 			Indent(level+2);
-			fprintf(mStream, _T("\"transparency\": 1.0,\n"));
+			fwprintf(mStream, _T("\"transparency\": 1.0,\n"));
 			Indent(level+2);
-			fprintf(mStream, _T("\"vertexColors\": false\n"));
+			fwprintf(mStream, _T("\"vertexColors\": false\n"));
 		}
 		if (targetClass != TEXTURES)
 		{
 			Indent(level+1);
-			fprintf(mStream, _T("}")); // close mat
+			fwprintf(mStream, _T("}")); // close mat
 		}
 		return FALSE;
 	}
@@ -1199,7 +1209,7 @@ WebGL2Export::OutputMaterial(INode* node, BOOL& isWire, BOOL& twoSided,
 	{
 		StartNode (node, level, isFirst);
 		Indent(level);
-		fprintf (mStream, _T("\"%s_%d\": {\n"), mtl->GetName(), textureNum); // open mat
+		fwprintf (mStream, _T("\"%s_%d\": {\n"), mtl->GetName(), textureNum); // open mat
 	}
 	/*
 	else if (targetClass == EMBEDS)
@@ -1212,9 +1222,9 @@ WebGL2Export::OutputMaterial(INode* node, BOOL& isWire, BOOL& twoSided,
 	else if (targetClass == OBJECTS)
 	{
 		if (!*isFirst)
-			fprintf (mStream, _T(","));
+			fwprintf (mStream, _T(","));
 		*isFirst = FALSE;
-		fprintf (mStream, _T("\"%s_%d\""), mtl->GetName(), textureNum);
+		fwprintf (mStream, _T("\"%s_%d\""), mtl->GetName(), textureNum);
 		return FALSE; // just here for the name
 	}
 
@@ -1223,12 +1233,12 @@ WebGL2Export::OutputMaterial(INode* node, BOOL& isWire, BOOL& twoSided,
 		Indent(level+1);
 //		"type": "MeshBasicMaterial",
 //		"parameters": { "color": 6710886, "wireframe": true }
-		fprintf(mStream, _T("\"type\": \"MeshLambertMaterial\",\n"));
+		fwprintf(mStream, _T("\"type\": \"MeshLambertMaterial\",\n"));
 		Indent(level+1);
-		fprintf(mStream, _T("\"parameters\": {\n")); // open params
+		fwprintf(mStream, _T("\"parameters\": {\n")); // open params
 		Indent(level+2);
 		c = sm->GetDiffuse(mStart);
-		fprintf(mStream, _T("\"color\": %s,\n"), color(c));
+		fwprintf(mStream, _T("\"color\": %s,\n"), color(c));
 //		Indent(level+2);
 //		fprintf(mStream, _T("\"shading\": \"flat\",\n"));
 //		fprintf(mStream, _T("\"colorDiffuse\": %d,\n"), c);
@@ -1243,49 +1253,49 @@ WebGL2Export::OutputMaterial(INode* node, BOOL& isWire, BOOL& twoSided,
 		Indent(level+2);
 		c = sm->GetSpecular(mStart);
 		c *= sm->GetShinStr(mStart);
-		fprintf(mStream, _T("\"colorSpecular\": %s,\n"), color(c));
+		fwprintf(mStream, _T("\"colorSpecular\": %s,\n"), color(c));
 		float sh = sm->GetShininess(mStart);
 		sh = sh * 0.95f + 0.05f;
 		Indent(level+2);
-		fprintf(mStream, _T("\"specularCoef\": %s,\n"), floatVal(sh));
+		fwprintf(mStream, _T("\"specularCoef\": %s,\n"), floatVal(sh));
 		float si = sm->GetSelfIllum(mStart);
 		if (si > 0.0f)
 		{
 			Indent(level+2);
 			c = sm->GetDiffuse(mStart);
 			Point3 p = si*Point3(c.r, c.g, c.b);
-			fprintf(mStream, _T("\"colorEmissive\": %d,\n"), p);
+			fwprintf(mStream, _T("\"colorEmissive\": %d,\n"), p);
 		}
 	}
 	else if (targetClass == EMBEDS)
 	{
 		if (!*isFirst)
-			fprintf (mStream, _T(","));
+			fwprintf (mStream, _T(","));
 		*isFirst = FALSE;
-		fprintf(mStream, _T("\n"));
+		fwprintf(mStream, _T("\n"));
 		c = sm->GetDiffuse(mStart);
 		Indent(level+1);
-		fprintf(mStream, _T("{\n")); // open mat
+		fwprintf(mStream, _T("{\n")); // open mat
 		Indent(level+2);
-		fprintf(mStream, _T("\"DbgColor\": %s,\n"), color(c));
+		fwprintf(mStream, _T("\"DbgColor\": %s,\n"), color(c));
 		Indent(level+2);
-		fprintf(mStream, _T("\"DbgIndex\": %d,\n"), textureNum);
+		fwprintf(mStream, _T("\"DbgIndex\": %d,\n"), textureNum);
 		Indent(level+2);
-		fprintf(mStream, _T("\"DbgName\": \"%s_%d\",\n"),  mtl->GetName(), textureNum);
+		fwprintf(mStream, _T("\"DbgName\": \"%s_%d\",\n"),  mtl->GetName(), textureNum);
 		Indent(level+2);
-		fprintf(mStream, _T("\"colorAmbient\": [0,0,0],\n"));
+		fwprintf(mStream, _T("\"colorAmbient\": [0,0,0],\n"));
 		Indent(level+2);
-		fprintf(mStream, _T("\"colorDiffuse\": [%s],\n"), colorString(c));
+		fwprintf(mStream, _T("\"colorDiffuse\": [%s],\n"), colorString(c));
 		Indent(level+2);
 		c = sm->GetSpecular(mStart);
 		c *= sm->GetShinStr(mStart);
-		fprintf(mStream, _T("\"colorSpecular\": [%s],\n"), colorString(c));
+		fwprintf(mStream, _T("\"colorSpecular\": [%s],\n"), colorString(c));
 		Indent(level+2);
 		float sh = sm->GetShininess(mStart);
 		sh = sh * 0.95f + 0.05f;
-		fprintf(mStream, _T("\"specularCoef\": %f,\n"), sh);
+		fwprintf(mStream, _T("\"specularCoef\": %f,\n"), sh);
 		Indent(level+2);
-		fprintf(mStream, _T("\"transparency\": %s,\n"), floatVal(sm->GetOpacity(mStart)));
+		fwprintf(mStream, _T("\"transparency\": %s,\n"), floatVal(sm->GetOpacity(mStart)));
 	}
 
 /*
@@ -1302,23 +1312,23 @@ WebGL2Export::OutputMaterial(INode* node, BOOL& isWire, BOOL& twoSided,
 		if (targetClass == MATERIALS)
 		{
 			Indent(level+2);
-			fprintf(mStream, _T("\"map\" : \"%s\",\n"), td->name);
+			fwprintf(mStream, _T("\"map\" : \"%s\",\n"), td->name);
 		}
 		else if (targetClass == TEXTURES)
 		{
 			StartNode (node, level, isFirst);
 			Indent(level+1);
-			fprintf(mStream, _T("\"%s\" : {\n"), td->name); // open url
+			fwprintf(mStream, _T("\"%s\" : {\n"), td->name); // open url
 			Indent(level+1);
-			fprintf(mStream, _T("\"url\" : \"%s\",\n"), td->url);
+			fwprintf(mStream, _T("\"url\" : \"%s\",\n"), td->url);
 			Indent(level);
-			fprintf(mStream, _T("\"wrap\" : [\"repeat\", \"repeat\"]"), td->url);
+			fwprintf(mStream, _T("\"wrap\" : [\"repeat\", \"repeat\"]"), td->url);
 			Indent(level);
-			fprintf(mStream, _T("}")); // close url
-			char from[1024];
-			char to[1024];
-			sprintf (from, "%s\\%s", td->path, td->name);
-			sprintf (to, "%s\\%s", mFilepath, td->name);
+			fwprintf(mStream, _T("}")); // close url
+			TCHAR from[1024];
+			TCHAR to[1024];
+			SPRINTF (from, _T("%s\\%s"), td->path, td->name);
+			SPRINTF (to, _T("%s\\%s"), mFilepath, td->name);
 			CopyFile (from, to, FALSE);
 		}
 		else if (targetClass == EMBEDS)
@@ -1326,17 +1336,17 @@ WebGL2Export::OutputMaterial(INode* node, BOOL& isWire, BOOL& twoSided,
 			if (!mSceneFile)
 			{
 				Indent(level+2);
-				fprintf(mStream, _T("\"mapDiffuse\" : \"%s,\"\n"), td->url);
-				char from[1024];
-				char to[1024];
-				sprintf (from, "%s\\%s", td->path, td->name);
-				sprintf (to, "%s\\%s", mFilepath, td->name);
+				fwprintf(mStream, _T("\"mapDiffuse\" : \"%s,\"\n"), td->url);
+				TCHAR from[1024];
+				TCHAR to[1024];
+				SPRINTF (from, _T("%s\\%s"), td->path, td->name);
+				SPRINTF (to, _T("%s\\%s"), mFilepath, td->name);
 				CopyFile (from, to, FALSE);
 			}
 		}
 
-		// fprintf(mStream, _T("repeatS TRUE\n"));
-		// fprintf(mStream, _T("repeatT TRUE\n"));
+		// fwprintf(mStream, _T("repeatS TRUE\n"));
+		// fwprintf(mStream, _T("repeatT TRUE\n"));
 
 		BitmapTex* bm = td->tex;
 		delete td;
@@ -1344,22 +1354,22 @@ WebGL2Export::OutputMaterial(INode* node, BOOL& isWire, BOOL& twoSided,
 	if (targetClass == MATERIALS || targetClass == EMBEDS)
 	{
 		Indent(level+2);
-		fprintf(mStream, _T("\"vertexColors\": false,\n"));
+		fwprintf(mStream, _T("\"vertexColors\": false,\n"));
 		Indent(level+2);
-		fprintf(mStream, _T("\"opacity\": %s\n"), floatVal(sm->GetOpacity(mStart)));
+		fwprintf(mStream, _T("\"opacity\": %s\n"), floatVal(sm->GetOpacity(mStart)));
 		if (targetClass == MATERIALS)
 		{
 			Indent(level+1);
-			fprintf(mStream, _T("}\n")); // close params
+			fwprintf(mStream, _T("}\n")); // close params
 		}
 	}
 	if (targetClass != TEXTURES)
 	{
 		Indent(level);
-		fprintf(mStream, _T("}\n")); // close mat
+		fwprintf(mStream, _T("}\n")); // close mat
 	}
 //	Indent(level);
-//	fprintf(mStream, _T("}\n"));
+//	fwprintf(mStream, _T("}\n"));
 //	Indent(--level);
 	return FALSE;
 }
@@ -1379,17 +1389,17 @@ WebGL2Export::WebGLOutCamera(INode* node, Object* obj, int level)
 	vp.fov = (float)(2.0 * atan(tan(cs.fov / 2.0) / INTENDED_ASPECT_RATIO));
 
 	Indent(level);
-	fprintf(mStream, _T("\"%s\": {\n"), mNodes.GetNodeName(node));
+	fwprintf(mStream, _T("\"%s\": {\n"), mNodes.GetNodeName(node));
 	Indent(level+1);
-	fprintf(mStream, _T("\"type\": \"perspective\",\n"));
+	fwprintf(mStream, _T("\"type\": \"perspective\",\n"));
 	Indent(level+1);
-	fprintf(mStream, _T("\"position\": [0, 0, 0],\n"));
+	fwprintf(mStream, _T("\"position\": [0, 0, 0],\n"));
 	Indent(level+1);
-	fprintf(mStream, _T("\"target\": [0, 0, 0],\n"));
+	fwprintf(mStream, _T("\"target\": [0, 0, 0],\n"));
 	Indent(level+1);
-	fprintf(mStream, _T("\"fov\": %s\n"), floatVal(vp.fov));
+	fwprintf(mStream, _T("\"fov\": %s\n"), floatVal(vp.fov));
 	Indent(level);
-	fprintf(mStream, _T("}"));
+	fwprintf(mStream, _T("}"));
 
 	return TRUE;
 }
@@ -1414,35 +1424,35 @@ WebGL2Export::WebGLOutPointLight(INode* node, LightObject* light, int level, BOO
 	light->EvalLightState(mStart, iv, &ls);
 
 	Indent(level);
-	fprintf(mStream, _T("\"%s\": {\n"), mNodes.GetNodeName(node));
+	fwprintf(mStream, _T("\"%s\": {\n"), mNodes.GetNodeName(node));
 	Indent(level+1);
-	fprintf(mStream, _T("\"type\": \"point\",\n"));
+	fwprintf(mStream, _T("\"type\": \"point\",\n"));
 	Indent(level+1);
-	fprintf(mStream, _T("\"intensity\": %s,\n"),
+	fwprintf(mStream, _T("\"intensity\": %s,\n"),
 			floatVal(light->GetIntensity(mStart, FOREVER)));
 	Indent(level+1);
 	Point3 col = light->GetRGBColor(mStart, FOREVER);
-	fprintf(mStream, _T("\"color\": %s,\n"), color(col));
+	fwprintf(mStream, _T("\"color\": %s,\n"), color(col));
 	Indent(level+1);
 	if (top)
 	{
 		Point3 p = node->GetObjTMAfterWSM(mStart).GetTrans();
-		fprintf(mStream, _T("\"position\": [%s],\n"), point(p));
+		fwprintf(mStream, _T("\"position\": [%s],\n"), point(p));
 	}
 	else
-		fprintf(mStream, _T("\"position\": [0, 0, 0],\n"));
+		fwprintf(mStream, _T("\"position\": [0, 0, 0],\n"));
 /*
 	Indent(level+1);
-	fprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
+	fwprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
 */
 	if (ls.useAtten) {
 		Indent(level+1);
-		fprintf(mStream, _T("attenuation [0 1 0],\n"));
+		fwprintf(mStream, _T("attenuation [0 1 0],\n"));
 	}
 	Indent(level+1);
-	fprintf(mStream, _T("\"radius\": %s\n"), floatVal(ls.attenEnd));
+	fwprintf(mStream, _T("\"radius\": %s\n"), floatVal(ls.attenEnd));
 	Indent(level);
-	fprintf(mStream, _T("}"));
+	fwprintf(mStream, _T("}"));
 	return TRUE;
 }
 
@@ -1457,11 +1467,11 @@ WebGL2Export::WebGLOutDirectLight(INode* node, LightObject* light, int level, BO
 	light->EvalLightState(mStart, iv, &ls);
 
 	Indent(level);
-	fprintf(mStream, _T("\"%s\": {\n"), mNodes.GetNodeName(node));
+	fwprintf(mStream, _T("\"%s\": {\n"), mNodes.GetNodeName(node));
 	Indent(level+1);
-	fprintf(mStream, _T("\"type\": \"directional\",\n"));
+	fwprintf(mStream, _T("\"type\": \"directional\",\n"));
 	Indent(level+1);
-	fprintf(mStream, _T("\"intensity\": %s,\n"),
+	fwprintf(mStream, _T("\"intensity\": %s,\n"),
 			floatVal(light->GetIntensity(mStart, FOREVER)));
 	Indent(level+1);
 	if (top)
@@ -1476,20 +1486,20 @@ WebGL2Export::WebGLOutDirectLight(INode* node, LightObject* light, int level, BO
 		Matrix3 rot;
 		q.MakeMatrix(rot);
 		p = p * rot;
-		fprintf(mStream, _T("\"direction\": [%s],\n"), point(p));
+		fwprintf(mStream, _T("\"direction\": [%s],\n"), point(p));
 	}
 	else
-		fprintf(mStream, _T("\"direction\": [%s],\n"), normPoint(dir));
+		fwprintf(mStream, _T("\"direction\": [%s],\n"), normPoint(dir));
 	Indent(level+1);
 	Point3 col = light->GetRGBColor(mStart, FOREVER);
 
-	fprintf(mStream, _T("\"color\": %s\n"), color(col));
+	fwprintf(mStream, _T("\"color\": %s\n"), color(col));
 /*
 	Indent(level+1);
-	fprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
+	fwprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
 */
 	Indent(level);
-	fprintf(mStream, _T("}"));
+	fwprintf(mStream, _T("}"));
 	return TRUE;
 }
 
@@ -1503,23 +1513,23 @@ WebGL2Export::WebGLOutSpotLight(INode* node, LightObject* light, int level, BOOL
 
 	light->EvalLightState(mStart, iv, &ls);
 	Indent(level);
-	fprintf(mStream, _T("\"%s\": {\n"), mNodes.GetNodeName(node));
+	fwprintf(mStream, _T("\"%s\": {\n"), mNodes.GetNodeName(node));
 	Indent(level+1);
-	fprintf(mStream, _T("\"type\": \"spot\",\n"));
+	fwprintf(mStream, _T("\"type\": \"spot\",\n"));
 	Indent(level+1);
-	fprintf(mStream, _T("\"intensity\": %s,\n"),
+	fwprintf(mStream, _T("\"intensity\": %s,\n"),
 			floatVal(light->GetIntensity(mStart,FOREVER)));
 	Indent(level+1);
 	Point3 col = light->GetRGBColor(mStart, FOREVER);
-	fprintf(mStream, _T("\"color\": %s,\n"), color(col));
+	fwprintf(mStream, _T("\"color\": %s,\n"), color(col));
 	Indent(level+1);
 	if (top)
 	{
 		Point3 p = node->GetObjTMAfterWSM(mStart).GetTrans();
-		fprintf(mStream, _T("\"position\": [%s],\n"), point(p));
+		fwprintf(mStream, _T("\"position\": [%s],\n"), point(p));
 	}
 	else
-		fprintf(mStream, _T("\"position\": [0, 0, 0],\n"));
+		fwprintf(mStream, _T("\"position\": [0, 0, 0],\n"));
 	Indent(level+1);
 	if (top)
 	{
@@ -1533,18 +1543,18 @@ WebGL2Export::WebGLOutSpotLight(INode* node, LightObject* light, int level, BOOL
 		q = parts.q;
 		q.MakeMatrix(rot);
 		p = p * rot;
-		fprintf(mStream, _T("\"direction\": [%s],\n"), normPoint(p));
+		fwprintf(mStream, _T("\"direction\": [%s],\n"), normPoint(p));
 	}
 	else
-		fprintf(mStream, _T("\"direction\": [%s],\n"), normPoint(dir));
+		fwprintf(mStream, _T("\"direction\": [%s],\n"), normPoint(dir));
 	Indent(level+1);
-	fprintf(mStream, _T("\"cutOffAngle\": %s,\n"),
+	fwprintf(mStream, _T("\"cutOffAngle\": %s,\n"),
 			floatVal(DegToRad(ls.fallsize)));
 	Indent(level+1);
-	fprintf(mStream, _T("\"beamWidth\": %s,\n"), floatVal(DegToRad(ls.hotsize)));
+	fwprintf(mStream, _T("\"beamWidth\": %s,\n"), floatVal(DegToRad(ls.hotsize)));
 	Indent(level+1);
 /*
-	fprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
+	fwprintf(mStream, _T("on %s\n"), ls.on ? _T("TRUE") : _T("FALSE"));
 	Indent(level+1);
 */
 	float radius;
@@ -1552,15 +1562,15 @@ WebGL2Export::WebGLOutSpotLight(INode* node, LightObject* light, int level, BOOL
 		radius = Length(mBoundBox.Width());
 	else
 		radius = ls.attenEnd;
-	fprintf(mStream, _T("\"radius\": %s\n"), floatVal(radius));
+	fwprintf(mStream, _T("\"radius\": %s\n"), floatVal(radius));
 	if (ls.useAtten) {
 		float attn;
 		attn = (ls.attenStart <= 1.0f) ? 1.0f : 1.0f/ls.attenStart;
 		Indent(1);
-		fprintf(mStream, _T("\"attenuation\": [0 %s 0]\n"), floatVal(attn));
+		fwprintf(mStream, _T("\"attenuation\": [0 %s 0]\n"), floatVal(attn));
 	}
 	Indent(level);
-	fprintf(mStream, _T("}"));
+	fwprintf(mStream, _T("}"));
 	return TRUE;
 }
 
@@ -1859,39 +1869,38 @@ WebGL2Export::WebGLOutObject(INode* node, INode* parent, Object* obj, int level,
 			if (targetClass == OBJECTS)
 			{
 				Indent(level);
-				fprintf(mStream, _T("\"%s\": {\n"), mNodes.GetNodeName(node));
+				fwprintf(mStream, _T("\"%s\": {\n"), mNodes.GetNodeName(node));
 				OutputNodeTransform(node, level+1, mirrored);
 			}
 			else if (targetClass == GEOMETRIES)
 			{
 				Indent(level);
-				fprintf(mStream, _T("\"%s_geo\": {\n"), mNodes.GetNodeName(node));
+				fwprintf(mStream, _T("\"%s_geo\": {\n"), mNodes.GetNodeName(node));
 				Indent(level+1);
-				fprintf(mStream, _T("\"type\": \"embedded_mesh\",\n"));
+				fwprintf(mStream, _T("\"type\": \"embedded_mesh\",\n"));
 				Indent(level+1);
-				fprintf(mStream, _T("\"id\" : \"%s_emb\"\n"), mNodes.GetNodeName(node));
+				fwprintf(mStream, _T("\"id\" : \"%s_emb\"\n"), mNodes.GetNodeName(node));
 				Indent(level);
-				fprintf(mStream, _T("}"), mNodes.GetNodeName(node));
+				fwprintf(mStream, _T("}"), mNodes.GetNodeName(node));
 			}
 
-			ObjectBucket* ob = mObjTable.AddObject(obj);
+//			ObjectBucket* ob = mObjTable.AddObject(obj);
 			if (targetClass == OBJECTS)
 			{
 				instance = TRUE;
 				// We have an instance
 				//	StartNode (parent, level+1, isFirst);
 				Indent(level+1);
-				fprintf(mStream, _T("\"geometry\": \"%s_geo\",\n"),
-					ob->objectUsed ? ob->instName.data() : mNodes.GetNodeName(node));
+				fwprintf(mStream, _T("\"geometry\": \"%s_geo\",\n"), mNodes.GetNodeName(node));
 				Indent(level+1);
-				fprintf(mStream, _T("\"visible\": true,\n"));
+				fwprintf(mStream, _T("\"visible\": true,\n"));
 			}
 		}
 
 		if (targetClass == OBJECTS)
 		{
 			Indent(level+1);
-			fprintf(mStream, _T("\"materials\": ["));
+			fwprintf(mStream, _T("\"materials\": ["));
 		}
 		int numTextures = NumTextures(node);
 		int start, end;
@@ -1924,9 +1933,9 @@ WebGL2Export::WebGLOutObject(INode* node, INode* parent, Object* obj, int level,
 		}
 		if (targetClass == OBJECTS)
 		{
-			fprintf(mStream, _T("]\n")); // end of 'materials' list for this object
+			fwprintf(mStream, _T("]\n")); // end of 'materials' list for this object
 			Indent(level);
-			fprintf(mStream, _T("}"));
+			fwprintf(mStream, _T("}"));
 		}
 	}
 }
@@ -2228,15 +2237,15 @@ WebGL2Export::WriteVisibilityData(INode *node, int level) {
 		if (vis != lastVis) {
 			mHadAnim = TRUE;
 			Indent(level);
-			fprintf(mStream, _T("HideKey_ktx_com {\n"));
+			fwprintf(mStream, _T("HideKey_ktx_com {\n"));
 			if (mGenFields) {
 				Indent(level+1);
-				fprintf(mStream, _T("fields [ SFLong frame] \n"));
+				fwprintf(mStream, _T("fields [ SFLong frame] \n"));
 			}
 			Indent(level+1);
-			fprintf(mStream, _T("frame %d\n"), i);
+			fwprintf(mStream, _T("frame %d\n"), i);
 			Indent(level);
-			fprintf(mStream, _T("}\n"));
+			fwprintf(mStream, _T("}\n"));
 		}
 		lastVis = vis;
 	}    
@@ -2278,6 +2287,8 @@ WebGL2Export::IsAudio(INode* node)
 static Control* GetController(Object* obj, const TCHAR* name)
 {
 	Control* c = NULL;
+/*
+	MSTR mName (name);
 	if (obj != NULL) {
 		init_thread_locals();
 		push_alloc_frame();
@@ -2289,7 +2300,7 @@ static Control* GetController(Object* obj, const TCHAR* name)
 			ParamDimension* dim;
 
 			// Get the name and value to set
-			vl.prop = Name::intern(const_cast<TCHAR*>(name));
+			vl.prop = Name::intern(&mName);
 
 			// Get the value.
 			c = MAXWrapper::get_max_prop_controller(obj, vl.prop, &dim);
@@ -2303,12 +2314,15 @@ static Control* GetController(Object* obj, const TCHAR* name)
 		pop_value_locals();
 		pop_alloc_frame();
 	}
+*/
 	return c;
 }
 
 Control *
 WebGL2Export::GetLightColorControl(INode* node)
 {
+	return NULL;
+/*
 	if (!IsLight(node))
 		return NULL;
 	Object* obj = node->EvalWorldState(mStart).obj;
@@ -2317,6 +2331,7 @@ WebGL2Export::GetLightColorControl(INode* node)
 //    IParamBlock *pblock = (IParamBlock *) obj->SubAnim(0);
 //    Control* cont = pblock->GetController(0);  // I know color is index 0!
 //    return cont;
+*/
 }
 
 #define NeedsKeys(nkeys) ((nkeys) > 1 || (nkeys) == NOT_KEYFRAMEABLE)
@@ -2342,7 +2357,7 @@ WebGL2Export::WebGLOutControllers(INode* node, int level)
 		mCycleInterval = (mIp->GetAnimRange().End() - mStart) /
 			((float) GetTicksPerFrame()* GetFrameRate());
 		Indent(level);
-		fprintf(mStream,
+		fwprintf(mStream,
 		 _T("DEF %s-TIMER TimeSensor { loop %s cycleInterval %s },\n"),
 				mNodes.GetNodeName(node),
 				(ts < 0) ? _T("TRUE") : _T("FALSE"),
@@ -2424,17 +2439,17 @@ WebGL2Export::WebGLOutTopLevelCamera(int level, INode* node, BOOL topLevel)
 	vp.fov = (float)(2.0 * atan(tan(cs.fov / 2.0) / INTENDED_ASPECT_RATIO));
 	/*
 	Indent(level);
-	fprintf(mStream, _T("DEF %s Viewpoint {\n"), mNodes.GetNodeName(node));
+	fwprintf(mStream, _T("DEF %s Viewpoint {\n"), mNodes.GetNodeName(node));
 	Indent(level+1);
-	fprintf(mStream, _T("position %s\n"), point(p));
+	fwprintf(mStream, _T("position %s\n"), point(p));
 	Indent(level+1);
-	fprintf(mStream, _T("orientation %s\n"), axisPoint(axis, -ang));
+	fwprintf(mStream, _T("orientation %s\n"), axisPoint(axis, -ang));
 	Indent(level+1);
-	fprintf(mStream, _T("fieldOfView %s\n"), floatVal(vp.fov));
+	fwprintf(mStream, _T("fieldOfView %s\n"), floatVal(vp.fov));
 	Indent(level + 1);
-	fprintf(mStream, _T("description \"%s\"\n"), mNodes.GetNodeName(node));
+	fwprintf(mStream, _T("description \"%s\"\n"), mNodes.GetNodeName(node));
 	Indent(level);
-	fprintf(mStream, _T("}\n"));
+	fwprintf(mStream, _T("}\n"));
 
 	// Write out any animation data
 	InitInterpolators(node);
@@ -2475,7 +2490,7 @@ extern HINSTANCE hInstance;
 void
 WebGL2Export::WebGLOutFileInfo()
 {
-	char filename[MAX_PATH];
+	TCHAR filename[MAX_PATH];
 	DWORD size, dummy;
 	float vernum = 2.0f;
 	float betanum = 0.0f;
@@ -2484,11 +2499,11 @@ WebGL2Export::WebGLOutFileInfo()
 	size = GetFileVersionInfoSize(filename, &dummy);
 	if (size)
 	{
-		char *buf = (char *)malloc(size);
-		GetFileVersionInfo(filename, NULL, size, buf);
+		TCHAR *buf = (TCHAR *)malloc(size*sizeof(TCHAR));
+		GetFileVersionInfo(filename, NULL, size*sizeof(TCHAR), buf);
 		VS_FIXEDFILEINFO *qbuf;
 		UINT len;
-		if (VerQueryValue(buf, "\\", (void **)&qbuf, &len))
+		if (VerQueryValue(buf, _T("\\"), (void **)&qbuf, &len))
 		{
 			// got the version information
 			DWORD ms = qbuf->dwProductVersionMS;
@@ -2498,18 +2513,18 @@ WebGL2Export::WebGLOutFileInfo()
 		}
 		free(buf);
 	}
-	fprintf (mStream, _T("\"metadata\": {\n"));
+	fwprintf (mStream, _T("\"metadata\": {\n"));
 	Indent (1);
-	fprintf (mStream, _T("\"formatVersion\": 3,\n"));
+	fwprintf (mStream, _T("\"formatVersion\": 3,\n"));
 	Indent (1);
-	fprintf (mStream, _T("\"type\": \"scene\",\n"));
+	fwprintf (mStream, _T("\"type\": \"scene\",\n"));
 	Indent (1);
-	TCHAR* fn = mIp->GetCurFileName();
-	fprintf (mStream, _T("\"sourceFile\": \"%s\",\n"), fn);
+	const TCHAR* fn = mIp->GetCurFileName();
+	fwprintf (mStream, _T("\"sourceFile\": \"%s\",\n"), fn);
 	Indent (1);
-	fprintf(mStream, _T("\"generatedBy\" : \"3D Studio MAX WebGL exporter, Version %.5g, Revision %.5g\""),
+	fwprintf(mStream, _T("\"generatedBy\" : \"3D Studio MAX WebGL exporter, Version %.5g, Revision %.5g\""),
 		vernum, betanum);
-	fprintf (mStream, _T("\n},\n"));
+	fwprintf (mStream, _T("\n},\n"));
 
 /*	
 	time_t ltime;
@@ -2518,9 +2533,9 @@ WebGL2Export::WebGLOutFileInfo()
 	// strip the CR
 	time[strlen(time)-1] = '\0';
 	if (fn && _tcslen(fn) > 0) {
-		fprintf(mStream, _T("// MAX File: %s, Date: %s\n\n"), fn, time);
+		fwprintf(mStream, _T("// MAX File: %s, Date: %s\n\n"), fn, time);
 	} else {
-		fprintf(mStream, _T("// Date: %s\n\n"), time);
+		fwprintf(mStream, _T("// Date: %s\n\n"), time);
 	}
 */
 }
@@ -2531,24 +2546,24 @@ WebGL2Export::WebGLOutWorldInfo()
 	if (mTitle.Length() == 0 && mInfo.Length() == 0)
 		return;
 
-	fprintf(mStream, _T("\"metadata\":\n"));
+	fwprintf(mStream, _T("\"metadata\":\n"));
 	Indent(1);
-	fprintf(mStream, _T("{\n"));
+	fwprintf(mStream, _T("{\n"));
 	if (mTitle.Length() != 0)
 	{
 		Indent(2);
-		fprintf(mStream, _T("\"sourceFile\"    : \"%s\""), mTitle.data());
-//		fprintf(mStream, _T("title \"%s\"\n"), mTitle.data());
+		fwprintf(mStream, _T("\"sourceFile\"    : \"%s\""), mTitle.data());
+//		fwprintf(mStream, _T("title \"%s\"\n"), mTitle.data());
 	}
 	/*
 	if (mInfo.Length() != 0)
 	{
 		Indent(1);
-		fprintf(mStream, _T("info \"%s\"\n"), mInfo.data());
+		fwprintf(mStream, _T("info \"%s\"\n"), mInfo.data());
 	}
 	*/
 	Indent(1);
-	fprintf(mStream, _T("}\n"));
+	fwprintf(mStream, _T("}\n"));
 }
 
 int
@@ -2594,8 +2609,8 @@ WebGL2Export::WebGLOutNode(INode* node, INode* parent, int level, BOOL isLOD,
 	BOOL    numAnchors  = 0;
 	BOOL    written     = FALSE;
 	BOOL    mirror      = FALSE;
-	int     cnt;
-
+//	int     cnt;
+	/*
 	// give third party dlls a chance to write the node
 	if (!node->IsRootNode())
 	{
@@ -2619,7 +2634,7 @@ WebGL2Export::WebGLOutNode(INode* node, INode* parent, int level, BOOL isLOD,
 		if (!mStream)
 			mStream = _tfopen(mFilename, _T("a"));
 	}
-
+	*/
 	if (isWebGL && !written)
 	{
 //		if (targetClass == OBJECTS && !IsLODObject(obj))
@@ -2637,14 +2652,14 @@ WebGL2Export::WebGLOutNode(INode* node, INode* parent, int level, BOOL isLOD,
 	if (mEnableProgressBar) SendMessage(hWndPB, PBM_STEPIT, 0, 0);
 
 	// Now output the children
-	if (!(written & WroteNodeChildren))
-	{
+//	if (!(written & WroteNodeChildren))
+//	{
 		for (int i = 0; i < numChildren; i++)
 		{
 			WebGLOutNode(node->GetChildNode(i), node, level+2, FALSE,
 				i == numChildren - 1, mirrored ^ mirror, targetClass, isFirst);
 		}
-	}
+//	}
 /*
  // need to get a valid obj ptr WebGLOutNode (WebGLOutCoordinateInterpolator)
  // causes the obj ptr (cache) to be invalid
@@ -2668,7 +2683,7 @@ WebGL2Export::WebGLOutNode(INode* node, INode* parent, int level, BOOL isLOD,
 	*/
 //	if (isWebGL && !node->IsRootNode() && !written)
 //		EndNode(node, obj, level, lastChild);
- 
+ /*
  // give third party dlls a chance to finish up the node
 	if (!node->IsRootNode())
 	{
@@ -2690,6 +2705,7 @@ WebGL2Export::WebGLOutNode(INode* node, INode* parent, int level, BOOL isLOD,
 		if (!mStream)
 			mStream = _tfopen(mFilename, _T("a"));
 	}
+	*/
 }
 
 // Traverse the scene graph looking for LOD nodes and texture maps.
@@ -2724,9 +2740,11 @@ WebGL2Export::ComputeWorldBoundBox(INode* node, ViewExp* vpt)
 void
 WebGL2Export::ScanSceneGraph1()
 {
+/*
 	ViewExp *vpt = mIp->GetViewport(NULL);
 	INode* node = mIp->GetRootNode();
 	ComputeWorldBoundBox(node, vpt);
+*/
 }
 
 // Make a list of al the LOD objects and texture maps in the scene.
@@ -2767,7 +2785,7 @@ ProgressDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_INITDIALOG:
 			CenterWindow(hDlg, GetParent(hDlg));
-			Static_SetText(GetDlgItem(hDlg, IDC_PROGRESS_NNAME), " ");
+			Static_SetText(GetDlgItem(hDlg, IDC_PROGRESS_NNAME), _T(" "));
 			return TRUE;
 		case WM_COMMAND:
 			switch(LOWORD(wParam))
@@ -2836,9 +2854,9 @@ WebGL2Export::DoExport(const TCHAR* filename, Interface* i, WebGLExport* exp)
 	mEnableProgressBar    = exp->GetEnableProgressBar();
 	mPreLight        = exp->GetPreLight();
 	mCPVSource       = exp->GetCPVSource();
-	mCallbacks       = exp->GetCallbacks();
-	static char fn[1024];
-	static char pn[1024];
+//	mCallbacks       = exp->GetCallbacks();
+	static TCHAR fn[1024];
+	static TCHAR pn[1024];
 	// Extract extension, see if we are x3dv or x3d
 	TSTR path1;
 	TSTR path2;
@@ -2847,11 +2865,11 @@ WebGL2Export::DoExport(const TCHAR* filename, Interface* i, WebGLExport* exp)
 	TSTR ext;
 	TSTR fullfilename (filename);
 	SplitFilename(fullfilename, &path1, &fname1, &ext);
-	sprintf (fn, "%s\\%s\\scene.js", (const char *)path1, (const char *)fname1, (const char *)fname1);
-	sprintf (pn, "%s\\%s", (const char *)path1, (const char *)fname1);
-	mFilename = (TCHAR*)fn;
-	mFilepath = (TCHAR *)pn;
-	_mkdir(pn);
+	SPRINTF (fn, _T("%s\\%s\\scene.js"), path1, fname1, fname1);
+	SPRINTF (pn, _T("%s\\%s"), path1, fname1);
+	mFilename = fn;
+	mFilepath = pn;
+	_wmkdir(pn);
 	WorkFile theFile(mFilename, _T("w"));
 	mStream = theFile.MStream();
 
@@ -2865,13 +2883,13 @@ WebGL2Export::DoExport(const TCHAR* filename, Interface* i, WebGLExport* exp)
 		return TRUE;
 	}
 
-	char modname[MAX_PATH];
-	char fromFile[MAX_PATH];
-	char toFile[MAX_PATH];
+	TCHAR modname[MAX_PATH];
+	TCHAR fromFile[MAX_PATH];
+	TCHAR toFile[MAX_PATH];
 	GetModuleFileName(hInstance, modname, MAX_PATH);
 	SplitFilename(modname, &path2, &fname2, &ext);
-	sprintf (fromFile, "%s\\webgl.html", path2);
-	sprintf (toFile, "%s\\%s\\%s.html", path1, fname1, fname1);
+	SPRINTF (fromFile, _T("%s\\webgl.html"), path2);
+	SPRINTF (toFile, _T("%s\\%s\\%s.html"), path1, fname1, fname1);
 	CopyFile (fromFile, toFile, FALSE);
 	/*
 	long f_size;
@@ -2902,7 +2920,7 @@ WebGL2Export::DoExport(const TCHAR* filename, Interface* i, WebGLExport* exp)
 	SetCursor(busy);
 
  // Write out the WebGL header and file info
-	fprintf(mStream, _T("{\n"));
+	fwprintf(mStream, _T("{\n"));
 	if (mSceneFile)
 		WebGLOutFileInfo();
 
@@ -2919,7 +2937,7 @@ WebGL2Export::DoExport(const TCHAR* filename, Interface* i, WebGLExport* exp)
 		cyVScroll = GetSystemMetrics(SM_CYVSCROLL); 
 		ShowWindow(hWndPDlg, SW_SHOW);
 	 // InitCommonControls(); 
-		hWndPB = CreateWindow(PROGRESS_CLASS, (LPSTR) NULL, 
+		hWndPB = CreateWindow(PROGRESS_CLASS, (LPCWSTR) NULL, 
 			WS_CHILD | WS_VISIBLE, rcClient.left, 
 			rcClient.bottom - cyVScroll, 
 			rcClient.right, cyVScroll, 
@@ -2929,7 +2947,7 @@ WebGL2Export::DoExport(const TCHAR* filename, Interface* i, WebGLExport* exp)
 			CountNodes(mIp->GetRootNode()) + 1));
 		SendMessage(hWndPB, PBM_SETSTEP, (WPARAM) 1, 0); 
 	}
- 
+ /*
  // give third party dlls a chance to write before the scene was written
 	BOOL written = FALSE;
 	int cnt;
@@ -2948,50 +2966,50 @@ WebGL2Export::DoExport(const TCHAR* filename, Interface* i, WebGLExport* exp)
 	}
 	if (!mStream)
 		mStream = _tfopen(mFilename, _T("a"));
-	 
+	*/ 
  // Write out the scene graph
-	if (!written)
-	{
+//	if (!written)
+//	{
 		BOOL isFirst = TRUE;
 		if (mSceneFile)
 		{
-			fprintf (mStream, _T("\"urlBaseType\": \"\",\n\n"));
-			fprintf(mStream, _T("\"lights\":\n{\n"));
+			fwprintf (mStream, _T("\"urlBaseType\": \"\",\n\n"));
+			fwprintf(mStream, _T("\"lights\":\n{\n"));
 			WebGLOutNode(mIp->GetRootNode(), NULL, -2, FALSE, TRUE, FALSE, LIGHTS, &isFirst);
-			fprintf(mStream, _T("\n},\n\n"));
+			fwprintf(mStream, _T("\n},\n\n"));
 
 			isFirst = TRUE;
-			fprintf(mStream, _T("\"cameras\":\n{\n"));
+			fwprintf(mStream, _T("\"cameras\":\n{\n"));
 			WebGLOutNode(mIp->GetRootNode(), NULL, -2, FALSE, TRUE, FALSE, CAMERAS, &isFirst);
-			fprintf(mStream, _T("\n},\n\n"));
+			fwprintf(mStream, _T("\n},\n\n"));
 
 			isFirst = TRUE;
-			fprintf(mStream, _T("\"materials\":\n{\n"));
+			fwprintf(mStream, _T("\"materials\":\n{\n"));
 			WebGLOutNode(mIp->GetRootNode(), NULL, -2, FALSE, TRUE, FALSE, MATERIALS, &isFirst);
-			fprintf(mStream, _T("\n},\n\n"));
+			fwprintf(mStream, _T("\n},\n\n"));
 
 			isFirst = TRUE;
-			fprintf(mStream, _T("\"objects\":\n{\n"));
+			fwprintf(mStream, _T("\"objects\":\n{\n"));
 			WebGLOutNode(mIp->GetRootNode(), NULL, -2, FALSE, TRUE, FALSE, OBJECTS, &isFirst);
-			fprintf(mStream, _T("\n},\n\n"));
+			fwprintf(mStream, _T("\n},\n\n"));
 
 			isFirst = TRUE;
-			fprintf(mStream, _T("\"textures\":\n{\n"));
+			fwprintf(mStream, _T("\"textures\":\n{\n"));
 			WebGLOutNode(mIp->GetRootNode(), NULL, -2, FALSE, TRUE, FALSE, TEXTURES, &isFirst);
-			fprintf(mStream, _T("\n},\n\n"));
+			fwprintf(mStream, _T("\n},\n\n"));
 
 			isFirst = TRUE;
-			fprintf(mStream, _T("\n\"geometries\":\n{\n"));
+			fwprintf(mStream, _T("\n\"geometries\":\n{\n"));
 			WebGLOutNode(mIp->GetRootNode(), NULL, -2, FALSE, TRUE, FALSE, GEOMETRIES, &isFirst);
-			fprintf(mStream, _T("\n},\n\n"));
+			fwprintf(mStream, _T("\n},\n\n"));
 		}
 
 		isFirst = TRUE;
 		if (mSceneFile)
 		{
-			fprintf(mStream, _T("\n\"embeds\":\n{\n"));
+			fwprintf(mStream, _T("\n\"embeds\":\n{\n"));
 			WebGLOutNode(mIp->GetRootNode(), NULL, -2, FALSE, TRUE, FALSE, EMBEDS, &isFirst);
-			fprintf(mStream, _T("\n},\n"));
+			fwprintf(mStream, _T("\n},\n"));
 			isFirst = TRUE;
 		}
 		else
@@ -2999,22 +3017,22 @@ WebGL2Export::DoExport(const TCHAR* filename, Interface* i, WebGLExport* exp)
 
 		if (mSceneFile)
 		{
-			fprintf(mStream, _T("\n\"defaults\":\n{\n"));
+			fwprintf(mStream, _T("\n\"defaults\":\n{\n"));
 			WebGLOutNode(mIp->GetRootNode(), NULL, -2, FALSE, TRUE, FALSE, DEFAULTS, &isFirst);
 			if (mCamera)
 			{
 				Indent(1);
-				fprintf (mStream, _T("\"camera\" : \"%s\",\n"), mCamera->GetName());
+				fwprintf (mStream, _T("\"camera\" : \"%s\",\n"), mCamera->GetName());
 			}
 			Indent(1);
-			fprintf (mStream, _T("\"bgcolor\" : [0,0,0]\n"));
-			fprintf(mStream, _T("\n}\n"));
-			fprintf(mStream, _T("\n}\n"));
+			fwprintf (mStream, _T("\"bgcolor\" : [0,0,0]\n"));
+			fwprintf(mStream, _T("\n}\n"));
+			fwprintf(mStream, _T("\n}\n"));
 		}
 //		delete mLodList;
 //		delete mTimerList;
-	}
-
+//	}
+	/*
  // give third party dlls a chance to write after the scene was written
 	for (cnt = 0; cnt < mCallbacks->GetPostSceneCount(); cnt++)
 	{
@@ -3029,7 +3047,7 @@ WebGL2Export::DoExport(const TCHAR* filename, Interface* i, WebGLExport* exp)
 	}
 	if (!mStream)
 		mStream = _tfopen(mFilename, _T("a"));
-	
+	*/
 	SetCursor(normal);
 	if (hWndPB)
 	{
@@ -3061,7 +3079,7 @@ WebGL2Export::WebGL2Export()
 	mCoordSampleRate    = 3;
 	mHasLights          = FALSE;
 	mHasNavInfo         = FALSE;
-	mFlipBook           = FALSE;
+//	mFlipBook           = FALSE;
 
 	mStream = 0;     // The file mStream to write
 	mFilename = NULL;   // The export .js filename
@@ -3106,7 +3124,7 @@ WebGL2Export::WebGL2Export()
 	BOOL            mPreLight;      // should we calculate the color per vertex
 	BOOL            mCPVSource;     // 1 if MAX's; 0 if should we need to calculate the color per vertex
 	*/
-	mCallbacks = NULL;     // export callback methods
+//	mCallbacks = NULL;     // export callback methods
 
 }
 
@@ -3144,7 +3162,7 @@ static DWORD HashCode(void* o, int size)
 }
 
 // Object Hash table stuff
-
+/*
 ObjectBucket*
 ObjectHashTable::AddObject(Object* o)
 {
@@ -3163,4 +3181,4 @@ ObjectHashTable::AddObject(Object* o)
 	mTable[hashCode] = ob;
 	return ob;
 }
-
+*/
