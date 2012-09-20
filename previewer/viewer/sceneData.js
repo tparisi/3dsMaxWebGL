@@ -23,7 +23,7 @@ SceneData.prototype.init = function(param)
 	var scale = param.scale || 1;
 	this.scale = new THREE.Vector3(scale, scale, scale);
 	
-	var loader = new SceneLoader();
+	var loader = new THREE.SceneLoader();
 	loader.load( url, function( data ) { 
 		that.handleLoaded(data) } );
 

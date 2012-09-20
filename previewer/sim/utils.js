@@ -1,7 +1,3 @@
-/**
- * @author Tony Parisi / http://www.tonyparisi.com
- */
-
 // Sim.js utilities
 Sim.Utils = {};
 

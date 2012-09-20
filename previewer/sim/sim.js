@@ -1,7 +1,3 @@
-/**
- * @author Tony Parisi / http://www.tonyparisi.com
- */
-
 // Sim.js - A Simple Simulator for WebGL (based on Three.js)
 
 Sim = {};
@@ -104,8 +100,6 @@ Sim.App.prototype.init = function(param)
 
     // Create a new Three.js scene
     var scene = new THREE.Scene();
-    scene.add( new THREE.AmbientLight( 0x505050 ) );
-    scene.data = this;
 
     // Put in a camera at a good default location
     camera = new THREE.PerspectiveCamera( 45, container.offsetWidth / container.offsetHeight, 1, 10000 );
@@ -358,7 +352,7 @@ Sim.App.prototype.objectFromMouse = function(pagex, pagey)
 	
     var ray = new THREE.Ray( this.camera.position, vector.subSelf( this.camera.position ).normalize() );
 
-    var intersects = ray.intersectScene( this.scene );
+    var intersects = ray.intersectObject( this.scene, true );
 	
     if ( intersects.length > 0 ) {    	
     	

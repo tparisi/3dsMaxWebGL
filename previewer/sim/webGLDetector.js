@@ -1,7 +1,3 @@
-/**
- * @author Tony Parisi / http://www.tonyparisi.com
- */
-
 // Simple WebGL Detector
 Sim.WebGLDetector = {
 	
@@ -10,7 +6,8 @@ Sim.WebGLDetector = {
 		var canvas = document.createElement("canvas");
 		
 	    var gl = null;
-	    var msg = "Your browser does not support WebGL, or it is not enabled by default.";
+	    var msg = "Your browser does not support WebGL, " +
+	    	"or it is not enabled by default.";
 	    try 
 	    {
 	        gl = canvas.getContext("experimental-webgl");

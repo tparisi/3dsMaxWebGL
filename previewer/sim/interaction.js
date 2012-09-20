@@ -1,7 +1,3 @@
-/**
- * @author Tony Parisi / http://www.tonyparisi.com
- */
-
 // Interaction classes
 Sim.PlaneDragger = function()
 {
