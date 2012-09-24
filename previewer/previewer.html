@@ -15,6 +15,64 @@
 	<script src="./viewer/sceneUtils.js"></script>
 	<script>
 
+	var app = null;
+	
+	function selectExport()
+	{
+	    var select = document.getElementById("exports");
+	    var index = select.selectedIndex;
+		if (index)
+		{
+			var dirname = select.options[index].text;
+			
+			var sceneData = new SceneData();
+			sceneData.onLoadComplete = function(data) { onLoadComplete(app, sceneData); } ;
+			var url = "../exports/" + dirname + "/scene.js";
+			sceneData.init({ url : url });
+		}
+	}
+
+	function parseResponse(xmlhttp, elt)
+	{
+	    if (xmlhttp.readyState == 4)
+	    {
+	        if (xmlhttp.status == 200)
+	        {	            
+	            var result = JSON.parse(xmlhttp.responseText);
+
+				var option = document.createElement("option");
+				option.text = "";
+				elt.add(option);
+				
+				var i, len = result.length;
+
+				for (i = 0; i < len; i++)
+				{
+					option = document.createElement("option");
+					option.text=result[i];
+					elt.add(option);
+				}
+
+	        }
+	        else if (xmlhttp.status == 404)
+	        {
+	            // updateStatus("Status: 404");
+	        }
+	    }
+	}
+
+	function listExports()
+	{
+		var listing = document.getElementById("exports");
+		
+	    xmlhttp = new XMLHttpRequest();
+
+	    xmlhttp.onreadystatechange = function () { parseResponse(xmlhttp, listing); } ;
+
+	    xmlhttp.open('GET', "listexports.php", true);
+	    xmlhttp.send(null);
+	}
+	
 	function onLoadComplete(viewer, sceneData)
 	{
 		// Hide the loader bar
@@ -27,14 +85,12 @@
 		function() {
 			var container = document.getElementById("container");
 			
-			var app = new SceneViewer();
+			app = new SceneViewer();
 			app.init({ container: container });
 
-			var sceneData = new SceneData();
-			sceneData.onLoadComplete = function(data) { onLoadComplete(app, sceneData); } ;
-			sceneData.init({ url : "../exports/teapotTextures/scene.js"});			
-			
 			app.run();
+
+			listExports();
 		}
 	);
 	</script>
@@ -49,6 +105,11 @@
 	<div id="prompt">
 	Click the mouse to manipulate the model: Left = rotate, Right = Pan<br></br>
 	</div>
+	<div id="listing">
+		Select an exported file
+		<select id="exports" onchange="selectExport();">
+		</select>
+	 </div>
 
 </body>
 </html>

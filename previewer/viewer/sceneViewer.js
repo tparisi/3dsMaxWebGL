@@ -37,8 +37,15 @@ SceneViewer.prototype.init = function(param)
 SceneViewer.prototype.addContent = function(content)
 {	
 //	content.object3D.rotation.x = -Math.PI / 2;
+	if (this.content)
+	{
+		this.root.remove(this.content.object3D);
+	}
+	
 	this.root.add(content.object3D);
 	this.fitToScene();
+	this.content = content;
+	
 }
 
 SceneViewer.prototype.createGrid = function()
