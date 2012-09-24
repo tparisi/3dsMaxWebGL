@@ -16,6 +16,8 @@ SceneViewer.prototype.init = function(param)
 {
 	// Call superclass init code to set up scene, renderer, default camera
 	Sim.App.prototype.init.call(this, param);
+
+	param = param || {};
 	
     // Create a headlight to show off the model
 	this.headlight = new THREE.DirectionalLight( 0xffffff, 1);
@@ -23,8 +25,11 @@ SceneViewer.prototype.init = function(param)
 	this.scene.add(this.headlight);	
 
 	this.camera.position.set(0, 3, 10);	
-
 	this.camera.lookAt(this.root.position);
+
+	this.gridSize = param.gridSize || SceneViewer.DEFAULT_GRID_SIZE;
+	this.gridStepSize = param.gridStepSize || SceneViewer.DEFAULT_GRID_STEP_SIZE;	
+	
 	this.createGrid();
 	this.createCameraControls();
 }
@@ -33,14 +38,19 @@ SceneViewer.prototype.addContent = function(content)
 {	
 //	content.object3D.rotation.x = -Math.PI / 2;
 	this.root.add(content.object3D);
-	this.fitCameraToScene();
+	this.fitToScene();
 }
 
 SceneViewer.prototype.createGrid = function()
 {
+	if (this.grid)
+	{
+		this.root.remove(this.grid);
+	}
+	
 	var line_material = new THREE.LineBasicMaterial( { color: 0xaaaaaa, opacity: 0.8 } ),
 		geometry = new THREE.Geometry(),
-		floor = 0, step = 1, size = 66;
+		floor = 0, step = this.gridStepSize, size = this.gridSize;
 	
 	for ( var i = 0; i <= size / step * 2; i ++ )
 	{
@@ -51,15 +61,15 @@ SceneViewer.prototype.createGrid = function()
 		geometry.vertices.push( new THREE.Vector3( i * step - size, floor,  size ) );
 	}
 	
-	var grid = new THREE.Line( geometry, line_material, THREE.LinePieces );
+	this.grid = new THREE.Line( geometry, line_material, THREE.LinePieces );
 
-	this.root.add(grid);
+	this.root.add(this.grid);
 }
 
 SceneViewer.prototype.createCameraControls = function()
 {
 	var controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
-	var radius = this.boundingBox ? this.boundingBox.max.z * 2 : SceneViewer.CAMERA_RADIUS;
+	var radius = this.sceneRadius ? this.sceneRadius  : SceneViewer.CAMERA_RADIUS;
 	
 	controls.rotateSpeed = SceneViewer.ROTATE_SPEED;
 	controls.zoomSpeed = SceneViewer.ZOOM_SPEED;
@@ -75,12 +85,25 @@ SceneViewer.prototype.createCameraControls = function()
 	this.controls = controls;
 }
 
-SceneViewer.prototype.fitCameraToScene = function()
+SceneViewer.prototype.fitToScene = function()
 {
+	function log10(val) {
+		  return Math.log(val) / Math.LN10;
+		}
+
 	this.boundingBox = SceneUtils.computeBoundingBox(this);
 	
-	var radius = this.boundingBox.max.z ;
+	var extent = this.boundingBox.max;
+	extent.subSelf(this.boundingBox.min);
+	
+	this.sceneRadius = extent.length();
+	
+	var scope = Math.pow(10, Math.ceil(log10(this.sceneRadius)));
+	
+	this.gridSize = scope;
+	this.gridStepSize = scope / 100;
 
+	this.createGrid();
 	this.createCameraControls();
 }
 
@@ -100,9 +123,11 @@ SceneViewer.prototype.update = function()
 }
 
 SceneViewer.CAMERA_RADIUS = 10;
-SceneViewer.MIN_DISTANCE_FACTOR = 1.1;
-SceneViewer.MAX_DISTANCE_FACTOR = 10;
+SceneViewer.MIN_DISTANCE_FACTOR = 1.5;
+SceneViewer.MAX_DISTANCE_FACTOR = 15;
 SceneViewer.ROTATE_SPEED = 1.0;
 SceneViewer.ZOOM_SPEED = 3;
 SceneViewer.PAN_SPEED = 0.2;
 SceneViewer.DAMPING_FACTOR = 0.3;
+SceneViewer.DEFAULT_GRID_SIZE = 100;
+SceneViewer.DEFAULT_GRID_STEP_SIZE = 1;
