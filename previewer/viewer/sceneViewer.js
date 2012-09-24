@@ -93,8 +93,7 @@ SceneViewer.prototype.fitToScene = function()
 
 	this.boundingBox = SceneUtils.computeBoundingBox(this);
 	
-	var extent = this.boundingBox.max;
-	extent.subSelf(this.boundingBox.min);
+	var extent = this.boundingBox.max.clone().subSelf(this.boundingBox.min);
 	
 	this.sceneRadius = extent.length();
 	
