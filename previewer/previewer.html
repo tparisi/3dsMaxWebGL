@@ -28,6 +28,8 @@
 			var sceneData = new SceneData();
 			sceneData.onLoadComplete = function(data) { onLoadComplete(app, sceneData); } ;
 			var url = "../exports/" + dirname + "/scene.js";
+			var loadStatus = document.getElementById("loadStatus");
+			loadStatus.style.display = 'none';		
 			sceneData.init({ url : url });
 		}
 	}
@@ -99,7 +101,7 @@
 <body>
 	<center><h1>3dsMAX WebGL Previewer</h1></center>
     <div id="container"></div>
-	<div id="loadStatus">
+	<div id="loadStatus" style="display:none">
 	Loading scene...
 	</div>
 	<div id="prompt">
