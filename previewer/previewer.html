@@ -21,7 +21,7 @@
 	{
 	    var select = document.getElementById("exports");
 	    var index = select.selectedIndex;
-		if (index)
+		if (index >= 0)
 		{
 			var dirname = select.options[index].text;
 			
@@ -42,10 +42,10 @@
 	        {	            
 	            var result = JSON.parse(xmlhttp.responseText);
 
-				var option = document.createElement("option");
+				/*var option = document.createElement("option");
 				option.text = "";
 				elt.add(option);
-				
+				*/
 				var i, len = result.length;
 
 				for (i = 0; i < len; i++)
@@ -109,8 +109,9 @@
 	</div>
 	<div id="listing">
 		Select an exported file
-		<select id="exports" onchange="selectExport();">
+		<select id="exports" size="10">
 		</select>
+		<button id="loadButton" onclick="selectExport();">Load</button>
 	 </div>
 
 </body>
