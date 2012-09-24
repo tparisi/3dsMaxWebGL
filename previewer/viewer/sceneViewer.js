@@ -32,7 +32,8 @@ SceneViewer.prototype.init = function(param)
 SceneViewer.prototype.addContent = function(content)
 {	
 //	content.object3D.rotation.x = -Math.PI / 2;
-	this.root.add(content.object3D);	
+	this.root.add(content.object3D);
+	this.fitCameraToScene();
 }
 
 SceneViewer.prototype.createGrid = function()
@@ -58,7 +59,7 @@ SceneViewer.prototype.createGrid = function()
 SceneViewer.prototype.createCameraControls = function()
 {
 	var controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
-	var radius = SceneViewer.CAMERA_RADIUS;
+	var radius = this.boundingBox ? this.boundingBox.max.z * 2 : SceneViewer.CAMERA_RADIUS;
 	
 	controls.rotateSpeed = SceneViewer.ROTATE_SPEED;
 	controls.zoomSpeed = SceneViewer.ZOOM_SPEED;
@@ -74,6 +75,14 @@ SceneViewer.prototype.createCameraControls = function()
 	this.controls = controls;
 }
 
+SceneViewer.prototype.fitCameraToScene = function()
+{
+	this.boundingBox = SceneUtils.computeBoundingBox(this);
+	
+	var radius = this.boundingBox.max.z ;
+
+	this.createCameraControls();
+}
 
 SceneViewer.prototype.update = function()
 {

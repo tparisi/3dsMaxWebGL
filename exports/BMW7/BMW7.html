@@ -12,13 +12,15 @@
 	<script src="../../previewer/sim/sim.js"></script>
 	<script src="../../previewer/viewer/sceneViewer.js"></script>
 	<script src="../../previewer/viewer/sceneData.js"></script>
+	<script src="../../previewer/viewer/sceneUtils.js"></script>
 	<script>
 
-	function onLoadComplete()
+	function onLoadComplete(viewer, sceneData)
 	{
 		// Hide the loader bar
 		var loadStatus = document.getElementById("loadStatus");
 		loadStatus.style.display = 'none';		
+		viewer.addContent(sceneData);
 	}
 	
 	$(document).ready(
@@ -29,9 +31,8 @@
 			app.init({ container: container });
 
 			var sceneData = new SceneData();
-			sceneData.onLoadComplete = onLoadComplete;
-			sceneData.init({ url : "./scene.js", scale:.05});			
-			app.addContent(sceneData);
+			sceneData.onLoadComplete = function(data) { onLoadComplete(app, sceneData); } ;
+			sceneData.init({ url : "./scene.js"});			
 
 			// Hack! Turn up the headlight because scene exporter doesn't give us the
 			// scene lights...

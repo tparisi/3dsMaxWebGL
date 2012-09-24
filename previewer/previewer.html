@@ -12,13 +12,15 @@
 	<script src="./sim/sim.js"></script>
 	<script src="./viewer/sceneViewer.js"></script>
 	<script src="./viewer/sceneData.js"></script>
+	<script src="./viewer/sceneUtils.js"></script>
 	<script>
 
-	function onLoadComplete()
+	function onLoadComplete(viewer, sceneData)
 	{
 		// Hide the loader bar
 		var loadStatus = document.getElementById("loadStatus");
 		loadStatus.style.display = 'none';		
+		viewer.addContent(sceneData);
 	}
 	
 	$(document).ready(
@@ -29,14 +31,8 @@
 			app.init({ container: container });
 
 			var sceneData = new SceneData();
-			sceneData.onLoadComplete = onLoadComplete;
-//			sceneData.init({ url : "../exports/teapotTextures/scene.js", scale:.01});			
-			sceneData.init({ url : "../exports/BMW7/scene.js", scale:.01});			
-			app.addContent(sceneData);
-
-			// Hack! Turn up the headlight because scene exporter doesn't give us the
-			// scene lights...
-			// app.headlight.intensity = 2;
+			sceneData.onLoadComplete = function(data) { onLoadComplete(app, sceneData); } ;
+			sceneData.init({ url : "../exports/BMW7/scene.js"});			
 			
 			app.run();
 		}
