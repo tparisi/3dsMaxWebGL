@@ -80,7 +80,7 @@
 		// Hide the loader bar
 		var loadStatus = document.getElementById("loadStatus");
 		loadStatus.style.display = 'none';		
-		viewer.addContent(sceneData);
+		viewer.replaceScene(sceneData);
 	}
 	
 	$(document).ready(
@@ -108,7 +108,7 @@
 	Click the mouse to manipulate the model: Left = rotate, Right = Pan<br></br>
 	</div>
 	<div id="listing">
-		Select an exported file
+		Select an exported scene
 		<select id="exports" size="1"  ondblclick="selectExport();">
 		</select>
 		<button id="loadButton" onclick="selectExport();">Load</button>

@@ -34,17 +34,17 @@ SceneViewer.prototype.init = function(param)
 	this.createCameraControls();
 }
 
-SceneViewer.prototype.addContent = function(content)
+SceneViewer.prototype.replaceScene = function(sceneRoot)
 {	
 //	content.object3D.rotation.x = -Math.PI / 2;
-	if (this.content)
+	if (this.sceneRoot)
 	{
-		this.root.remove(this.content.object3D);
+		this.root.remove(this.sceneRoot.object3D);
 	}
 	
-	this.root.add(content.object3D);
+	this.root.add(sceneRoot.object3D);
 	this.fitToScene();
-	this.content = content;
+	this.sceneRoot = sceneRoot;
 	
 }
 
