@@ -49,21 +49,21 @@
 	},
 	"materials" : {
 		"earth" : {
-			"type" : "MeshBasicMaterial",
+			"type" : "MeshPhongMaterial",
 			"parameters" : {
 				"color" : 16777215,
 				"map" : "earth"
 			}
 		},
 		"earth" : {
-			"type" : "MeshBasicMaterial",
+			"type" : "MeshPhongMaterial",
 			"parameters" : {
 				"color" : 16777215,
 				"map" : "earth"
 			}
 		},
 		"MemorialMat" : {
-			"type" : "MeshBasicMaterial",
+			"type" : "MeshPhongMaterial",
 			"parameters" : {
 				"color" : 16777215,
 				"map" : "memorial"
@@ -83,9 +83,9 @@
 				"colorDiffuse": [1,1,1],
 				"colorSpecular": [1,1,1],
 				"specularCoef": 0.1,
-				"transparency": 1,
+				"transparency": 0.5,
 				"vertexColors": false,
-				"opacity": 1
+				"opacity": 0.5
 			}			],
 				"vertices" : [
 -0.07438906,-0.4938442,0.02417047,
@@ -2442,9 +2442,9 @@
 				"colorDiffuse": [1,1,1],
 				"colorSpecular": [1,1,1],
 				"specularCoef": 0.1,
-				"transparency": 1,
+				"transparency": 0.5,
 				"vertexColors": false,
-				"opacity": 1
+				"opacity": 0.5
 			}			],
 				"vertices" : [
 -0.4755286,-1,0.1545086,
@@ -2810,9 +2810,9 @@
 				"colorDiffuse": [1,1,1],
 				"colorSpecular": [1,1,1],
 				"specularCoef": 0.1,
-				"transparency": 1,
+				"transparency": 0.5,
 				"vertexColors": false,
-				"opacity": 1
+				"opacity": 0.5
 			}			],
 				"vertices" : [
 0.5,-0.5,-0.5,

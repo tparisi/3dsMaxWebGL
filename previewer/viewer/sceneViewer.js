@@ -105,7 +105,7 @@ SceneViewer.prototype.fitToScene = function()
 	this.sceneRadius = extent.length();
 	
 	var scope = Math.pow(10, Math.ceil(log10(this.sceneRadius)));
-		
+	
 	this.gridSize = scope;
 	this.gridStepSize = scope / 100;
 
