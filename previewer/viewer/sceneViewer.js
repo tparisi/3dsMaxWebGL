@@ -85,7 +85,7 @@ SceneViewer.prototype.createCameraControls = function()
 	controls.noZoom = false;
 	controls.noPan = false;
 	controls.staticMoving = false;
-
+	
 	controls.minDistance = radius * SceneViewer.MIN_DISTANCE_FACTOR;
 	controls.maxDistance = radius * SceneViewer.MAX_DISTANCE_FACTOR;
 
@@ -98,14 +98,14 @@ SceneViewer.prototype.fitToScene = function()
 		  return Math.log(val) / Math.LN10;
 		}
 
-	this.boundingBox = SceneUtils.computeBoundingBox(this);
+	this.boundingBox = SceneUtils.computeBoundingBox(this.root);
 	
 	var extent = this.boundingBox.max.clone().subSelf(this.boundingBox.min);
 	
 	this.sceneRadius = extent.length();
 	
 	var scope = Math.pow(10, Math.ceil(log10(this.sceneRadius)));
-	
+		
 	this.gridSize = scope;
 	this.gridStepSize = scope / 100;
 

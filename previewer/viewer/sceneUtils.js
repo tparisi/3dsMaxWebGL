@@ -15,40 +15,46 @@ SceneUtils.computeBoundingBox = function(scene)
 				}
 				
 				var geometryBBox = geometry.boundingBox;
+				var bboxMin = geometryBBox.min.clone();
+				var bboxMax = geometryBBox.max.clone();
+				var matrix = obj.matrixWorld;
 				
-				if ( geometryBBox.min.x < boundingBox.min.x ) {
-
-					boundingBox.min.x = geometryBBox.min.x;
-
-				}
+				matrix.multiplyVector3(bboxMin);
+				matrix.multiplyVector3(bboxMax);
 				
-				if ( geometryBBox.max.x > boundingBox.max.x ) {
+				if ( bboxMin.x < boundingBox.min.x ) {
 
-					boundingBox.max.x = geometryBBox.max.x;
-
-				}
-
-				if ( geometryBBox.min.y < boundingBox.min.y ) {
-
-					boundingBox.min.y = geometryBBox.min.y;
+					boundingBox.min.x = bboxMin.x;
 
 				}
 				
-				if ( geometryBBox.max.y > boundingBox.max.y ) {
+				if ( bboxMax.x > boundingBox.max.x ) {
 
-					boundingBox.max.y = geometryBBox.max.y;
+					boundingBox.max.x = bboxMax.x;
 
 				}
 
-				if ( geometryBBox.min.z < boundingBox.min.z ) {
+				if ( bboxMin.y < boundingBox.min.y ) {
 
-					boundingBox.min.z = geometryBBox.min.z;
+					boundingBox.min.y = bboxMin.y;
 
 				}
 				
-				if ( geometryBBox.max.z > boundingBox.max.z ) {
+				if ( bboxMax.y > boundingBox.max.y ) {
 
-					boundingBox.max.z = geometryBBox.max.z;
+					boundingBox.max.y = bboxMax.y;
+
+				}
+
+				if ( bboxMin.z < boundingBox.min.z ) {
+
+					boundingBox.min.z = bboxMin.z;
+
+				}
+				
+				if ( bboxMax.z > boundingBox.max.z ) {
+
+					boundingBox.max.z = bboxMax.z;
 
 				}
 				
@@ -66,7 +72,7 @@ SceneUtils.computeBoundingBox = function(scene)
 	
 	var boundingBox = { min: new THREE.Vector3(), max: new THREE.Vector3() };
 	
-	compute(scene.root, boundingBox);
+	compute(scene, boundingBox);
 	
 	return boundingBox;
 }
