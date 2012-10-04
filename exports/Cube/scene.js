@@ -5,6 +5,15 @@
 	},
 	"urlBaseType" : "",
 	"objects": {
+		"Cube" : {
+			"geometry" : "Cube",
+			"materials" : ["MemorialMat"],
+			"position" : [0,0,0],
+			"rotation" : [0,0,0],
+			"scale" : [1,1,-1],
+			"visible" : true
+		}
+,
 		"Sphere" : {
 			"geometry" : "Sphere",
 			"materials" : ["earth"],
@@ -22,18 +31,13 @@
 			"scale" : [1,1,-1],
 			"visible" : true
 		}
-,
-		"Cube" : {
-			"geometry" : "Cube",
-			"materials" : ["MemorialMat"],
-			"position" : [0,0,0],
-			"rotation" : [0,0,0],
-			"scale" : [1,1,-1],
-			"visible" : true
-		}
 
 	},
 	"geometries": {
+		"Cube" : {
+			"type" : "embedded_mesh",
+			"id" : "Cube_emb"
+		},
 		"Sphere" : {
 			"type" : "embedded_mesh",
 			"id" : "Sphere_emb"
@@ -41,37 +45,143 @@
 		"Cylinder" : {
 			"type" : "embedded_mesh",
 			"id" : "Cylinder_emb"
-		},
-		"Cube" : {
-			"type" : "embedded_mesh",
-			"id" : "Cube_emb"
 		}
 	},
 	"materials" : {
-		"earth" : {
-			"type" : "MeshPhongMaterial",
-			"parameters" : {
-				"color" : 16777215,
-				"map" : "earth"
-			}
-		},
-		"earth" : {
-			"type" : "MeshPhongMaterial",
-			"parameters" : {
-				"color" : 16777215,
-				"map" : "earth"
-			}
-		},
 		"MemorialMat" : {
-			"type" : "MeshPhongMaterial",
+			"type" : "MeshBasicMaterial",
 			"parameters" : {
 				"color" : 16777215,
+				"opacity": 1,
 				"map" : "memorial"
+			}
+		},
+		"earth" : {
+			"type" : "MeshBasicMaterial",
+			"parameters" : {
+				"color" : 16777215,
+				"opacity": 1,
+				"map" : "earth"
+			}
+		},
+		"earth" : {
+			"type" : "MeshBasicMaterial",
+			"parameters" : {
+				"color" : 16777215,
+				"opacity": 1,
+				"map" : "earth"
 			}
 		}
 	},
 	"embeds" : {
-		"Sphere_emb" : {
+		"Cube_emb" : {
+			"metadata" : { "formatVersion" : 3 },
+			"scale" : 1.0,
+			"materials" : [
+			{
+				"DbgColor": 9868950,
+				"DbgIndex": -1,
+				"DbgName": "MemorialMat",
+				"colorAmbient": [1,1,1],
+				"colorDiffuse": [1,1,1],
+				"colorSpecular": [1,1,1],
+				"specularCoef": 0.1,
+				"vertexColors": false,
+				"opacity": 1
+			}			],
+				"vertices" : [
+0.5,-0.5,-0.5,
+ -0.5,-0.5,-0.5,
+ 0.5,0.5,-0.5,
+ -0.5,0.5,-0.5,
+ 0.5,0.5,0.5,
+ -0.5,0.5,0.5,
+ 0.5,-0.5,0.5,
+ -0.5,-0.5,0.5,
+ 0.5,0.5,-0.5,
+ -0.5,0.5,-0.5,
+ 0.5,0.5,0.5,
+ -0.5,0.5,0.5,
+ 0.5,-0.5,0.5,
+ -0.5,-0.5,-0.5,
+ -0.5,-0.5,0.5,
+ 0.5,-0.5,-0.5,
+ -0.5,-0.5,-0.5,
+ -0.5,0.5,0.5,
+ -0.5,-0.5,0.5,
+ -0.5,0.5,-0.5,
+ 0.5,-0.5,0.5,
+ 0.5,0.5,-0.5,
+ 0.5,-0.5,-0.5,
+ 0.5,0.5,0.5],
+				"normals" : [
+0,0,-1,
+ 0,0,-1,
+ 0,0,-1,
+ 0,0,-1,
+ 0,1,0,
+ 0,1,0,
+ 0,0,1,
+ 0,0,1,
+ 0,1,0,
+ 0,1,0,
+ 0,0,1,
+ 0,0,1,
+ 0,-1,0,
+ 0,-1,0,
+ 0,-1,0,
+ 0,-1,0,
+ -1,0,0,
+ -1,0,0,
+ -1,0,0,
+ -1,0,0,
+ 1,0,0,
+ 1,0,0,
+ 1,0,0,
+ 1,0,0				],
+				"uvs" : [
+				[0,0,
+ 1,0,
+ 0,1,
+ 1,1,
+ 0,1,
+ 1,1,
+ 0,1,
+ 1,1,
+ 0,0,
+ 1,0,
+ 0,0,
+ 1,0,
+ 0,0,
+ 1,1,
+ 1,0,
+ 0,1,
+ 0,0,
+ 1,1,
+ 1,0,
+ 0,1,
+ 0,0,
+ 1,1,
+ 1,0,
+ 0,1				]],
+				"faces" : [
+42,1,0,3,0,1,0,3,1,0,3,
+42,3,0,2,0,3,0,2,3,0,2,
+42,9,8,5,0,9,8,5,9,8,5,
+42,5,8,4,0,5,8,4,5,8,4,
+42,11,10,7,0,11,10,7,11,10,7,
+42,7,10,6,0,7,10,6,7,10,6,
+42,14,12,13,0,14,12,13,14,12,13,
+42,13,12,15,0,13,12,15,13,12,15,
+42,18,16,17,0,18,16,17,18,16,17,
+42,17,16,19,0,17,16,19,17,16,19,
+42,22,20,21,0,22,20,21,22,20,21,
+42,21,20,23,0,21,20,23,21,20,23				]
+,
+			"morphTargets": [],
+			"edges": []
+		}
+,		"Sphere_emb" : {
 			"metadata" : { "formatVersion" : 3 },
 			"scale" : 1.0,
 			"materials" : [
@@ -83,9 +193,8 @@
 				"colorDiffuse": [1,1,1],
 				"colorSpecular": [1,1,1],
 				"specularCoef": 0.1,
-				"transparency": 0.5,
 				"vertexColors": false,
-				"opacity": 0.5
+				"opacity": 1
 			}			],
 				"vertices" : [
 -0.07438906,-0.4938442,0.02417047,
@@ -2442,9 +2551,8 @@
 				"colorDiffuse": [1,1,1],
 				"colorSpecular": [1,1,1],
 				"specularCoef": 0.1,
-				"transparency": 0.5,
 				"vertexColors": false,
-				"opacity": 0.5
+				"opacity": 1
 			}			],
 				"vertices" : [
 -0.4755286,-1,0.1545086,
@@ -2798,125 +2906,17 @@
 			"morphTargets": [],
 			"edges": []
 		}
-,		"Cube_emb" : {
-			"metadata" : { "formatVersion" : 3 },
-			"scale" : 1.0,
-			"materials" : [
-			{
-				"DbgColor": 9868950,
-				"DbgIndex": -1,
-				"DbgName": "MemorialMat",
-				"colorAmbient": [1,1,1],
-				"colorDiffuse": [1,1,1],
-				"colorSpecular": [1,1,1],
-				"specularCoef": 0.1,
-				"transparency": 0.5,
-				"vertexColors": false,
-				"opacity": 0.5
-			}			],
-				"vertices" : [
-0.5,-0.5,-0.5,
- -0.5,-0.5,-0.5,
- 0.5,0.5,-0.5,
- -0.5,0.5,-0.5,
- 0.5,0.5,0.5,
- -0.5,0.5,0.5,
- 0.5,-0.5,0.5,
- -0.5,-0.5,0.5,
- 0.5,0.5,-0.5,
- -0.5,0.5,-0.5,
- 0.5,0.5,0.5,
- -0.5,0.5,0.5,
- 0.5,-0.5,0.5,
- -0.5,-0.5,-0.5,
- -0.5,-0.5,0.5,
- 0.5,-0.5,-0.5,
- -0.5,-0.5,-0.5,
- -0.5,0.5,0.5,
- -0.5,-0.5,0.5,
- -0.5,0.5,-0.5,
- 0.5,-0.5,0.5,
- 0.5,0.5,-0.5,
- 0.5,-0.5,-0.5,
- 0.5,0.5,0.5],
-				"normals" : [
-0,0,-1,
- 0,0,-1,
- 0,0,-1,
- 0,0,-1,
- 0,1,0,
- 0,1,0,
- 0,0,1,
- 0,0,1,
- 0,1,0,
- 0,1,0,
- 0,0,1,
- 0,0,1,
- 0,-1,0,
- 0,-1,0,
- 0,-1,0,
- 0,-1,0,
- -1,0,0,
- -1,0,0,
- -1,0,0,
- -1,0,0,
- 1,0,0,
- 1,0,0,
- 1,0,0,
- 1,0,0				],
-				"uvs" : [
-				[0,0,
- 1,0,
- 0,1,
- 1,1,
- 0,1,
- 1,1,
- 0,1,
- 1,1,
- 0,0,
- 1,0,
- 0,0,
- 1,0,
- 0,0,
- 1,1,
- 1,0,
- 0,1,
- 0,0,
- 1,1,
- 1,0,
- 0,1,
- 0,0,
- 1,1,
- 1,0,
- 0,1				]],
-				"faces" : [
-42,1,0,3,0,1,0,3,1,0,3,
-42,3,0,2,0,3,0,2,3,0,2,
-42,9,8,5,0,9,8,5,9,8,5,
-42,5,8,4,0,5,8,4,5,8,4,
-42,11,10,7,0,11,10,7,11,10,7,
-42,7,10,6,0,7,10,6,7,10,6,
-42,14,12,13,0,14,12,13,14,12,13,
-42,13,12,15,0,13,12,15,13,12,15,
-42,18,16,17,0,18,16,17,18,16,17,
-42,17,16,19,0,17,16,19,17,16,19,
-42,22,20,21,0,22,20,21,22,20,21,
-42,21,20,23,0,21,20,23,21,20,23				]
-,
-			"morphTargets": [],
-			"edges": []
-		}
 
 	},
 	"textures" : {
-		"earth" : {
-			"url" : "Assets/earth.jpg"
-		},
-		"earth" : {
-			"url" : "Assets/earth.jpg"
-		},
 		"memorial" : {
 			"url" : "Assets/memorial.png"
+		},
+		"earth" : {
+			"url" : "Assets/earth.jpg"
+		},
+		"earth" : {
+			"url" : "Assets/earth.jpg"
 		}
 	},
 	"cameras" : {
