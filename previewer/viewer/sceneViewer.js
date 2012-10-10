@@ -86,8 +86,8 @@ SceneViewer.prototype.createCameraControls = function()
 	controls.noPan = false;
 	controls.staticMoving = false;
 	
-	controls.minDistance = radius * SceneViewer.MIN_DISTANCE_FACTOR;
-	controls.maxDistance = radius * SceneViewer.MAX_DISTANCE_FACTOR;
+	controls.minDistance = radius; // * SceneViewer.MIN_DISTANCE_FACTOR;
+	controls.maxDistance = radius; // * SceneViewer.MAX_DISTANCE_FACTOR;
 
 	this.controls = controls;
 }
