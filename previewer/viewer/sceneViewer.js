@@ -2,49 +2,62 @@
  * @author Tony Parisi / http://www.tonyparisi.com
  */
 
-// Constructor
 SceneViewer = function()
 {
-	Sim.App.call(this);
+	SB.Game.call(this);	    		
 }
 
-// Subclass Sim.App
-SceneViewer.prototype = new Sim.App();
+goog.inherits(SceneViewer, SB.Game);
 
-// Our custom initializer
-SceneViewer.prototype.init = function(param)
+SceneViewer.prototype.initialize = function(param)
 {
-	// Call superclass init code to set up scene, renderer, default camera
-	Sim.App.prototype.init.call(this, param);
-
-	param = param || {};
+	if (!param)
+		param = {};
 	
-    // Create a headlight to show off the model
-	this.headlight = new THREE.DirectionalLight( 0xffffff, 1);
-	this.headlight.position.set(0, 0, 1);
-	this.scene.add(this.headlight);	
-
-	this.camera.position.set(0, 3, 10);	
-	this.camera.lookAt(this.root.position);
-
+	SB.Game.prototype.initialize.call(this, param);
+	
 	this.gridSize = param.gridSize || SceneViewer.DEFAULT_GRID_SIZE;
 	this.gridStepSize = param.gridStepSize || SceneViewer.DEFAULT_GRID_STEP_SIZE;	
 	
-	this.createGrid();
-	this.createCameraControls();
+	this.initEntities();
 }
 
-SceneViewer.prototype.replaceScene = function(sceneRoot)
+
+SceneViewer.prototype.initEntities = function()
+{
+	this.root = new SB.Entity;
+
+	this.sceneRoot = new SB.Entity;
+	this.sceneRoot.addComponent(new SB.Transform);
+	
+	this.root.addChild(this.sceneRoot);	
+	
+	var viewer = SB.Prefabs.FPSController({ headlight : true });
+	
+	var controllerScript = viewer.getComponent(SB.FPSControllerScript);
+	this.controllerScript = controllerScript;
+	
+	this.root.addChild(viewer);
+	
+	this.createGrid();
+
+	this.jsonScene = null;
+	
+	this.addEntity(this.root);
+	
+	this.root.realize();
+}
+
+SceneViewer.prototype.replaceScene = function(jsonScene)
 {	
-//	content.object3D.rotation.x = -Math.PI / 2;
-	if (this.sceneRoot)
+	if (this.jsonScene)
 	{
-		this.root.remove(this.sceneRoot.object3D);
+		this.sceneRoot.removeComponent(this.jsonScene);
 	}
 	
-	this.root.add(sceneRoot.object3D);
+	this.sceneRoot.addComponent(jsonScene);
 	this.fitToScene();
-	this.sceneRoot = sceneRoot;
+	this.jsonScene = jsonScene;
 	
 }
 
@@ -52,44 +65,12 @@ SceneViewer.prototype.createGrid = function()
 {
 	if (this.grid)
 	{
-		this.root.remove(this.grid);
+		this.root.removeComponent(this.grid);
 	}
-	
-	var line_material = new THREE.LineBasicMaterial( { color: 0xaaaaaa, opacity: 0.8 } ),
-		geometry = new THREE.Geometry(),
-		floor = 0, step = this.gridStepSize, size = this.gridSize;
-	
-	for ( var i = 0; i <= size / step * 2; i ++ )
-	{
-		geometry.vertices.push( new THREE.Vector3( - size, floor, i * step - size ) );
-		geometry.vertices.push( new THREE.Vector3(   size, floor, i * step - size ) );
-	
-		geometry.vertices.push( new THREE.Vector3( i * step - size, floor, -size ) );
-		geometry.vertices.push( new THREE.Vector3( i * step - size, floor,  size ) );
-	}
-	
-	this.grid = new THREE.Line( geometry, line_material, THREE.LinePieces );
+		
+	this.grid = new SB.Grid({color: 0x202020});
 
-	this.root.add(this.grid);
-}
-
-SceneViewer.prototype.createCameraControls = function()
-{
-	var controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
-	var radius = this.sceneRadius ? this.sceneRadius  : SceneViewer.CAMERA_RADIUS;
-	
-	controls.rotateSpeed = SceneViewer.ROTATE_SPEED;
-	controls.zoomSpeed = SceneViewer.ZOOM_SPEED;
-	controls.panSpeed = SceneViewer.PAN_SPEED;
-	controls.dynamicDampingFactor = SceneViewer.DAMPING_FACTOR;
-	controls.noZoom = false;
-	controls.noPan = false;
-	controls.staticMoving = false;
-	
-	controls.minDistance = radius; // * SceneViewer.MIN_DISTANCE_FACTOR;
-	controls.maxDistance = radius; // * SceneViewer.MAX_DISTANCE_FACTOR;
-
-	this.controls = controls;
+	this.root.addComponent(this.grid);
 }
 
 SceneViewer.prototype.fitToScene = function()
@@ -98,7 +79,7 @@ SceneViewer.prototype.fitToScene = function()
 		  return Math.log(val) / Math.LN10;
 		}
 
-	this.boundingBox = SceneUtils.computeBoundingBox(this.root);
+	this.boundingBox = SB.SceneUtils.computeBoundingBox(this.sceneRoot.transform.object);
 	
 	var extent = this.boundingBox.max.clone().subSelf(this.boundingBox.min);
 	
@@ -109,31 +90,15 @@ SceneViewer.prototype.fitToScene = function()
 	this.gridSize = scope;
 	this.gridStepSize = scope / 100;
 
-	this.createGrid();
-	this.createCameraControls();
-}
+	var cx = (this.boundingBox.max.x + this.boundingBox.min.x) / 2;
+	var cz = (this.boundingBox.max.z + this.boundingBox.min.z) / 2;
 
-SceneViewer.prototype.update = function()
-{
-	// Update the camera controls
-	if (this.controls)
-	{
-		this.controls.update();
-	}
+	var y = 1.6 + this.boundingBox.min.y;
 	
-	// Update the headlight to point at the model
-	var normcamerapos = this.camera.position.clone().normalize();
-	this.headlight.position.copy(normcamerapos);
-
-	Sim.App.prototype.update.call(this);
+	this.controllerScript.setCameraPos(new THREE.Vector3(cx, y, cz));
+	
+	this.createGrid();
 }
 
-SceneViewer.CAMERA_RADIUS = 10;
-SceneViewer.MIN_DISTANCE_FACTOR = 1.5;
-SceneViewer.MAX_DISTANCE_FACTOR = 15;
-SceneViewer.ROTATE_SPEED = 1.0;
-SceneViewer.ZOOM_SPEED = 3;
-SceneViewer.PAN_SPEED = 0.2;
-SceneViewer.DAMPING_FACTOR = 0.3;
 SceneViewer.DEFAULT_GRID_SIZE = 100;
 SceneViewer.DEFAULT_GRID_STEP_SIZE = 1;

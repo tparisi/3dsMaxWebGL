@@ -5,14 +5,15 @@
 <title>3dsMAX WebGL Previewer</title>
 
 	<link href="./css/previewer.css" rel="stylesheet" /> 
+	<script>
+	var CLOSURE_NO_DEPS = true;
+	</script>
 	<script src="./libs/three.js"></script>
+	<script src="./libs/sb.js"></script>
 	<script src="./libs/jquery-1.6.4.js"></script>
     <script src="./libs/jquery.mousewheel.js"></script>
 	<script src="./libs/RequestAnimationFrame.js"></script>
-	<script src="./sim/sim.js"></script>
 	<script src="./viewer/sceneViewer.js"></script>
-	<script src="./viewer/sceneData.js"></script>
-	<script src="./viewer/sceneUtils.js"></script>
 	<script src="./viewer/SceneLoader.js"></script>
 	<script>
 
@@ -26,12 +27,11 @@
 		{
 			var dirname = select.options[index].text;
 			
-			var sceneData = new SceneData();
-			sceneData.onLoadComplete = function(data) { onLoadComplete(app, sceneData); } ;
+			var loadcallback = function(scene) { onLoadComplete(app, scene); } ;
 			var url = "../exports/" + dirname + "/scene.js";
+			var jsonScene = SB.JsonScene.loadScene(url, null, loadcallback);
 			var loadStatus = document.getElementById("loadStatus");
 			loadStatus.style.display = 'block';		
-			sceneData.init({ url : url });
 		}
 	}
 
@@ -76,12 +76,12 @@
 	    xmlhttp.send(null);
 	}
 	
-	function onLoadComplete(viewer, sceneData)
+	function onLoadComplete(viewer, scene)
 	{
 		// Hide the loader bar
 		var loadStatus = document.getElementById("loadStatus");
 		loadStatus.style.display = 'none';		
-		viewer.replaceScene(sceneData);
+		viewer.replaceScene(scene);
 	}
 	
 	$(document).ready(
@@ -89,7 +89,7 @@
 			var container = document.getElementById("container");
 			
 			app = new SceneViewer();
-			app.init({ container: container });
+			app.initialize({ container: container });
 
 			app.run();
 

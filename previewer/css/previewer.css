@@ -16,6 +16,7 @@ body {
 	position:absolute;
 }
 
+:focus { outline: none; }
 
 #loadStatus {
 	width: 95%;
