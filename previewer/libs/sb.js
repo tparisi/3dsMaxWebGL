@@ -4920,6 +4920,8 @@ SB.FPSControllerScript = function(param)
 	
 	this.lastdy = 0;
 	this.dragging = false;
+	this.walkSpeed = 1;
+	this.turnSpeed = 1;
 }
 
 goog.inherits(SB.FPSControllerScript, SB.Component);
@@ -5072,19 +5074,19 @@ SB.FPSControllerScript.prototype.onTimeChanged = function(t)
 	switch (this.whichKeyDown)
 	{
     	case SB.Keyboard.KEY_LEFT : 
-    		turnamount = +1 * turnfraction;
+    		turnamount = +1 * turnfraction * this.turnSpeed;
 			handled = true;
     		break;
     	case SB.Keyboard.KEY_UP : 
-    		moveamount = -1 * movefraction;
+    		moveamount = -1 * movefraction * this.walkSpeed;
 			handled = true;
     		break;
     	case SB.Keyboard.KEY_RIGHT : 
-    		turnamount = -1 * turnfraction;
+    		turnamount = -1 * turnfraction * this.turnSpeed;
 			handled = true;
     		break;
     	case SB.Keyboard.KEY_DOWN : 
-    		moveamount = +1 * movefraction;
+    		moveamount = +1 * movefraction * this.walkSpeed;
 			handled = true;
     		break;
 	}
@@ -5094,20 +5096,20 @@ SB.FPSControllerScript.prototype.onTimeChanged = function(t)
 		switch (String.fromCharCode(this.whichKeyDown))
 		{
 	    	case 'A' :
-	    		turnamount = +1 * turnfraction;
+	    		turnamount = +1 * turnfraction * this.turnSpeed;
 	    		handled = true;
 	    		break;
 	    		
 	    	case 'W' :
-	    		moveamount = -1 * movefraction;
+	    		moveamount = -1 * movefraction * this.walkSpeed;
 	    		handled = true;
 	    		break;
 	    	case 'D' :
-	    		turnamount = -1 * turnfraction;
+	    		turnamount = -1 * turnfraction * this.turnSpeed;
 				handled = true;
 	    		break;
 	    	case 'S' :
-	    		moveamount = +1 * movefraction;
+	    		moveamount = +1 * movefraction * this.walkSpeed;
 				handled = true;
 	    		break;
 	    		

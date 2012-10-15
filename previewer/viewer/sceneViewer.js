@@ -99,8 +99,8 @@ SceneViewer.prototype.fitToScene = function()
 	var y = cy + 1.6; //  + this.boundingBox.min.y;
 	var z = this.boundingBox.max.z + 10;
 	
-	
 	this.controllerScript.setCameraPos(new THREE.Vector3(cx, y, this.sceneRadius));
+	this.controllerScript.walkSpeed = this.gridStepSize;	
 	
 	this.createGrid();
 }
