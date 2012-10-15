@@ -4976,6 +4976,21 @@ SB.FPSControllerScript.prototype.mouseLook = function(dir)
 	this.viewpoint.transform.rotation.addSelf(dir);
 }
 
+SB.FPSControllerScript.prototype.setCameraTilt = function(dir)
+{
+	if (this.viewpoint && this.viewpoint.transform)
+	{
+		this.viewpoint.transform.rotation.copy(dir);
+	}
+}
+
+SB.FPSControllerScript.prototype.setCameraTurn = function(dir)
+{
+	if (this._entity && this._entity.transform)
+	{
+		this._entity.transform.rotation.copy(dir);
+	}
+}
 
 SB.FPSControllerScript.prototype.onMouseMove = function(x, y)
 {
