@@ -1920,7 +1920,7 @@ SB.GraphicsThreeJS.prototype.initScene = function()
 {
     var scene = new THREE.Scene();
 
-    scene.add( new THREE.AmbientLight(0xffffff) ); //  0x505050 ) ); // 
+//    scene.add( new THREE.AmbientLight(0xffffff) ); //  0x505050 ) ); // 
 	
     var camera = new THREE.PerspectiveCamera( 45, 
     		this.container.offsetWidth / this.container.offsetHeight, 1, 4000 );
@@ -3578,6 +3578,11 @@ SB.Entity.prototype.removeComponent = function(component) {
 
     if (i != -1)
     {
+    	if (component.removeFromScene);
+    	{
+    		component.removeFromScene();
+    	}
+    	
         this._components.splice(i, 1);
         component.setEntity(null);
     }
@@ -4520,7 +4525,8 @@ SB.Grid = function(param)
 	SB.Visual.call(this, param);
 	param = param || {};
 	this.size = param.size || 10;
-	this.color = param.color || 0xcccccc;
+	this.stepSize = param.stepSize || 1;
+	this.color = (param.color === undefined) ? 0xcccccc : param.color;
 }
 
 goog.inherits(SB.Grid, SB.Visual);
@@ -4531,7 +4537,7 @@ SB.Grid.prototype.realize = function()
 	
 	var line_material = new THREE.LineBasicMaterial( { color: this.color, opacity: 0.2 } ),
 		geometry = new THREE.Geometry(),
-		floor = -0.04, step = 1, size = this.size;
+		floor = -0.04, step = this.stepSize, size = this.size;
 
 	for ( var i = 0; i <= size / step * 2; i ++ )
 	{

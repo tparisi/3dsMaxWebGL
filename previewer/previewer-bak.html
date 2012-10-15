@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>3dsMAX WebGL Previewer</title>
+
+	<link href="./css/previewer.css" rel="stylesheet" /> 
+	<script src="./libs/three.js"></script>
+	<script src="./libs/jquery-1.6.4.js"></script>
+    <script src="./libs/jquery.mousewheel.js"></script>
+	<script src="./libs/RequestAnimationFrame.js"></script>
+	<script src="./sim/sim.js"></script>
+	<script src="./viewer/sceneViewer-bak.js"></script>
+	<script src="./viewer/sceneData.js"></script>
+	<script src="./viewer/sceneUtils.js"></script>
+	<script src="./viewer/SceneLoader.js"></script>
+	<script>
+
+	var app = null;
+	
+	function selectExport()
+	{
+	    var select = document.getElementById("exports");
+	    var index = select.selectedIndex;
+		if (index >= 0)
+		{
+			var dirname = select.options[index].text;
+			
+			var sceneData = new SceneData();
+			sceneData.onLoadComplete = function(data) { onLoadComplete(app, sceneData); } ;
+			var url = "../exports/" + dirname + "/scene.js";
+			var loadStatus = document.getElementById("loadStatus");
+			loadStatus.style.display = 'block';		
+			sceneData.init({ url : url });
+		}
+	}
+
+	function parseResponse(xmlhttp, elt)
+	{
+	    if (xmlhttp.readyState == 4)
+	    {
+	        if (xmlhttp.status == 200)
+	        {	            
+	            var result = JSON.parse(xmlhttp.responseText);
+
+				/*var option = document.createElement("option");
+				option.text = "";
+				elt.add(option);
+				*/
+				var i, len = result.length;
+				elt.size = len;
+				for (i = 0; i < len; i++)
+				{
+					option = document.createElement("option");
+					option.text=result[i];
+					elt.add(option);
+				}
+
+	        }
+	        else if (xmlhttp.status == 404)
+	        {
+	            // updateStatus("Status: 404");
+	        }
+	    }
+	}
+
+	function listExports()
+	{
+		var listing = document.getElementById("exports");
+		
+	    xmlhttp = new XMLHttpRequest();
+
+	    xmlhttp.onreadystatechange = function () { parseResponse(xmlhttp, listing); } ;
+
+	    xmlhttp.open('GET', "listexports.php", true);
+	    xmlhttp.send(null);
+	}
+	
+	function onLoadComplete(viewer, sceneData)
+	{
+		// Hide the loader bar
+		var loadStatus = document.getElementById("loadStatus");
+		loadStatus.style.display = 'none';		
+		viewer.replaceScene(sceneData);
+	}
+	
+	$(document).ready(
+		function() {
+			var container = document.getElementById("container");
+			
+			app = new SceneViewer();
+			app.init({ container: container });
+
+			app.run();
+
+			listExports();
+		}
+	);
+	</script>
+
+</head>
+<body>
+	<center><h1>3dsMAX WebGL Previewer</h1></center>
+    <div id="container"></div>
+	<div id="loadStatus" style="display:none">
+	Loading scene...
+	</div>
+	<div id="prompt">
+	Click the mouse to manipulate the model: Left = rotate, Right = Pan<br></br>
+	</div>
+	<div id="listing">
+		Select an exported scene
+		<select id="exports" size="1"  ondblclick="selectExport();">
+		</select>
+		<button id="loadButton" onclick="selectExport();">Load</button>
+	 </div>
+
+</body>
+</html>

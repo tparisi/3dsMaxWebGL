@@ -36,6 +36,7 @@ SceneViewer.prototype.initEntities = function()
 	
 	var controllerScript = viewer.getComponent(SB.FPSControllerScript);
 	this.controllerScript = controllerScript;
+	this.controllerScript.setCameraPos(new THREE.Vector3(0, 2.5, 10));
 	
 	this.root.addChild(viewer);
 	
@@ -68,7 +69,7 @@ SceneViewer.prototype.createGrid = function()
 		this.root.removeComponent(this.grid);
 	}
 		
-	this.grid = new SB.Grid({color: 0x202020});
+	this.grid = new SB.Grid({color: 0x202020, size: this.gridSize, stepSize: this.gridStepSize});
 
 	this.root.addComponent(this.grid);
 }
@@ -91,11 +92,15 @@ SceneViewer.prototype.fitToScene = function()
 	this.gridStepSize = scope / 100;
 
 	var cx = (this.boundingBox.max.x + this.boundingBox.min.x) / 2;
+	var cy = (this.boundingBox.max.y + this.boundingBox.min.y) / 2;
 	var cz = (this.boundingBox.max.z + this.boundingBox.min.z) / 2;
 
-	var y = 1.6 + this.boundingBox.min.y;
+	var x = cx;
+	var y = cy + 1.6; //  + this.boundingBox.min.y;
+	var z = this.boundingBox.max.z + 10;
 	
-	this.controllerScript.setCameraPos(new THREE.Vector3(cx, y, cz));
+	
+	this.controllerScript.setCameraPos(new THREE.Vector3(cx, y, this.sceneRadius));
 	
 	this.createGrid();
 }
