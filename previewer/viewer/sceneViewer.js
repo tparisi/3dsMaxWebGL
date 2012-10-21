@@ -32,7 +32,7 @@ SceneViewer.prototype.initEntities = function()
 	
 	this.root.addChild(this.sceneRoot);	
 	
-	var viewer = SB.Prefabs.FPSController({ headlight : true });
+	var viewer = SB.Prefabs.FPSController({ active : true, headlight : true });
 	
 	var controllerScript = viewer.getComponent(SB.FPSControllerScript);
 	this.controllerScript = controllerScript;

@@ -3132,6 +3132,7 @@ SB.Camera = function(param)
 	
 	SB.SceneComponent.call(this, param);
 	this._active = param.active || false;
+	this._fov = param.fov || 45;
 }
 
 goog.inherits(SB.Camera, SB.SceneComponent);
@@ -3141,7 +3142,7 @@ SB.Camera.prototype.realize = function()
 	SB.SceneComponent.prototype.realize.call(this);
 	
 	var container = SB.Graphics.instance.container;
-	this.object = new THREE.PerspectiveCamera( 45, container.offsetWidth / container.offsetHeight, 1, 4000 );
+	this.object = new THREE.PerspectiveCamera( this._fov, container.offsetWidth / container.offsetHeight, 1, 4000 );
 
 	this.addToScene();
 	
@@ -4193,7 +4194,7 @@ SB.Prefabs.WalkthroughController = function(param)
 	
 	var viewpoint = new SB.Entity;
 	var transform = new SB.Transform;
-	var camera = new SB.Camera({active:true});
+	var camera = new SB.Camera({active:param.active, fov:param.fov});
 	viewpoint.addComponent(transform);
 	viewpoint.addComponent(camera);
 	viewpoint.transform = transform;
@@ -4676,7 +4677,17 @@ SB.JsonModel.prototype.handleLoaded = function(data)
 	this.addToScene();
 }
 
-/**
+SB.JsonModel.prototype.initialize = function(param)
+{
+	param = param || {};
+	
+	var material = param.material || new THREE.MeshBasicMaterial();
+	var geometry = param.geometry || new THREE.Geometry();
+	
+	this.object = new THREE.Mesh(geometry, material);
+
+	this.addToScene();
+}/**
  * @fileoverview Timer - component that generates time events
  * 
  * @author Tony Parisi
@@ -4866,6 +4877,8 @@ goog.require('SB.Prefabs');
 
 SB.Prefabs.FPSController = function(param)
 {
+	param = param || {};
+	
 	var controller = new SB.Entity(param);
 	var transform = new SB.Transform;
 	controller.addComponent(transform);
@@ -4888,7 +4901,7 @@ SB.Prefabs.FPSController = function(param)
 	
 	var viewpoint = new SB.Entity;
 	var transform = new SB.Transform;
-	var camera = new SB.Camera({active:true});
+	var camera = new SB.Camera({active:param.active, fov: param.fov});
 	viewpoint.addComponent(transform);
 	viewpoint.addComponent(camera);
 	viewpoint.transform = transform;
