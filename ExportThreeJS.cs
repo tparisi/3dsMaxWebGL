@@ -45,10 +45,17 @@ public class ExportThreeJS : ScriptableWizard
 public static class ThreeJSExporterScript
 {
 	static ArrayList exportMats; // collect list of mats as we go
+	static ArrayList exportMatNames; // collect list of mats as we go
+	static ArrayList exportMatEmbs; // collect list of mats as we go
+	static ArrayList exportTxs;
+	static string folderPath;
 	
 	public static string SceneToString ()
 	{
 		exportMats = new ArrayList();
+		exportMatNames = new ArrayList();
+		exportMatEmbs = new ArrayList();
+		exportTxs = new ArrayList();
 		int indent = 1;
 		StringBuilder sb = new StringBuilder();
 		// Header
@@ -152,10 +159,22 @@ public static class ThreeJSExporterScript
 				sb.Append (",\n");
 			TabAppend (tab, sb, "'" + o.name+"' : {\n");
 			TabAppend (tab+1, sb,  "'geometry' : '" + o.name + "',\n");
-			TabAppend (tab+1, sb,  "'materials' : ['" + mats[0].name + "'],\n"); // FIX
+			TabAppend (tab+1, sb,  "'materials' : [");
+			for (int i = 0; i < mats.Length; i++)
+			{
+				if (exportMatNames.Contains(mats[i]))
+					continue;
+				exportMatNames.Add(mats[i]);
+				if (i != 0)
+					sb.Append(",");
+				sb.Append ("'"+mats[i].name+"'");
+			}
+			sb.Append ("],\n");
 			TabAppend (tab+1, sb,  "'position' : [" + Vec3ToString(o.transform.position) + "],\n");
-			TabAppend (tab+1, sb,  "'rotation' : [" + Vec3ToString(o.transform.rotation.eulerAngles * 3.1415926f / 180f) + "],\n");
-			TabAppend (tab+1, sb,  "'scale' : [" + Vec3ToString(o.transform.lossyScale) + "],\n");
+			Vector3 angles = o.transform.rotation.eulerAngles;
+		//	angles.x = (360f - angles.x) % 360f;
+			TabAppend (tab+1, sb,  "'rotation' : [" + Vec3ToString(angles * 3.1415926f / 180f) + "],\n");
+			TabAppend (tab+1, sb,  "'scale' : [" + Scale3ToString(o.transform.lossyScale) + "],\n");
 			TabAppend (tab+1, sb,  "'visible' : true\n");
 			TabAppend (tab, sb,  "}\n");
 		}
@@ -254,8 +273,8 @@ public static class ThreeJSExporterScript
 	
 	public static void MaterialToString (int tab, StringBuilder sb, Material mat, ref bool first)
 	{
-//		if (exportMats.Contains(mat))
-//			return;
+		if (exportMats.Contains(mat))
+			return;
 		exportMats.Add(mat);
 		if (first)
 			first = false;
@@ -264,9 +283,11 @@ public static class ThreeJSExporterScript
 		TabAppend (tab, sb,  "'" + mat.name + "' : {\n");
 		TabAppend (tab+1, sb, "'type' : '"+MaterialToTypeString(mat)+"',\n");
 		TabAppend (tab+1, sb, "'parameters' : {\n");
-		TabAppend (tab+2, sb, "'color' : " + ColorToInt(mat.color) + ",\n");
-		TabAppend (tab+2, sb, "'opacity': "+(mat.color.a)+",\n");
-		TabAppend (tab+2, sb, "'map' : '" + mat.mainTexture.name + "'\n");
+		long ci = ColorToLong(mat.color);
+		TabAppend (tab+2, sb, "'color' : " + ci.ToString() + ",\n");
+		if (mat.mainTexture != null)
+			TabAppend (tab+2, sb, "'map' : '" + mat.mainTexture.name + "',\n");
+		TabAppend (tab+2, sb, "'opacity': "+(mat.color.a)+"\n");
 	//	sb.Append ("'color' : 16711680, "specular": 16711680, "shininess": 25, "bumpMap": "texture_bump", "bumpScale": -0.75 }
 		TabAppend (tab+1, sb, "}\n");
 		TabAppend (tab, sb,  "}");
@@ -274,6 +295,9 @@ public static class ThreeJSExporterScript
 
 	public static void MaterialToEmbedString (int tab, StringBuilder sb, Material mat, ref bool first)
 	{
+		if (exportMatEmbs.Contains(mat))
+			return;
+		exportMatEmbs.Add(mat);
 		if (first)
 			first = false;
 		else
@@ -300,20 +324,45 @@ public static class ThreeJSExporterScript
 		{
 	        Material[] mats = mf.renderer.sharedMaterials;
 			foreach (Material mat in mats)
-				TextureToString (tab, sb, mat.mainTexture, ref first); // FIX
+			{
+				if (mat.mainTexture != null)
+					TextureToString (tab, sb, mat.mainTexture, ref first); // FIX
+			}
 		}
 	}
 	
 	public static void TextureToString (int tab, StringBuilder sb, Texture tx, ref bool first)
 	{
+		if (exportTxs.Contains(tx))
+			return;
+		exportTxs.Add(tx);
 		if (first)
 			first = false;
 		else
 			sb.Append (",\n");
 		TabAppend (tab, sb,  "'" + tx.name+"' : {\n");
+
 		int instId = tx.GetInstanceID();
 		string assetPath = AssetDatabase.GetAssetPath(tx);
-		TabAppend (tab+1, sb,  "'url' : '" + assetPath + "'\n");
+//		string destFile = folderPath + "/"+ Path.GetFileNameWithoutExtension(assetPath)+".png";
+		string destFile = folderPath + "/" + Path.GetFileName(assetPath);
+		string destPath = Path.GetDirectoryName(destFile);
+//		if (!Directory.Exists(destPath))
+//			Directory.CreateDirectory (destPath);
+		try
+		{
+			File.Copy (assetPath, destFile);
+		}
+		catch 
+		{
+		}
+/*
+		Texture2D tx2d = (Texture2D)tx;
+		byte[] bytes = tx2d.EncodeToPNG();
+		string destFile = folderPath+tx.name+".png";
+		System.IO.File.WriteAllBytes(destFile, bytes);
+*/
+		TabAppend (tab+1, sb,  "'url' : '" + tx.name+".png" + "'\n");
 		TabAppend (tab, sb,  "}");
 	}
 	
@@ -328,8 +377,9 @@ public static class ThreeJSExporterScript
 	        TabAppend (tab, sb,  "'" + mf.name + "' : {\n");
 		TabAppend (tab+1, sb,  "'vertices' : [\n");
 		bool firstv = true;
-        foreach(Vector3 v in m.vertices)
+        for (int i = 0; i < m.vertices.Length; i++)
 		{
+			Vector3 v = m.vertices[i];
 			if (firstv)
 			{
 				firstv = false;
@@ -355,8 +405,18 @@ public static class ThreeJSExporterScript
 		TabAppend (tab+1, sb,  "'uvs' : [\n");
 		firstv = true;
 		TabAppend (tab+1, sb,  "[");
-        foreach(Vector2 v in m.uv)
+        for (int i = 0; i < m.uv.Length; i++)
 		{
+			Vector2 v = m.uv[i];
+			if (v.x > 1f || v.x < 1f)
+				v.x = v.x % 1f;
+			if (v.x < 0f)
+				v.x += 1f;
+			
+			if (v.y > 1f || v.y < -1f)
+				v.y = v.y % 1f;
+			if (v.y < 0f)
+				v.y += 1f;
 			if (firstv)
 			{
 				firstv = false;
@@ -396,7 +456,11 @@ public static class ThreeJSExporterScript
         TabAppend (tab+1, sb,  "]],\n");
 		
 		TabAppend (tab+1, sb,  "'faces' : [\n");
-        int[] triangles = m.GetTriangles(0);
+for (int s=0; s < m.subMeshCount; s++)
+{
+		if (s > 0)
+			sb.Append(",\n");
+        int[] triangles = m.GetTriangles(s);
 		bool fFirst = true;
         for (int i=0; i < triangles.Length; i += 3)
 		{
@@ -419,25 +483,26 @@ public static class ThreeJSExporterScript
 			bitField |= 32; // normals
 			if (m.uv.Length > 0)
 				bitField |= 8; // ONLY IF IT HAS A TEXTURE
-			int id = 0;//mesh.faces[i].getMatID();
+			int id = s;//mesh.faces[i].getMatID();
 			// NOTE! This 5th item is 'material index'
 			sb.Append (bitField.ToString()+",");
 			sb.Append (triangles[i].ToString()+",");
-			sb.Append (triangles[i+1].ToString()+",");
 			sb.Append (triangles[i+2].ToString()+",");
-			sb.Append ("0,");/// FIX exportMats.IndexOf(mat) +",");
+			sb.Append (triangles[i+1].ToString()+",");
+			sb.Append (exportMats.IndexOf(mf.renderer.sharedMaterials[s]) +",");
 			if (m.uv.Length > 0) // has UVs
 			{
 			//	int id = 0; // FIX mesh.faces[i].getMatID();
 				sb.Append (triangles[i].ToString()+",");
-				sb.Append (triangles[i+1].ToString()+",");
 				sb.Append (triangles[i+2].ToString()+",");
+				sb.Append (triangles[i+1].ToString()+",");
 			}
 			// for normals
 			sb.Append (triangles[i].ToString()+",");
-			sb.Append (triangles[i+1].ToString()+",");
-			sb.Append (triangles[i+2].ToString());
+			sb.Append (triangles[i+2].ToString()+",");
+			sb.Append (triangles[i+1].ToString());
 		} // for each triangle face
+} // for each submesh
         TabAppend (tab+1, sb,  "]\n");
 
 		//FIX
@@ -519,11 +584,12 @@ public static class ThreeJSExporterScript
 		}
 	}
 	
-    public static void SceneToFolder(string filename, bool append)
+    public static void SceneToFolder(string foldername, bool append)
     {
         try
         {
-            using (StreamWriter sw = new StreamWriter(filename+"\\scene.js", append))
+			folderPath = foldername;
+            using (StreamWriter sw = new StreamWriter(foldername+"\\scene.js", append))
             {
                 sw.WriteLine(SceneToString().Replace("'", "\""));
             }
@@ -541,13 +607,20 @@ public static class ThreeJSExporterScript
 	{
 		return (v.x.ToString()+","+v.y.ToString()+","+(-v.z).ToString());
 	}
+	static string Scale3ToString (Vector3 v)
+	{
+		return (v.x.ToString()+","+v.y.ToString()+","+(v.z).ToString());
+	}
 	static string ColorToString (Color v)
 	{
 		return (v.r.ToString()+","+v.g.ToString()+","+v.b.ToString());
 	}
-	static int ColorToInt (Color v)
+	static long ColorToLong (Color v)
 	{
-		return (int)(v.r * 255 * 256 * 256+  v.g * 255 * 256 + v.b*255);
+		long r = (long)(v.r * 255f);
+		long g = (long)(v.g * 255f);
+		long b = (long)(v.b * 255f);
+		return (long)(r * 256 * 256) +  g * 256 + b;
 	}
 	
 	static void TabAppend (int tab, StringBuilder sb, string val)
