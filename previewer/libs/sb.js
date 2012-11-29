@@ -1834,6 +1834,11 @@ SB.Time.instance = null;
 goog.provide('SB.Config');
 
 /**
+ * @define {boolean} Whether the library should be compiled for Three.js usage.
+ */
+SB.Config.USE_THREEJS = true;
+
+/**
  * @define {boolean} Whether the library should be compiled for WebGL usage.
  */
 SB.Config.USE_WEBGL = true;
@@ -1934,7 +1939,10 @@ SB.GraphicsThreeJS.prototype.initScene = function()
 
 SB.GraphicsThreeJS.prototype.initRenderer = function(param)
 {
-    var renderer = new THREE.WebGLRenderer( { antialias: true } );
+    var renderer = SB.Config.USE_WEBGL ?
+    	new THREE.WebGLRenderer( { antialias: true } ) :
+    	new THREE.CanvasRenderer;
+    	
     renderer.sortObjects = false;
     renderer.setSize( this.container.offsetWidth, this.container.offsetHeight );
 
@@ -2073,11 +2081,6 @@ SB.GraphicsThreeJS.prototype.onDocumentMouseMove = function(event)
 SB.GraphicsThreeJS.prototype.onDocumentMouseDown = function(event)
 {
     event.preventDefault();
-    
-    // N.B.: ahh, the bullshit continues...
-    this.focus();
-    
-    // console.log("Mouse down " + event.pageX + ", " + event.pageY);
     
     SB.Mouse.instance.onMouseDown(event.pageX, event.pageY);
     
@@ -2228,7 +2231,7 @@ SB.Services._serviceMap =
 		"time" : { object : SB.Time },
 		"input" : { object : SB.Input },
 		"events" : { object : SB.EventService },
-		"graphics" : { object : SB.Config.USE_WEBGL ? SB.GraphicsThreeJS : null },
+		"graphics" : { object : SB.Config.USE_THREEJS ? SB.GraphicsThreeJS : null },
 };
 
 SB.Services.create = function(serviceName)
@@ -2301,6 +2304,10 @@ goog.inherits(SB.Game, SB.PubSub);
 
 SB.Game.prototype.initialize = function(param)
 {
+	param = param || {};
+
+	this.tabstop = param.tabstop;
+	
 	this._services = [];
 	this._entities = [];
 
@@ -2342,7 +2349,7 @@ SB.Game.prototype.addOptionalServices = function()
 SB.Game.prototype.focus = function()
 {
 	// Hack hack hack should be the input system
-	SB.services.graphics.focus();
+	SB.Graphics.instance.focus();
 }
 
 SB.Game.prototype.run = function()
@@ -2476,6 +2483,12 @@ SB.Game.handleMouseMove = function(x, y)
 
 SB.Game.handleMouseDown = function(x, y)
 {
+    // N.B.: ahh, the bullshit continues...
+    if (SB.Game.instance.tabstop)
+    	SB.Game.instance.focus();
+    
+    // console.log("Mouse down " + event.pageX + ", " + event.pageY);
+    
     if (SB.Picker.clickedObject)
     	return;
     
@@ -3831,25 +3844,21 @@ SB.Tracker.prototype.realize = function()
     // Track our position based on the transform component and passed-in reference object
     this.object = this._entity.transform.object;
     this.reference = this.param.reference;
-	this.referencePosition = this.param.referencePosition ? this.param.referencePosition : new THREE.Vector3();
-
+	this.referencePosition = this.param.referencePosition ? this.param.referencePosition.clone() : new THREE.Vector3();
+	this.refpos = new THREE.Vector3;
+	this.position = new THREE.Vector3;
+	this.orientation = new THREE.Quaternion;
+	this.savedPosition = new THREE.Vector3;
+	this.savedOrientation = new THREE.Quaternion;
+	this.reference2me = new THREE.Matrix4;
+	this.world2me = new THREE.Matrix4;
+	
 	SB.Component.prototype.realize.call(this);
-
-	if (this.running)
-    {
-    	this.position = this.calcPosition();
-    }
-    
 }
 
 SB.Tracker.prototype.start = function()
 {
     this.running = true;
-
-    if (this._realized)
-    {
-    	this.position = this.calcPosition();
-    }
 }
 
 SB.Tracker.prototype.stop = function(x, y)
@@ -3864,15 +3873,25 @@ SB.Tracker.prototype.update = function()
         return;
     }
 
-    var pos = this.calcPosition();
-	if (this.position.x != pos.x ||
-			this.position.y != pos.y ||
-			this.position.z != pos.z)
+    this.calcPosition();
+	if (this.position.x != this.savedPosition.x ||
+			this.position.y != this.savedPosition.y ||
+			this.position.z != this.savedPosition.z)
 	{
 		//console.log("Object position: " + pos.x + ", " + pos.y + ", " + pos.z);
 
-	    this.publish("position", pos);
-	    this.position = pos;
+	    this.publish("position", this.position);
+	}
+	
+	this.calcOrientation();
+	if (this.orientation.x != this.savedOrientation.x ||
+			this.orientation.y != this.savedOrientation.y ||
+			this.orientation.z != this.savedOrientation.z ||
+			this.orientation.w != this.savedOrientation.w )
+	{
+		//console.log("Object position: " + pos.x + ", " + pos.y + ", " + pos.z);
+
+	    this.publish("orientation", this.orientation);
 	}
 }
 
@@ -3880,15 +3899,23 @@ SB.Tracker.prototype.calcPosition = function()
 {
 	// Get reference object position in world space
 	var refmat = this.reference.object.matrixWorld;
-	var refpos = this.referencePosition.clone();
-	refpos = refmat.multiplyVector3(refpos);
+	this.refpos.copy(this.referencePosition);
+	this.refpos = refmat.multiplyVector3(this.refpos);
 	
 	// Transform reference world space position into my model space
 	var mymat = this.object.matrixWorld;
-	var myinv = new THREE.Matrix4().getInverse(mymat);
-	refpos = myinv.multiplyVector3(refpos);
+	this.world2me.getInverse(mymat);
+	this.position = this.world2me.multiplyVector3(this.refpos);
+}
 
-	return refpos;
+SB.Tracker.prototype.calcOrientation = function()
+{
+	// Get reference object orientation in world space
+	var refmat = this.reference.object.matrixWorld;
+	var mymat = this.object.matrixWorld;
+	this.world2me.getInverse(mymat);
+	this.reference2me.multiply(refmat, this.world2me);
+	this.orientation = this.reference2me.decompose()[1];
 }/**
  *
  */
@@ -4096,6 +4123,8 @@ SB.Transform = function(param)
     this.position = new THREE.Vector3();
     this.rotation = new THREE.Vector3();
     this.scale = new THREE.Vector3(1, 1, 1);
+    this.orientation = new THREE.Quaternion;
+    this.useQuaternion = false;
 } ;
 
 goog.inherits(SB.Transform, SB.Component);
@@ -4119,6 +4148,11 @@ SB.Transform.prototype.update = function()
     this.object.scale.x = this.scale.x;
     this.object.scale.y = this.scale.y;
     this.object.scale.z = this.scale.z;
+    if (this.useQuaternion)
+    {
+    	this.object.quaternion.copy(this.orientation);
+    	this.object.useQuaternion = true;
+    }
 }
 
 SB.Transform.prototype.addToScene = function() {
@@ -4280,18 +4314,6 @@ SB.WalkthroughControllerScript.prototype.update = function()
 	{
 		this._entity.transform.position.copy(this.cameraPos);
 		this.cameraPos = null;
-	}
-}
-
-SB.WalkthroughControllerScript.prototype.setCameraPos = function(pos)
-{
-	if (this.cameraPos)
-	{
-		this.cameraPos.copy(pos);
-	}
-	else
-	{
-		this.cameraPos = pos.clone();
 	}
 }
 
@@ -5009,18 +5031,6 @@ SB.FPSControllerScript.prototype.update = function()
 	}
 }
 
-SB.FPSControllerScript.prototype.setCameraPos = function(pos)
-{
-	if (this.cameraPos)
-	{
-		this.cameraPos.copy(pos);
-	}
-	else
-	{
-		this.cameraPos = pos.clone();
-	}
-}
-
 SB.FPSControllerScript.prototype.move = function(dir)
 {
 	this.directionMatrix.identity();
@@ -5298,18 +5308,6 @@ SB.ModelControllerScript.prototype.update = function()
 	{
 		this._entity.transform.position.copy(this.cameraPos);
 		this.cameraPos = null;
-	}
-}
-
-SB.ModelControllerScript.prototype.setCameraPos = function(pos)
-{
-	if (this.cameraPos)
-	{
-		this.cameraPos.copy(pos);
-	}
-	else
-	{
-		this.cameraPos = pos.clone();
 	}
 }
 

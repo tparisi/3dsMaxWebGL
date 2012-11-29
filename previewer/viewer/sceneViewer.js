@@ -4,7 +4,7 @@
 
 SceneViewer = function()
 {
-	SB.Game.call(this);	    		
+	SB.Game.call(this);
 }
 
 goog.inherits(SceneViewer, SB.Game);
@@ -14,6 +14,7 @@ SceneViewer.prototype.initialize = function(param)
 	if (!param)
 		param = {};
 	
+	param.tabstop = true;
 	SB.Game.prototype.initialize.call(this, param);
 	
 	this.gridSize = param.gridSize || SceneViewer.DEFAULT_GRID_SIZE;
@@ -32,13 +33,11 @@ SceneViewer.prototype.initEntities = function()
 	
 	this.root.addChild(this.sceneRoot);	
 	
-	var viewer = SB.Prefabs.FPSController({ active : true, headlight : true });
+	this.controller = SB.Prefabs.FPSController({ active : true, headlight : true });
+	this.controller.transform.position.set(0, 2.5, 10);
+	this.controllerScript = this.controller.getComponent(SB.FPSControllerScript);
 	
-	var controllerScript = viewer.getComponent(SB.FPSControllerScript);
-	this.controllerScript = controllerScript;
-	this.controllerScript.setCameraPos(new THREE.Vector3(0, 2.5, 10));
-	
-	this.root.addChild(viewer);
+	this.root.addChild(this.controller);
 	
 	this.createGrid();
 
@@ -99,7 +98,7 @@ SceneViewer.prototype.fitToScene = function()
 	var y = cy + 1.6; //  + this.boundingBox.min.y;
 	var z = this.boundingBox.max.z + 10;
 	
-	this.controllerScript.setCameraPos(new THREE.Vector3(cx, y, this.sceneRadius));
+	this.controller.transform.position.set(cx, y, this.sceneRadius);
 	this.controllerScript.setCameraTurn(new THREE.Vector3);
 	this.controllerScript.setCameraTilt(new THREE.Vector3);
 	this.controllerScript.walkSpeed = this.gridStepSize;	
