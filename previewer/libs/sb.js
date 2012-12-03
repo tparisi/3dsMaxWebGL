@@ -3798,7 +3798,6 @@ SB.DirectionalLight = function(param)
 	param = param || {};
 	this.color = param.color;
 	this.intensity = param.intensity;
-	this.dirMatrix = new THREE.Matrix4;
 	SB.SceneComponent.call(this, param);
 }
 
@@ -3809,19 +3808,23 @@ SB.DirectionalLight.prototype.realize = function()
 	SB.SceneComponent.prototype.realize.call(this);
 	this.object = new THREE.DirectionalLight(this.color, this.intensity, 0);
 	this.position.set(0, 0, 1);
+	this.object.target.position.set(0, 0, SB.DirectionalLight.DEFAULT_TARGET_Z);
 	this.addToScene();
 }
 
 SB.DirectionalLight.prototype.update = function() 
 {
-	// D'oh Three.js doesn't seem to transform directional light positions automatically
+	// D'oh Three.js doesn't seem to transform directional light directions automatically
+	// Really bizarre semantics
 	this.position.set(0, 0, 1);
-	this.dirMatrix.identity();
-	this.dirMatrix.extractRotation(this.object.parent.matrixWorld);
-	this.position = this.dirMatrix.multiplyVector3(this.position);
+	this.object.target.position.set(0, 0, SB.DirectionalLight.DEFAULT_TARGET_Z);
+	var worldmat = this.object.parent.matrixWorld;
+	worldmat.multiplyVector3(this.position);
+	worldmat.multiplyVector3(this.object.target.position);
 	SB.SceneComponent.prototype.update.call(this);
 }
-/**
+
+SB.DirectionalLight.DEFAULT_TARGET_Z = -10000;/**
  * @fileoverview Tracker - converts x,y mouse motion into rotation about an axis (event-driven)
  * 
  * @author Tony Parisi
@@ -4973,7 +4976,7 @@ SB.Prefabs.FPSController = function(param)
 	
 	var viewpoint = new SB.Entity;
 	var transform = new SB.Transform;
-	var camera = new SB.Camera({active:param.active, fov: param.fov});
+	var camera = new SB.Camera({active:param.active, fov: param.fov, position:param.cameraPosition});
 	viewpoint.addComponent(transform);
 	viewpoint.addComponent(camera);
 	viewpoint.transform = transform;
