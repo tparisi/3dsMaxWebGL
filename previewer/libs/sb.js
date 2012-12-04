@@ -1906,8 +1906,17 @@ SB.GraphicsThreeJS.prototype.initOptions = function(param)
 
 SB.GraphicsThreeJS.prototype.initPageElements = function(param)
 {
-    this.container = param.container ? param.container : document.createElement( 'div' );
-    document.body.appendChild( this.container );
+    if (param.container)
+    {
+    	this.container = param.container;
+    }
+   	else
+   	{
+		this.container = document.createElement( 'div' );
+	    document.body.appendChild( this.container );
+   	}
+
+    this.saved_cursor = this.container.style.cursor;
     
     if (this.displayStats)
     {
@@ -2162,6 +2171,9 @@ SB.GraphicsThreeJS.prototype.onWindowResize = function(event)
 
 SB.GraphicsThreeJS.prototype.setCursor = function(cursor)
 {
+	if (!cursor)
+		cursor = this.saved_cursor;
+	
 	this.container.style.cursor = cursor;
 }
 
@@ -5624,7 +5636,7 @@ SB.Picker.handleMouseMove = function(x, y)
         {
     		if (oldObj)
     		{
-    			SB.Graphics.instance.setCursor('auto');
+    			SB.Graphics.instance.setCursor(null);
     			
     			if (oldObj.onMouseOut)
                 {
