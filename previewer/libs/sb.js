@@ -3156,8 +3156,8 @@ SB.Camera = function(param)
 	param = param || {};
 	
 	SB.SceneComponent.call(this, param);
-	this._active = param.active || false;
-	this._fov = param.fov || 45;
+
+	this.active = param.active || false;
 	var position = param.position || SB.Camera.DEFAULT_POSITION;
     this.position.copy(position);	
 }
@@ -3168,12 +3168,9 @@ SB.Camera.prototype.realize = function()
 {
 	SB.SceneComponent.prototype.realize.call(this);
 	
-	var container = SB.Graphics.instance.container;
-	this.object = new THREE.PerspectiveCamera( this._fov, container.offsetWidth / container.offsetHeight, 1, 4000 );
-
 	this.addToScene();
 	
-	if (this._active)
+	if (this.active)
 	{
 		SB.Graphics.instance.camera = this.object;
 	}
@@ -3181,8 +3178,8 @@ SB.Camera.prototype.realize = function()
 
 SB.Camera.prototype.setActive = function(active) 
 {
-	this._active = active;
-	if (this._realized && this._active)
+	this.active = active;
+	if (this._realized && this.active)
 	{
 		SB.Graphics.instance.camera = this.object;
 	}
@@ -3748,7 +3745,7 @@ SB.Viewer = function(param)
 	
 	this.viewpoint = new SB.Entity;
 	var transform = new SB.Transform;
-	var camera = new SB.Camera({active:true});
+	var camera = new SB.PerspectiveCamera({active:true});
 	this.viewpoint.addComponent(transform);
 	this.viewpoint.addComponent(camera);
 	this.viewpoint.transform = transform;
@@ -4277,7 +4274,7 @@ SB.Prefabs.WalkthroughController = function(param)
 	
 	var viewpoint = new SB.Entity;
 	var transform = new SB.Transform;
-	var camera = new SB.Camera({active:param.active, fov:param.fov});
+	var camera = new SB.PerspectiveCamera({active:param.active, fov:param.fov});
 	viewpoint.addComponent(transform);
 	viewpoint.addComponent(camera);
 	viewpoint.transform = transform;
@@ -4978,7 +4975,7 @@ SB.Prefabs.FPSController = function(param)
 	
 	var viewpoint = new SB.Entity;
 	var transform = new SB.Transform;
-	var camera = new SB.Camera({active:param.active, fov: param.fov, position:param.cameraPosition});
+	var camera = new SB.PerspectiveCamera({active:param.active, fov: param.fov, position:param.cameraPosition});
 	viewpoint.addComponent(transform);
 	viewpoint.addComponent(camera);
 	viewpoint.transform = transform;
@@ -5248,7 +5245,7 @@ SB.Prefabs.ModelController = function(param)
 	
 	var viewpoint = new SB.Entity;
 	var transform = new SB.Transform;
-	var camera = new SB.Camera({active:param.active, fov: param.fov});
+	var camera = new SB.PerspectiveCamera({active:param.active, fov: param.fov});
 	viewpoint.addComponent(transform);
 	viewpoint.addComponent(camera);
 	viewpoint.transform = transform;
@@ -5906,6 +5903,26 @@ SB.KeyFrameAnimator.prototype.update = function()
 }
 // Statics
 SB.KeyFrameAnimator.default_duration = 1000;
+goog.provide('SB.PerspectiveCamera');
+goog.require('SB.Camera');
+
+SB.PerspectiveCamera = function(param)
+{
+	param = param || {};	
+	this.fov = param.fov || 45;
+	
+	SB.Camera.call(this, param);
+}
+
+goog.inherits(SB.PerspectiveCamera, SB.Camera);
+
+SB.PerspectiveCamera.prototype.realize = function() 
+{
+	var container = SB.Graphics.instance.container;
+	this.object = new THREE.PerspectiveCamera( this.fov, container.offsetWidth / container.offsetHeight, 1, 4000 );
+
+	SB.Camera.prototype.realize.call(this);	
+}
 /**
  * @fileoverview A visual containing a cylinder mesh.
  * @author Tony Parisi
@@ -6583,6 +6600,7 @@ goog.require('SB.Interpolator');
 goog.require('SB.KeyFrame');
 goog.require('SB.KeyFrameAnimator');
 goog.require('SB.Camera');
+goog.require('SB.PerspectiveCamera');
 goog.require('SB.WalkthroughControllerScript');
 goog.require('SB.FPSControllerScript');
 goog.require('SB.ModelControllerScript');
