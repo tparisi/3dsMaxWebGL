@@ -2768,6 +2768,129 @@ SB.KeyFrame.ease = function(n) {
 
 SB.KeyFrame.default_duration = 1000;
 /**
+ * @fileoverview Base class for visual elements.
+ * @author Tony Parisi
+ */
+goog.provide('SB.SceneComponent');
+goog.require('SB.Component');
+
+/**
+ * @constructor
+ */
+SB.SceneComponent = function(param)
+{	
+	SB.Component.call(this, param);
+    
+    this.object = null;
+    this.position = this.param.position || new THREE.Vector3();
+    this.rotation = this.param.rotation || new THREE.Vector3();
+    this.scale = this.param.scale || new THREE.Vector3(1, 1, 1);
+} ;
+
+goog.inherits(SB.SceneComponent, SB.Component);
+
+SB.SceneComponent.prototype.realize = function()
+{
+	if (this.object && !this.object.data)
+	{
+		this.addToScene();
+	}
+	
+	SB.Component.prototype.realize.call(this);
+}
+
+SB.SceneComponent.prototype.update = function()
+{	
+	SB.Component.prototype.update.call(this);
+	
+	if (this.object)
+	{
+		this.object.position.x = this.position.x;
+		this.object.position.y = this.position.y;
+		this.object.position.z = this.position.z;
+		this.object.rotation.x = this.rotation.x;
+		this.object.rotation.y = this.rotation.y;
+		this.object.rotation.z = this.rotation.z;
+		this.object.scale.x = this.scale.x;
+		this.object.scale.y = this.scale.y;
+		this.object.scale.z = this.scale.z;
+	}
+}
+
+SB.SceneComponent.prototype.addToScene = function() {
+	if (this._entity)
+	{
+		var parent = this._entity.transform ? this._entity.transform.object : SB.Graphics.instance.scene;
+		if (parent)
+		{
+		    parent.add(this.object);
+		    this.object.data = this; // backpointer for picking and such
+		}
+		else
+		{
+			// N.B.: throw something?
+		}
+	}
+	else
+	{
+		// N.B.: throw something?
+	}
+}
+
+SB.SceneComponent.prototype.removeFromScene = function() {
+	if (this._entity)
+	{
+		var parent = this._entity.transform ? this._entity.transform.object : SB.Graphics.instance.scene;
+		if (parent)
+		{
+			this.object.data = null;
+		    parent.remove(this.object);
+		}
+		else
+		{
+			// N.B.: throw something?
+		}
+	}
+	else
+	{
+		// N.B.: throw something?
+	}
+}
+goog.provide('SB.Light');
+goog.require('SB.SceneComponent');
+
+SB.Light = function(param)
+{
+	param = param || {};
+	this.color = param.color;
+	this.intensity = param.intensity;
+	SB.SceneComponent.call(this, param);
+}
+
+goog.inherits(SB.Light, SB.SceneComponent);
+
+SB.Light.prototype.realize = function() 
+{
+	SB.SceneComponent.prototype.realize.call(this);
+
+	if (this.object)
+	{
+		this.addToScene();
+	}
+}
+
+SB.Light.prototype.update = function() 
+{
+	if (this.object)
+	{
+		this.object.color = this.color;
+		this.object.intensity = this.intensity;
+	}
+	
+	SB.SceneComponent.prototype.update.call(this);
+}
+
+SB.Light.DEFAULT_RANGE = 10000;/**
  * @fileoverview Loader - loads level files
  * 
  * @author Tony Parisi
@@ -2903,95 +3026,6 @@ SB.Shaders.ToonShader.applyShader = function(object)
 	}
 }
 
-/**
- * @fileoverview Base class for visual elements.
- * @author Tony Parisi
- */
-goog.provide('SB.SceneComponent');
-goog.require('SB.Component');
-
-/**
- * @constructor
- */
-SB.SceneComponent = function(param)
-{	
-	SB.Component.call(this, param);
-    
-    this.object = null;
-    this.position = this.param.position || new THREE.Vector3();
-    this.rotation = this.param.rotation || new THREE.Vector3();
-    this.scale = this.param.scale || new THREE.Vector3(1, 1, 1);
-} ;
-
-goog.inherits(SB.SceneComponent, SB.Component);
-
-SB.SceneComponent.prototype.realize = function()
-{
-	if (this.object && !this.object.data)
-	{
-		this.addToScene();
-	}
-	
-	SB.Component.prototype.realize.call(this);
-}
-
-SB.SceneComponent.prototype.update = function()
-{	
-	SB.Component.prototype.update.call(this);
-	
-	if (this.object)
-	{
-		this.object.position.x = this.position.x;
-		this.object.position.y = this.position.y;
-		this.object.position.z = this.position.z;
-		this.object.rotation.x = this.rotation.x;
-		this.object.rotation.y = this.rotation.y;
-		this.object.rotation.z = this.rotation.z;
-		this.object.scale.x = this.scale.x;
-		this.object.scale.y = this.scale.y;
-		this.object.scale.z = this.scale.z;
-	}
-}
-
-SB.SceneComponent.prototype.addToScene = function() {
-	if (this._entity)
-	{
-		var parent = this._entity.transform ? this._entity.transform.object : SB.Graphics.instance.scene;
-		if (parent)
-		{
-		    parent.add(this.object);
-		    this.object.data = this; // backpointer for picking and such
-		}
-		else
-		{
-			// N.B.: throw something?
-		}
-	}
-	else
-	{
-		// N.B.: throw something?
-	}
-}
-
-SB.SceneComponent.prototype.removeFromScene = function() {
-	if (this._entity)
-	{
-		var parent = this._entity.transform ? this._entity.transform.object : SB.Graphics.instance.scene;
-		if (parent)
-		{
-			this.object.data = null;
-		    parent.remove(this.object);
-		}
-		else
-		{
-			// N.B.: throw something?
-		}
-	}
-	else
-	{
-		// N.B.: throw something?
-	}
-}
 /**
  * @fileoverview Base class for visual elements.
  * @author Tony Parisi
@@ -3800,40 +3834,40 @@ SB.PhysicsBody = function() {};
  */
 SB.PhysicsBody.prototype.setMaterial = function(material) {};
 goog.provide('SB.DirectionalLight');
-goog.require('SB.SceneComponent');
+goog.require('SB.Light');
 
 SB.DirectionalLight = function(param)
 {
 	param = param || {};
-	this.color = param.color;
-	this.intensity = param.intensity;
-	SB.SceneComponent.call(this, param);
+	this.direction = param.direction || new THREE.Vector3(0, 0, -1);
+	
+	SB.Light.call(this, param);
 }
 
-goog.inherits(SB.DirectionalLight, SB.SceneComponent);
+goog.inherits(SB.DirectionalLight, SB.Light);
 
 SB.DirectionalLight.prototype.realize = function() 
 {
-	SB.SceneComponent.prototype.realize.call(this);
 	this.object = new THREE.DirectionalLight(this.color, this.intensity, 0);
-	this.position.set(0, 0, 1);
-	this.object.target.position.set(0, 0, SB.DirectionalLight.DEFAULT_TARGET_Z);
-	this.addToScene();
+	this.position.copy(this.direction).negate().multiplyScalar(SB.Light.DEFAULT_RANGE);
+	this.object.target.position.copy(this.direction).multiplyScalar(SB.Light.DEFAULT_RANGE);
+
+	SB.Light.prototype.realize.call(this);
 }
 
 SB.DirectionalLight.prototype.update = function() 
 {
 	// D'oh Three.js doesn't seem to transform directional light directions automatically
 	// Really bizarre semantics
-	this.position.set(0, 0, 1);
-	this.object.target.position.set(0, 0, SB.DirectionalLight.DEFAULT_TARGET_Z);
+	this.position.copy(this.direction).negate();
+	this.object.target.position.copy(this.direction).multiplyScalar(SB.Light.DEFAULT_RANGE);
 	var worldmat = this.object.parent.matrixWorld;
 	worldmat.multiplyVector3(this.position);
 	worldmat.multiplyVector3(this.object.target.position);
 	SB.SceneComponent.prototype.update.call(this);
 }
 
-SB.DirectionalLight.DEFAULT_TARGET_Z = -10000;/**
+/**
  * @fileoverview Tracker - converts x,y mouse motion into rotation about an axis (event-driven)
  * 
  * @author Tony Parisi
@@ -6623,6 +6657,7 @@ goog.require('SB.Input');
 goog.require('SB.Keyboard');
 goog.require('SB.Mouse');
 goog.require('SB.Picker');
+goog.require('SB.Light');
 goog.require('SB.DirectionalLight');
 goog.require('SB.Loader');
 goog.require('SB.NetworkClient');
