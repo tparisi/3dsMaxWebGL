@@ -2187,7 +2187,14 @@ SB.GraphicsThreeJS.prototype.update = function()
     	this.stats.update();
     }
 }
-	        
+
+SB.GraphicsThreeJS.prototype.enableShadows = function(enable)
+{
+	this.renderer.shadowMapEnabled = enable;
+	this.renderer.shadowMapSoft = enable;
+	this.renderer.shadowMapCullFrontFaces = false;
+}
+
 SB.GraphicsThreeJS.default_display_stats = false,
 /**
  *
@@ -2862,8 +2869,8 @@ goog.require('SB.SceneComponent');
 SB.Light = function(param)
 {
 	param = param || {};
-	this.color = param.color;
-	this.intensity = param.intensity;
+	this.color = ( param.color !== undefined ) ? param.color : SB.Light.DEFAULT_COLOR;
+	this.intensity = ( param.intensity !== undefined ) ? param.intensity : SB.Light.DEFAULT_INTENSITY;
 	SB.SceneComponent.call(this, param);
 }
 
@@ -2890,6 +2897,8 @@ SB.Light.prototype.update = function()
 	SB.SceneComponent.prototype.update.call(this);
 }
 
+SB.Light.DEFAULT_COLOR = 0xFFFFFF;
+SB.Light.DEFAULT_INTENSITY = 1;
 SB.Light.DEFAULT_RANGE = 10000;/**
  * @fileoverview Loader - loads level files
  * 
@@ -3228,7 +3237,25 @@ SB.Camera.DEFAULT_POSITION = new THREE.Vector3(0, 0, 10);/**
  * @fileoverview Contains prefab assemblies for core Skybox package
  * @author Tony Parisi
  */
-goog.provide('SB.Prefabs');/**
+goog.provide('SB.Prefabs');goog.provide('SB.AmbientLight');
+goog.require('SB.Light');
+
+SB.AmbientLight = function(param)
+{
+	param = param || {};
+	
+	SB.Light.call(this, param);
+}
+
+goog.inherits(SB.AmbientLight, SB.Light);
+
+SB.AmbientLight.prototype.realize = function() 
+{
+	this.object = new THREE.AmbientLight(this.color);
+
+	SB.Light.prototype.realize.call(this);
+}
+/**
  *
  */
 goog.provide('SB.PhysicsSystem');
@@ -4616,6 +4643,9 @@ SB.SpotLight = function(param)
 	this.angle = ( param.angle !== undefined ) ? param.angle : SB.SpotLight.DEFAULT_ANGLE;
 	this.exponent = ( param.exponent !== undefined ) ? param.exponent : SB.SpotLight.DEFAULT_EXPONENT;
 	this.castShadows = ( param.castShadows !== undefined ) ? param.castShadows : SB.SpotLight.DEFAULT_CAST_SHADOWS;
+	this.shadowDarkness = ( param.shadowDarkness !== undefined ) ? param.shadowDarkness : SB.SpotLight.DEFAULT_SHADOW_DARKNESS;
+	this.targetPos = new THREE.Vector3;
+	this.scaledDir = new THREE.Vector3;
 	
 	SB.Light.call(this, param);
 }
@@ -4625,14 +4655,15 @@ goog.inherits(SB.SpotLight, SB.Light);
 SB.SpotLight.prototype.realize = function() 
 {
 	this.object = new THREE.SpotLight(this.color, this.intensity, this.distance, this.angle, this.exponent);
-	this.targetPos = this.position.clone();
-	this.targetPos.addSelf(this.direction.multiplyScalar(SB.Light.DEFAULT_RANGE));	
+
+	this.scaledDir.copy(this.direction);
+	this.scaledDir.multiplyScalar(SB.Light.DEFAULT_RANGE);
+	this.targetPos.copy(this.position);
+	this.targetPos.addSelf(this.scaledDir);	
 	this.object.target.position.copy(this.targetPos);
 
-	if (this.castShadows)
-	{
-	}
-	
+	this.updateShadows();
+
 	SB.Light.prototype.realize.call(this);
 }
 
@@ -4640,10 +4671,10 @@ SB.SpotLight.prototype.update = function()
 {
 	if (this.object)
 	{
-		// D'oh Three.js doesn't seem to transform light directions automatically
-		// Really bizarre semantics
+		this.scaledDir.copy(this.direction);
+		this.scaledDir.multiplyScalar(SB.Light.DEFAULT_RANGE);
 		this.targetPos.copy(this.position);
-		this.targetPos.addSelf(this.direction.multiplyScalar(SB.Light.DEFAULT_RANGE));	
+		this.targetPos.addSelf(this.scaledDir);	
 		this.object.target.position.copy(this.targetPos);
 		
 		var worldmat = this.object.parent.matrixWorld;
@@ -4654,16 +4685,40 @@ SB.SpotLight.prototype.update = function()
 		this.object.distance = this.distance;
 		this.object.angle = this.angle;
 		this.object.exponent = this.exponent;
+
+		this.updateShadows();
 	}
 	
 	// Update the rest
 	SB.Light.prototype.update.call(this);
 }
 
+SB.SpotLight.prototype.updateShadows = function()
+{
+	if (this.castShadows)
+	{
+		this.object.castShadow = true;
+		this.object.shadowCameraNear = 1;
+		this.object.shadowCameraFar = SB.Light.DEFAULT_RANGE;
+		this.object.shadowCameraFov = 90;
+
+		// light.shadowCameraVisible = true;
+
+		this.object.shadowBias = 0.0001;
+		this.object.shadowDarkness = this.shadowDarkness;
+
+		this.object.shadowMapWidth = 2048;
+		this.object.shadowMapHeight = 2048;
+		
+		SB.Graphics.instance.enableShadows(true);
+	}	
+}
+
 SB.SpotLight.DEFAULT_DISTANCE = 0;
 SB.SpotLight.DEFAULT_ANGLE = Math.PI / 2;
 SB.SpotLight.DEFAULT_EXPONENT = 10;
 SB.SpotLight.DEFAULT_CAST_SHADOWS = false;
+SB.SpotLight.DEFAULT_SHADOW_DARKNESS = 0.3;
 /**
  * @fileoverview A wire grid floor plane
  * @author Tony Parisi
@@ -6635,25 +6690,6 @@ SB.Zoomer.prototype.update = function()
         this.oldScale.z = this.scale.z;
     }
 }
-goog.provide('SB.LightComponent');
-goog.require('SB.SceneComponent');
-
-SB.LightComponent = function(param)
-{
-	SB.SceneComponent.call(this, param);
-}
-
-goog.inherits(SB.LightComponent, SB.SceneComponent);
-
-SB.LightComponent.prototype.realize = function()
-{
-	SB.SceneComponent.prototype.realize.call(this);
-	
-	this.object = new THREE.DirectionalLight(0xffffff);
-    this.object.position.set(1, 0, 0).normalize();
-	
-	this.addToScene();
-}
 goog.provide('SB.RigidBodyCircleBox2D');
 goog.require('SB.RigidBodyBox2D');
 
@@ -6681,6 +6717,42 @@ SB.RigidBodyCircleBox2D = function(radius)
 } ;
 
 goog.inherits(SB.RigidBodyCircleBox2D, SB.RigidBodyBox2D);
+goog.provide('SB.PointLight');
+goog.require('SB.Light');
+
+SB.PointLight = function(param)
+{
+	param = param || {};
+	this.distance = ( param.distance !== undefined ) ? param.distance : SB.PointLight.DEFAULT_DISTANCE;
+	
+	SB.Light.call(this, param);
+}
+
+goog.inherits(SB.PointLight, SB.Light);
+
+SB.PointLight.prototype.realize = function() 
+{
+	this.object = new THREE.PointLight(this.color, this.intensity, this.distance);
+
+	SB.Light.prototype.realize.call(this);
+}
+
+SB.PointLight.prototype.update = function() 
+{
+	if (this.object)
+	{
+		var worldmat = this.object.parent.matrixWorld;
+		worldmat.multiplyVector3(this.position);
+		
+		// Copy other values
+		this.object.distance = this.distance;
+	}
+	
+	// Update the rest
+	SB.Light.prototype.update.call(this);
+}
+
+SB.PointLight.DEFAULT_DISTANCE = 0;
 /**
  * @fileoverview File Manager - load game assets using Ajax
  * 
@@ -6717,7 +6789,9 @@ goog.require('SB.Keyboard');
 goog.require('SB.Mouse');
 goog.require('SB.Picker');
 goog.require('SB.Light');
+goog.require('SB.AmbientLight');
 goog.require('SB.DirectionalLight');
+goog.require('SB.PointLight');
 goog.require('SB.SpotLight');
 goog.require('SB.Loader');
 goog.require('SB.NetworkClient');
@@ -6753,7 +6827,6 @@ goog.require('SB.PointSet');
 goog.require('SB.Visual');
 
 goog.require('SB.Shaders');
-goog.require('SB.LightComponent');
 
 /**
  * @constructor
