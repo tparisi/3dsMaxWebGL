@@ -1967,7 +1967,8 @@ SB.GraphicsThreeJS.prototype.initRenderer = function(param)
 
     this.renderer = renderer;
     this.projector = projector;
-    
+
+    this.lastFrameTime = 0;
 }
 
 SB.GraphicsThreeJS.prototype.initMouse = function()
@@ -2013,13 +2014,8 @@ SB.GraphicsThreeJS.prototype.addDomHandlers = function()
 	window.addEventListener( 'resize', function(event) { that.onWindowResize(event); }, false );
 }
 
-SB.GraphicsThreeJS.prototype.objectFromMouse = function(pagex, pagey)
+SB.GraphicsThreeJS.prototype.objectFromMouse = function(eltx, elty)
 {
-	var offset = $(this.renderer.domElement).offset();
-	
-	var eltx = pagex - offset.left;
-	var elty = pagey - offset.top;
-	
 	// translate client coords into vp x,y
     var vpx = ( eltx / this.container.offsetWidth ) * 2 - 1;
     var vpy = - ( elty / this.container.offsetHeight ) * 2 + 1;
@@ -2075,51 +2071,64 @@ SB.GraphicsThreeJS.prototype.findObjectFromIntersected = function(object, point,
 SB.GraphicsThreeJS.prototype.onDocumentMouseMove = function(event)
 {
     event.preventDefault();
-    //console.log("MOUSE Mouse move " + event.pageX + ", " + event.pageY);
     
-    SB.Mouse.instance.onMouseMove(event.pageX, event.pageY);
+	var offset = $(this.renderer.domElement).offset();
+	
+	var eltx = event.pageX - offset.left;
+	var elty = event.pageY - offset.top;
+	
+    SB.Mouse.instance.onMouseMove(eltx, elty);
     
     if (SB.Picker)
     {
-    	SB.Picker.handleMouseMove(event.pageX, event.pageY);
+    	SB.Picker.handleMouseMove(eltx, elty);
     }
     
-    SB.Game.handleMouseMove(event.pageX, event.pageY);
+    SB.Game.handleMouseMove(event.pageX, event.pageY, eltx, elty);
 }
 
 SB.GraphicsThreeJS.prototype.onDocumentMouseDown = function(event)
 {
     event.preventDefault();
     
-    SB.Mouse.instance.onMouseDown(event.pageX, event.pageY);
+	var offset = $(this.renderer.domElement).offset();
+	
+	var eltx = event.pageX - offset.left;
+	var elty = event.pageY - offset.top;
+	
+    SB.Mouse.instance.onMouseDown(eltx, elty);
     
     if (SB.Picker)
     {
-    	SB.Picker.handleMouseDown(event.pageX, event.pageY);
+    	SB.Picker.handleMouseDown(eltx, elty);
     }
     
-    SB.Game.handleMouseDown(event.pageX, event.pageY);
+    SB.Game.handleMouseDown(event.pageX, event.pageY, eltx, elty);
 }
 
 SB.GraphicsThreeJS.prototype.onDocumentMouseUp = function(event)
 {
     event.preventDefault();
-    // console.log("Mouse up " + event.pageX + ", " + event.pageY);
+
+    var offset = $(this.renderer.domElement).offset();
+	
+	var eltx = event.pageX - offset.left;
+	var elty = event.pageY - offset.top;
+	
     
-    SB.Mouse.instance.onMouseUp(event.pageX, event.pageY);
+    SB.Mouse.instance.onMouseUp(eltx, elty);
     
     if (SB.Picker)
     {
-    	SB.Picker.handleMouseUp(event.pageX, event.pageY);
+    	SB.Picker.handleMouseUp(eltx, elty);
     }	            
 
-    SB.Game.handleMouseUp(event.pageX, event.pageY);
+    SB.Game.handleMouseUp(event.pageX, event.pageY, eltx, elty);
 }
 
 SB.GraphicsThreeJS.prototype.onDocumentMouseScroll = function(event, delta)
 {
     event.preventDefault();
-    // console.log("Mouse wheel " + delta);
     
     SB.Mouse.instance.onMouseScroll(delta);
 
@@ -2182,6 +2191,12 @@ SB.GraphicsThreeJS.prototype.update = function()
 {
     this.renderer.render( this.scene, this.camera );
 
+    var frameTime = Date.now();
+    var deltat = (frameTime - this.lastFrameTime) / 1000;
+    this.frameRate = 1 / deltat;
+
+    this.lastFrameTime = frameTime;
+    	
     if (this.stats)
     {
     	this.stats.update();
@@ -2792,6 +2807,7 @@ SB.SceneComponent = function(param)
     this.position = this.param.position || new THREE.Vector3();
     this.rotation = this.param.rotation || new THREE.Vector3();
     this.scale = this.param.scale || new THREE.Vector3(1, 1, 1);
+    this.autoUpdateTransform = true;
 } ;
 
 goog.inherits(SB.SceneComponent, SB.Component);
@@ -2810,7 +2826,7 @@ SB.SceneComponent.prototype.update = function()
 {	
 	SB.Component.prototype.update.call(this);
 	
-	if (this.object)
+	if (this.object && this.autoUpdateTransform)
 	{
 		this.object.position.x = this.position.x;
 		this.object.position.y = this.position.y;
@@ -2821,6 +2837,10 @@ SB.SceneComponent.prototype.update = function()
 		this.object.scale.x = this.scale.x;
 		this.object.scale.y = this.scale.y;
 		this.object.scale.z = this.scale.z;
+	}
+	else
+	{
+		var debug = 1;
 	}
 }
 
@@ -2919,6 +2939,155 @@ SB.Loader = function()
 
 goog.inherits(SB.Loader, SB.PubSub);
         
+SB.Loader.prototype.loadModel = function(url)
+{
+	var spliturl = url.split('.');
+	var len = spliturl.length;
+	var ext = '';
+	if (len)
+	{
+		ext = spliturl[len - 1];
+	}
+	
+	if (ext && ext.length)
+	{
+	}
+	else
+	{
+		return;
+	}
+	
+	var loaderClass;
+	
+	switch (ext.toUpperCase())
+	{
+		case 'JS' :
+			loaderClass = THREE.JSONLoader;
+			break;
+		default :
+			break;
+	}
+	
+	if (loaderClass)
+	{
+		var loader = new loaderClass;
+		var that = this;
+		
+		loader.load(url, function (data) {
+			that.handleModelLoaded(url, data);
+		});		
+	}
+}
+
+SB.Loader.prototype.handleModelLoaded = function(url, data)
+{
+	if (data.scene)
+	{
+		var material = new THREE.MeshFaceMaterial();
+		var mesh = new SB.Mesh({geometry:data, material:material});
+		this.publish("loaded", mesh);
+	}
+}
+
+SB.Loader.prototype.loadScene = function(url)
+{
+	var spliturl = url.split('.');
+	var len = spliturl.length;
+	var ext = '';
+	if (len)
+	{
+		ext = spliturl[len - 1];
+	}
+	
+	if (ext && ext.length)
+	{
+	}
+	else
+	{
+		return;
+	}
+	
+	var loaderClass;
+	
+	switch (ext.toUpperCase())
+	{
+		case 'DAE' :
+			loaderClass = THREE.ColladaLoader;
+			break;
+		case 'JS' :
+			loaderClass = THREE.SceneLoader;
+			break;
+		default :
+			break;
+	}
+	
+	if (loaderClass)
+	{
+		var loader = new loaderClass;
+		var that = this;
+		
+		loader.load(url, function (data) {
+			that.handleSceneLoaded(url, data);
+		});		
+	}
+}
+
+SB.Loader.prototype.traverseCallback = function(n, result)
+{
+	// Look for cameras
+	if (n instanceof THREE.Camera)
+	{
+		if (!result.cameras)
+			result.cameras = [];
+		
+		result.cameras.push(n);
+	}
+
+	// Look for lights
+	if (n instanceof THREE.Light)
+	{
+		if (!result.lights)
+			result.lights = [];
+		
+		result.lights.push(n);
+	}
+}
+
+SB.Loader.prototype.handleSceneLoaded = function(url, data)
+{
+	var result = {};
+	var success = false;
+	
+	if (data.scene)
+	{
+		result.scene = new SB.SceneVisual({scene:data.scene});
+		var that = this;
+		THREE.SceneUtils.traverseHierarchy(data.scene, function (n) { that.traverseCallback(n, result); });
+		success = true;
+	}
+	
+	if (data.animations)
+	{
+		result.keyFrameAnimators = [];
+		var i, len = data.animations.length;
+		for (i = 0; i < len; i++)
+		{
+			var animations = [];
+			animations.push(data.animations[i]);
+			result.keyFrameAnimators.push(new SB.KeyFrameAnimator({animations:animations}));
+		}
+	}
+	
+	if (data.skins)
+	{
+		result.meshAnimator = new SB.MeshAnimator({skins:data.skins});
+	}
+
+	
+	if (success)
+		this.publish("loaded", result);
+}
+
 goog.provide('SB.Shaders');
 
 SB.Shaders = {} ;
@@ -3190,6 +3359,80 @@ SB.JsonScene.loadScene = function(url, param, callback)
 	});
 	
 	return scene;
+}
+/**
+ * @fileoverview Rotator - converts x,y mouse motion into rotation about an axis (event-driven)
+ * 
+ * @author Tony Parisi
+ */
+goog.provide('SB.Rotator');
+goog.require('SB.Component');
+
+SB.Rotator = function(param)
+{
+    SB.Component.call(this);
+    this.target = (param && param.target) ? param.target : null;
+    this.axis = (param && param.axis) ? param.axis : 'y';
+    this.lastx = SB.Mouse.NO_POSITION;
+    this.lasty = SB.Mouse.NO_POSITION;
+    this.x = SB.Mouse.NO_POSITION;
+    this.y = SB.Mouse.NO_POSITION;
+    this.running = false;
+}
+
+goog.inherits(SB.Rotator, SB.Component);
+	        
+SB.Rotator.prototype.start = function(x, y)
+{
+    this.lastx = x;
+    this.lasty = y;
+    this.x = this.lastx;
+    this.y = this.lasty;
+    this.running = true;
+}
+
+SB.Rotator.prototype.set = function(x, y)
+{
+    this.x = x;
+    this.y = y;
+}
+
+SB.Rotator.prototype.stop = function(x, y)
+{
+    this.x = x;
+    this.y = y;
+
+    this.running = false;
+}
+
+SB.Rotator.prototype.update = function()
+{
+    if (!this.running)
+    {
+        return;
+    }
+
+    var dx = this.x - this.lastx;
+    var dy = this.y - this.lasty;
+
+    if (Math.abs(dx) < 4)
+    	dx = 0;
+    
+    if (Math.abs(dy) < 4)
+    	dy = 0;
+    
+    if (this.axis == 'y')
+    {
+    	this.publish("rotate", this.axis, dx * 0.01);
+    }
+
+    if (this.axis == 'x')
+    {
+    	this.publish("rotate", this.axis, dy * 0.01);
+    }    
+
+    this.lastx = this.x;
+    this.lasty = this.y;
 }
 goog.provide('SB.Camera');
 goog.require('SB.SceneComponent');
@@ -3494,359 +3737,6 @@ SB.PhysicsSystemBox2D.prototype.update = function() {
 SB.PhysicsSystemBox2D.prototype.addBody = function(body) {
     return this._world.CreateBody(body);
 }
-/**
- * @fileoverview Entity collects a group of Components that define a game object and its behaviors
- * 
- * @author Tony Parisi
- */
-goog.provide('SB.Entity');
-goog.require('SB.PubSub');
-
-/**
- * Creates a new Entity.
- * @constructor
- * @extends {SB.PubSub}
- */
-SB.Entity = function() {
-    SB.PubSub.call(this);
-    
-    /**
-     * @type {number}
-     * @private
-     */
-    this._id = SB.Entity.nextId++;
-
-    /**
-     * @type {SB.Entity}
-     * @private
-     */
-    this._parent = null;
-
-    /**
-     * @type {Array.<SB.Entity>}
-     * @private
-     */
-    this._children = [];
-
-    /**
-     * @type {Array}
-     * @private
-     */
-    this._components = [];
-    
-    
-    /**
-     * @type {Boolean}
-     * @private
-     */
-    this._realized = false;
-}
-
-goog.inherits(SB.Entity, SB.PubSub);
-
-/**
- * The next identifier to hand out.
- * @type {number}
- * @private
- */
-SB.Entity.nextId = 0;
-
-SB.Entity.prototype.getID = function() {
-    return this._id;
-}
-
-//---------------------------------------------------------------------
-// Hierarchy methods
-//---------------------------------------------------------------------
-
-/**
- * Sets the parent of the Entity.
- * @param {SB.Entity} parent The parent of the Entity.
- * @private
- */
-SB.Entity.prototype.setParent = function(parent) {
-    this._parent = parent;
-}
-
-/**
- * Adds a child to the Entity.
- * @param {SB.Entity} child The child to add.
- */
-SB.Entity.prototype.addChild = function(child) {
-    if (!child)
-    {
-        throw new Error('Cannot add a null child');
-    }
-
-    if (child._parent)
-    {
-        throw new Error('Child is already attached to an Entity');
-    }
-
-    child.setParent(this);
-    this._children.push(child);
-
-    if (this._realized && !child._realized)
-    {
-    	child.realize();
-    }
-
-}
-
-/**
- * Removes a child from the Entity
- * @param {SB.Entity} child The child to remove.
- */
-SB.Entity.prototype.removeChild = function(child) {
-    var i = this._children.indexOf(child);
-
-    if (i != -1)
-    {
-        this._children.splice(i, 1);
-        child.setParent(null);
-    }
-}
-
-/**
- * Removes a child from the Entity
- * @param {SB.Entity} child The child to remove.
- */
-SB.Entity.prototype.getChild = function(index) {
-	if (index >= this._children.length)
-		return null;
-	
-	return this._children[index];
-}
-
-//---------------------------------------------------------------------
-// Component methods
-//---------------------------------------------------------------------
-
-/**
- * Adds a Component to the Entity.
- * @param {SB.Component} component.
- */
-SB.Entity.prototype.addComponent = function(component) {
-    if (!component)
-    {
-        throw new Error('Cannot add a null component');
-    }
-    
-    if (component._entity)
-    {
-        throw new Error('Component is already attached to an Entity')
-    }
-
-    if (component instanceof SB.Transform)
-    {
-    	if (this.transform != null && component != this.transform)
-    	{
-            throw new Error('Entity already has a Transform component')
-    	}
-    	
-    	this.transform = component;
-    }
-    
-    this._components.push(component);
-    component.setEntity(this);
-    
-    if (this._realized && !component._realized)
-    {
-    	component.realize();
-    }
-}
-
-/**
- * Removes a Component from the Entity.
- * @param {SB.Component} component.
- */
-SB.Entity.prototype.removeComponent = function(component) {
-    var i = this._components.indexOf(component);
-
-    if (i != -1)
-    {
-    	if (component.removeFromScene);
-    	{
-    		component.removeFromScene();
-    	}
-    	
-        this._components.splice(i, 1);
-        component.setEntity(null);
-    }
-}
-
-/**
- * Retrieves a Component of a given type in the Entity.
- * @param {Object} type.
- */
-SB.Entity.prototype.getComponent = function(type) {
-	var i, len = this._components.length;
-	
-	for (i = 0; i < len; i++)
-	{
-		var component = this._components[i];
-		if (component instanceof type)
-		{
-			return component;
-		}
-	}
-	
-	return null;
-}
-
-/**
- * Retrieves a Component of a given type in the Entity.
- * @param {Object} type.
- */
-SB.Entity.prototype.getComponents = function(type) {
-	var i, len = this._components.length;
-	
-	var components = [];
-	
-	for (i = 0; i < len; i++)
-	{
-		var component = this._components[i];
-		if (component instanceof type)
-		{
-			components.push(component);
-		}
-	}
-	
-	return components;
-}
-
-//---------------------------------------------------------------------
-//Initialize methods
-//---------------------------------------------------------------------
-
-SB.Entity.prototype.realize = function() {
-    this.realizeComponents();
-    this.realizeChildren();
-        
-    this._realized = true;
-}
-
-/**
- * @private
- */
-SB.Entity.prototype.realizeComponents = function() {
-    var component;
-    var count = this._components.length;
-    var i = 0;
-
-    for (; i < count; ++i)
-    {
-        this._components[i].realize();
-    }
-}
-
-/**
- * @private
- */
-SB.Entity.prototype.realizeChildren = function() {
-    var child;
-    var count = this._children.length;
-    var i = 0;
-
-    for (; i < count; ++i)
-    {
-        this._children[i].realize();
-    }
-}
-
-//---------------------------------------------------------------------
-// Update methods
-//---------------------------------------------------------------------
-
-SB.Entity.prototype.update = function() {
-    this.handleMessages();
-    this.updateComponents();
-    this.updateChildren();
-}
-
-/**
- * @private
- */
-SB.Entity.prototype.updateComponents = function() {
-    var component;
-    var count = this._components.length;
-    var i = 0;
-
-    for (; i < count; ++i)
-    {
-        this._components[i].update();
-    }
-}
-
-/**
- * @private
- */
-SB.Entity.prototype.updateChildren = function() {
-    var child;
-    var count = this._children.length;
-    var i = 0;
-
-    for (; i < count; ++i)
-    {
-        this._children[i].update();
-    }
-}
-goog.provide('SB.Viewer');
-goog.require('SB.Entity');
-
-SB.Viewer = function(param)
-{
-	SB.Entity.call(this, param);
-
-	param = param || {};
-	
-	this.transform = new SB.Transform;
-	this.addComponent(this.transform);
-	this.transform.position.set(0, 0, 5);
-	
-	this.viewpoint = new SB.Entity;
-	var transform = new SB.Transform;
-	var camera = new SB.PerspectiveCamera({active:true});
-	this.viewpoint.addComponent(transform);
-	this.viewpoint.addComponent(camera);
-	this.viewpoint.transform = transform;
-	this.viewpoint.camera = camera;
-
-	this.addChild(this.viewpoint);
-
-	if (param.headlight)
-	{
-		this.headlight = new SB.DirectionalLight({ color : 0xFFFFFF, intensity : 1});
-		this.addComponent(this.headlight);
-	}
-	
-	this.directionMatrix = new THREE.Matrix4;
-}
-
-goog.inherits(SB.Viewer, SB.Entity);
-
-SB.Viewer.prototype.realize = function() 
-{
-	SB.Entity.prototype.realize.call(this);
-}
-
-SB.Viewer.prototype.update = function() 
-{
-	SB.Entity.prototype.update.call(this);
-}
-
-SB.Viewer.prototype.move = function(dir)
-{
-	this.directionMatrix.identity();
-	this.directionMatrix.setRotationFromEuler(this.transform.rotation);
-	dir = this.directionMatrix.multiplyVector3(dir);
-	this.transform.position.addSelf(dir);
-}
-
-SB.Viewer.prototype.turn = function(dir)
-{
-	this.transform.rotation.addSelf(dir);
-}
 goog.provide('SB.PhysicsBody');
 
 /**
@@ -4141,6 +4031,30 @@ SB.Popup.pop = function(popup)
 	}
 }
 /**
+ * @fileoverview A visual containing a model in Collada format
+ * @author Tony Parisi
+ */
+goog.provide('SB.SceneVisual');
+goog.require('SB.Visual');
+
+SB.SceneVisual = function(param) 
+{
+	param = param || {};
+	
+    SB.Visual.call(this, param);
+
+    this.object = param.scene;
+}
+
+goog.inherits(SB.SceneVisual, SB.Visual);
+
+SB.SceneVisual.prototype.realize = function()
+{
+	SB.Visual.prototype.realize.call(this);
+	
+    this.addToScene();
+}
+/**
  * @fileoverview PollingRotator - converts x,y mouse motion into rotation about an axis (polling)
  * 
  * @author Tony Parisi
@@ -4344,9 +4258,8 @@ SB.Prefabs.WalkthroughController = function(param)
 	controller.addChild(viewpoint);
 
 	var intensity = param.headlight ? 1 : 0;
-	var color = param.headlight ? 0xFFFFFF : 0;
 	
-	var headlight = new SB.DirectionalLight({ color : color, intensity : intensity });
+	var headlight = new SB.DirectionalLight({ intensity : intensity });
 	controller.addComponent(headlight);
 	
 	return controller;
@@ -4374,6 +4287,7 @@ SB.WalkthroughControllerScript.prototype.realize = function()
 	this.dragger = this._entity.getComponent(SB.Dragger);
 	this.rotator = this._entity.getComponent(SB.Rotator);
 	this.timer = this._entity.getComponent(SB.Timer);
+	this.headlight = this._entity.getComponent(SB.DirectionalLight);
 	this.viewpoint = this._entity.getChild(0);
 	
 	SB.Game.instance.mouseDelegate = this;
@@ -4856,6 +4770,303 @@ SB.PhysicsBodyBox2D.prototype.setShape = function(shape)
     this._body.addShape(shape);
 } ;
 /**
+ * @fileoverview Entity collects a group of Components that define a game object and its behaviors
+ * 
+ * @author Tony Parisi
+ */
+goog.provide('SB.Entity');
+goog.require('SB.PubSub');
+
+/**
+ * Creates a new Entity.
+ * @constructor
+ * @extends {SB.PubSub}
+ */
+SB.Entity = function() {
+    SB.PubSub.call(this);
+    
+    /**
+     * @type {number}
+     * @private
+     */
+    this._id = SB.Entity.nextId++;
+
+    /**
+     * @type {SB.Entity}
+     * @private
+     */
+    this._parent = null;
+
+    /**
+     * @type {Array.<SB.Entity>}
+     * @private
+     */
+    this._children = [];
+
+    /**
+     * @type {Array}
+     * @private
+     */
+    this._components = [];
+    
+    
+    /**
+     * @type {Boolean}
+     * @private
+     */
+    this._realized = false;
+}
+
+goog.inherits(SB.Entity, SB.PubSub);
+
+/**
+ * The next identifier to hand out.
+ * @type {number}
+ * @private
+ */
+SB.Entity.nextId = 0;
+
+SB.Entity.prototype.getID = function() {
+    return this._id;
+}
+
+//---------------------------------------------------------------------
+// Hierarchy methods
+//---------------------------------------------------------------------
+
+/**
+ * Sets the parent of the Entity.
+ * @param {SB.Entity} parent The parent of the Entity.
+ * @private
+ */
+SB.Entity.prototype.setParent = function(parent) {
+    this._parent = parent;
+}
+
+/**
+ * Adds a child to the Entity.
+ * @param {SB.Entity} child The child to add.
+ */
+SB.Entity.prototype.addChild = function(child) {
+    if (!child)
+    {
+        throw new Error('Cannot add a null child');
+    }
+
+    if (child._parent)
+    {
+        throw new Error('Child is already attached to an Entity');
+    }
+
+    child.setParent(this);
+    this._children.push(child);
+
+    if (this._realized && !child._realized)
+    {
+    	child.realize();
+    }
+
+}
+
+/**
+ * Removes a child from the Entity
+ * @param {SB.Entity} child The child to remove.
+ */
+SB.Entity.prototype.removeChild = function(child) {
+    var i = this._children.indexOf(child);
+
+    if (i != -1)
+    {
+        this._children.splice(i, 1);
+        child.setParent(null);
+    }
+}
+
+/**
+ * Removes a child from the Entity
+ * @param {SB.Entity} child The child to remove.
+ */
+SB.Entity.prototype.getChild = function(index) {
+	if (index >= this._children.length)
+		return null;
+	
+	return this._children[index];
+}
+
+//---------------------------------------------------------------------
+// Component methods
+//---------------------------------------------------------------------
+
+/**
+ * Adds a Component to the Entity.
+ * @param {SB.Component} component.
+ */
+SB.Entity.prototype.addComponent = function(component) {
+    if (!component)
+    {
+        throw new Error('Cannot add a null component');
+    }
+    
+    if (component._entity)
+    {
+        throw new Error('Component is already attached to an Entity')
+    }
+
+    if (component instanceof SB.Transform)
+    {
+    	if (this.transform != null && component != this.transform)
+    	{
+            throw new Error('Entity already has a Transform component')
+    	}
+    	
+    	this.transform = component;
+    }
+    
+    this._components.push(component);
+    component.setEntity(this);
+    
+    if (this._realized && !component._realized)
+    {
+    	component.realize();
+    }
+}
+
+/**
+ * Removes a Component from the Entity.
+ * @param {SB.Component} component.
+ */
+SB.Entity.prototype.removeComponent = function(component) {
+    var i = this._components.indexOf(component);
+
+    if (i != -1)
+    {
+    	if (component.removeFromScene)
+    	{
+    		component.removeFromScene();
+    	}
+    	
+        this._components.splice(i, 1);
+        component.setEntity(null);
+    }
+}
+
+/**
+ * Retrieves a Component of a given type in the Entity.
+ * @param {Object} type.
+ */
+SB.Entity.prototype.getComponent = function(type) {
+	var i, len = this._components.length;
+	
+	for (i = 0; i < len; i++)
+	{
+		var component = this._components[i];
+		if (component instanceof type)
+		{
+			return component;
+		}
+	}
+	
+	return null;
+}
+
+/**
+ * Retrieves a Component of a given type in the Entity.
+ * @param {Object} type.
+ */
+SB.Entity.prototype.getComponents = function(type) {
+	var i, len = this._components.length;
+	
+	var components = [];
+	
+	for (i = 0; i < len; i++)
+	{
+		var component = this._components[i];
+		if (component instanceof type)
+		{
+			components.push(component);
+		}
+	}
+	
+	return components;
+}
+
+//---------------------------------------------------------------------
+//Initialize methods
+//---------------------------------------------------------------------
+
+SB.Entity.prototype.realize = function() {
+    this.realizeComponents();
+    this.realizeChildren();
+        
+    this._realized = true;
+}
+
+/**
+ * @private
+ */
+SB.Entity.prototype.realizeComponents = function() {
+    var component;
+    var count = this._components.length;
+    var i = 0;
+
+    for (; i < count; ++i)
+    {
+        this._components[i].realize();
+    }
+}
+
+/**
+ * @private
+ */
+SB.Entity.prototype.realizeChildren = function() {
+    var child;
+    var count = this._children.length;
+    var i = 0;
+
+    for (; i < count; ++i)
+    {
+        this._children[i].realize();
+    }
+}
+
+//---------------------------------------------------------------------
+// Update methods
+//---------------------------------------------------------------------
+
+SB.Entity.prototype.update = function() {
+    this.handleMessages();
+    this.updateComponents();
+    this.updateChildren();
+}
+
+/**
+ * @private
+ */
+SB.Entity.prototype.updateComponents = function() {
+    var component;
+    var count = this._components.length;
+    var i = 0;
+
+    for (; i < count; ++i)
+    {
+        this._components[i].update();
+    }
+}
+
+/**
+ * @private
+ */
+SB.Entity.prototype.updateChildren = function() {
+    var child;
+    var count = this._children.length;
+    var i = 0;
+
+    for (; i < count; ++i)
+    {
+        this._children[i].update();
+    }
+}
+/**
  * @fileoverview A visual containing a model in JSON format
  * @author Tony Parisi
  */
@@ -5021,9 +5232,12 @@ goog.require('SB.Visual');
 SB.Mesh = function(param) {
     SB.Visual.call(this, param);
 
-    this.param = param || {};
-    this.param.color = this.param.color || 0;
-    this.param.wireframe = this.param.wireframe || false;
+    param = param || {};
+    
+    this.color = (param.color !== undefined) ? param.color : 0;
+    this.wireframe = (param.wireframe !== undefined) ? param.wireframe : false;
+    this.geometry = param.geometry;
+    this.material = param.material;
 }
 
 goog.inherits(SB.Mesh, SB.Visual);
@@ -5032,9 +5246,16 @@ SB.Mesh.prototype.realize = function()
 {
 	SB.Visual.prototype.realize.call(this);
 	
-	this.geometry = new THREE.Geometry();
-	this.geometry.dynamic = true;
-	this.material = new THREE.MeshPhongMaterial({wireframe:this.param.wireframe, color: this.param.color});
+	if (!this.geometry)
+	{
+		this.geometry = new THREE.Geometry();
+		this.geometry.dynamic = true;
+	}
+	
+	if (this.material)
+	{
+		this.material = new THREE.MeshPhongMaterial({wireframe:this.param.wireframe, color: this.param.color});
+	}
 	
 	this.object = new THREE.Mesh(this.geometry, this.material);
 	
@@ -5132,9 +5353,8 @@ SB.Prefabs.FPSController = function(param)
 	controller.addChild(viewpoint);
 
 	var intensity = param.headlight ? 1 : 0;
-	var color = param.headlight ? 0xFFFFFF : 0;
 	
-	var headlight = new SB.DirectionalLight({ color : color, intensity : intensity });
+	var headlight = new SB.DirectionalLight({ intensity : intensity });
 	controller.addComponent(headlight);
 	
 	return controller;
@@ -5165,6 +5385,7 @@ SB.FPSControllerScript.prototype.realize = function()
 	this.dragger = this._entity.getComponent(SB.Dragger);
 	this.rotator = this._entity.getComponent(SB.Rotator);
 	this.timer = this._entity.getComponent(SB.Timer);
+	this.headlight = this._entity.getComponent(SB.DirectionalLight);
 	this.viewpoint = this._entity.getChild(0);
 	
 	SB.Game.instance.mouseDelegate = this;
@@ -5374,26 +5595,26 @@ SB.Prefabs.ModelController = function(param)
 	var controller = new SB.Entity(param);
 	var transform = new SB.Transform;
 	controller.addComponent(transform);
-	controller.transform.position.set(0, 0, 5);
-	var controllerScript = new SB.ModelControllerScript;
+	var controllerScript = new SB.ModelControllerScript(param);
 	controller.addComponent(controllerScript);
 
-	var dragger = new SB.Dragger();
-	var rotator = new SB.Rotator();
+	var xRotator = new SB.Rotator( { axis : 'x' } );
+	var yRotator = new SB.Rotator( { axis : 'y' } );
 	var timer = new SB.Timer( { duration : 3333 } );
 	
-	controller.addComponent(dragger);
-	controller.addComponent(rotator);
+	controller.addComponent(xRotator);
+	controller.addComponent(yRotator);
 	controller.addComponent(timer);
 
-	dragger.subscribe("move", controllerScript, controllerScript.onDraggerMove);
-	rotator.subscribe("rotate", controllerScript, controllerScript.onRotatorRotate);
+	xRotator.subscribe("rotate", controllerScript, controllerScript.onXRotatorRotate);
+	yRotator.subscribe("rotate", controllerScript, controllerScript.onYRotatorRotate);
 	timer.subscribe("time", controllerScript, controllerScript.onTimeChanged);
 	timer.subscribe("fraction", controllerScript, controllerScript.onTimeFractionChanged);	
 	
 	var viewpoint = new SB.Entity;
 	var transform = new SB.Transform;
 	var camera = new SB.PerspectiveCamera({active:param.active, fov: param.fov});
+	camera.position.set(0, 0, 0);
 	viewpoint.addComponent(transform);
 	viewpoint.addComponent(camera);
 	viewpoint.transform = transform;
@@ -5402,9 +5623,8 @@ SB.Prefabs.ModelController = function(param)
 	controller.addChild(viewpoint);
 
 	var intensity = param.headlight ? 1 : 0;
-	var color = param.headlight ? 0xFFFFFF : 0;
 	
-	var headlight = new SB.DirectionalLight({ color : color, intensity : intensity });
+	var headlight = new SB.DirectionalLight({ intensity : intensity });
 	controller.addComponent(headlight);
 	
 	return controller;
@@ -5417,15 +5637,26 @@ SB.ModelControllerScript = function(param)
 {
 	SB.Component.call(this, param);
 
-	this.directionMatrix = new THREE.Matrix4;
-	this.moveDir = new THREE.Vector3;
-	this.turnDir = new THREE.Vector3;
-	this.lookDir = new THREE.Vector3;
+	this.rotationMatrix = new THREE.Matrix4;
+	this.cameraPos = new THREE.Vector3;
+	this.object2camera = new THREE.Vector3(0, 0, 1);
+	this.combinedRotation = new THREE.Vector3;
 	
 	this.lastdx = 0;
+	this.lastdy = 0;
 	this.dragging = false;
-	this.walkSpeed = 1;
-	this.turnSpeed = 1;
+	this.rotateSpeed = 1;
+
+	this.radius = param.radius || SB.ModelControllerScript.default_radius;
+	this.active = (param.active !== undefined) ? param.active : true;
+	
+	this.xRotation = 0;
+	this.yRotation = 0;
+	
+	this.maxXRotation = param.maxXRotation || SB.ModelControllerScript.MAX_X_ROTATION;
+	this.minXRotation = param.minXRotation || SB.ModelControllerScript.MIN_X_ROTATION;
+	this.maxYRotation = param.maxYRotation || SB.ModelControllerScript.MAX_Y_ROTATION;
+	this.minYRotation = param.minYRotation || SB.ModelControllerScript.MIN_Y_ROTATION;
 }
 
 goog.inherits(SB.ModelControllerScript, SB.Component);
@@ -5433,68 +5664,228 @@ goog.inherits(SB.ModelControllerScript, SB.Component);
 SB.ModelControllerScript.prototype.realize = function()
 {
 	this.dragger = this._entity.getComponent(SB.Dragger);
-	this.rotator = this._entity.getComponent(SB.Rotator);
+	this.xRotator = this._entity.getComponents(SB.Rotator)[0];
+	this.yRotator = this._entity.getComponents(SB.Rotator)[1];
 	this.timer = this._entity.getComponent(SB.Timer);
+	this.headlight = this._entity.getComponent(SB.DirectionalLight);
 	this.viewpoint = this._entity.getChild(0);
+	
+	this.viewpoint.transform.position.set(0, 0, this.radius);
 	
 	SB.Game.instance.mouseDelegate = this;
 	SB.Game.instance.keyboardDelegate = this;
 }
 
-SB.ModelControllerScript.prototype.move = function(dir)
+SB.ModelControllerScript.prototype.zoom = function(delta)
 {
-	this.directionMatrix.identity();
-	this.directionMatrix.setRotationFromEuler(this._entity.transform.rotation);
-	dir = this.directionMatrix.multiplyVector3(dir);
-	this._entity.transform.position.addSelf(dir);
+	this.radius += delta;
 }
 
-SB.ModelControllerScript.prototype.turn = function(dir)
+if (true)
 {
-	SB.Game.instance.sceneRoot.transform.rotation.addSelf(dir);
-}
-
-SB.ModelControllerScript.prototype.setCameraTilt = function(dir)
+SB.ModelControllerScript.prototype.rotateX = function(delta)
 {
-	if (this.viewpoint && this.viewpoint.transform)
+	var newXRotation = this.xRotation - delta;
+	
+	if (newXRotation > this.maxXRotation)
+		newXRotation =  this.maxXRotation;
+	
+	if (newXRotation < this.minXRotation)
+		newXRotation = this.minXRotation;
+			
+	if (newXRotation >= Math.PI * 2)
 	{
-		this.viewpoint.transform.rotation.copy(dir);
+		newXRotation = 0;
+		this.xRotation = 0;
 	}
+	
+	if (newXRotation <= -Math.PI * 2)
+	{
+		newXRotation = 0;
+		this.xRotation = 0;
+	}
+	
+	new TWEEN.Tween(this)
+    .to( {
+        xRotation : newXRotation
+    }, 667)
+    .easing(TWEEN.Easing.Quadratic.EaseIn)
+    .easing(TWEEN.Easing.Quadratic.EaseOut).start();	
 }
 
-SB.ModelControllerScript.prototype.setCameraTurn = function(dir)
+SB.ModelControllerScript.prototype.rotateY = function(delta)
 {
-	if (this._entity && this._entity.transform)
+	var newYRotation = this.yRotation - delta;
+	
+	if (newYRotation > this.maxYRotation)
+		newYRotation =  this.maxYRotation;
+	
+	if (newYRotation < this.minYRotation)
+		newYRotation = this.minYRotation;
+	
+	if (newYRotation >= Math.PI * 2)
 	{
-		this._entity.transform.rotation.copy(dir);
+		newYRotation = 0;
+		this.yRotation = 0;
 	}
+	
+	if (newYRotation <= -Math.PI * 2)
+	{
+		newYRotation = 0;
+		this.yRotation = 0;
+	}
+	
+	new TWEEN.Tween(this)
+    .to( {
+        yRotation : newYRotation
+    }, 667)
+    .easing(TWEEN.Easing.Quadratic.EaseIn)
+    .easing(TWEEN.Easing.Quadratic.EaseOut).start();	
+}
+
+SB.ModelControllerScript.prototype.update = function()
+{
+	TWEEN.update();
+	
+	this.object2camera.set(0, 0, 1);
+	this.combinedRotation.set(this.xRotation, this.yRotation, 0);
+	this.rotationMatrix.setRotationFromEuler(this.combinedRotation);
+	this.rotationMatrix.multiplyVector3(this.object2camera);
+	this.object2camera.multiplyScalar(this.radius);
+	
+	this.cameraPos.copy(this.object2camera);
+
+	this.viewpoint.transform.position.copy(this.cameraPos);
+	this.viewpoint.transform.rotation.copy(this.combinedRotation);
+}
+}
+
+else {
+SB.ModelControllerScript.prototype.rotateX = function(delta)
+{
+	// Get camera in my model space
+	var cameraPos = this.viewpoint.camera.object.matrixWorld.multiplyVector3(new THREE.Vector3);
+	
+	var mymat = this._entity.transform.object.matrixWorld;
+	var invmat = new THREE.Matrix4().getInverse(mymat);
+
+	cameraPos = invmat.multiplyVector3(cameraPos);
+	
+	this.object2camera.set(0, 0, 0).subSelf(cameraPos).normalize();
+	var orig2v = new THREE.Vector3(0, 0, -1);
+	var xrotation = Math.acos( orig2v.dot(this.object2camera) );
+	
+	var newXRotation = xrotation + delta;
+
+	/*
+	if (newXRotation > this.maxXRotation)
+		newXRotation =  this.maxXRotation;
+	
+	if (newXRotation < this.minXRotation)
+		newXRotation = this.minXRotation;
+	
+	if (newXRotation >= Math.PI * 2)
+	{
+		newXRotation = 0;
+		this.xRotation = 0;
+	}
+	
+	if (newXRotation <= -Math.PI * 2)
+	{
+		newXRotation = 0;
+		this.xRotation = 0;
+	}
+	*/
+	
+	new TWEEN.Tween(this)
+    .to( {
+        xRotation : newXRotation
+    }, 667)
+    .easing(TWEEN.Easing.Quadratic.EaseIn)
+    .easing(TWEEN.Easing.Quadratic.EaseOut).start();	
+}
+
+SB.ModelControllerScript.prototype.rotateY = function(delta)
+{
+	var newYRotation = this.yRotation - delta;
+	
+	if (newYRotation > this.maxYRotation)
+		newYRotation =  this.maxYRotation;
+	
+	if (newYRotation < this.minYRotation)
+		newYRotation = this.minYRotation;
+	
+	if (newYRotation >= Math.PI * 2)
+	{
+		newYRotation = 0;
+		this.yRotation = 0;
+	}
+	
+	if (newYRotation <= -Math.PI * 2)
+	{
+		newYRotation = 0;
+		this.yRotation = 0;
+	}
+	
+	new TWEEN.Tween(this)
+    .to( {
+        yRotation : newYRotation
+    }, 667)
+    .easing(TWEEN.Easing.Quadratic.EaseIn)
+    .easing(TWEEN.Easing.Quadratic.EaseOut).start();	
+}
+
+SB.ModelControllerScript.prototype.update = function()
+{
+	TWEEN.update();
+	
+	this.object2camera.set(0, 0, 1);
+	this.combinedRotation.set(this.xRotation, this.yRotation, 0);
+	this.rotationMatrix.setRotationFromEuler(this.combinedRotation);
+	this.rotationMatrix.multiplyVector3(this.object2camera);
+	this.object2camera.multiplyScalar(this.radius);
+	
+	this.cameraPos.copy(this.object2camera);
+
+	this.viewpoint.transform.position.copy(this.cameraPos);
+	this.viewpoint.transform.rotation.copy(this.combinedRotation);
+}
 }
 
 SB.ModelControllerScript.prototype.onMouseMove = function(x, y)
 {
-	this.dragger.set(x, y);
-	this.rotator.set(x, y);
+	if (this.active)
+	{
+		this.xRotator.set(x, y);
+		this.yRotator.set(x, y);
+	}
 }
 
 SB.ModelControllerScript.prototype.onMouseDown = function(x, y)
 {
-	this.dragger.start(x, y);
-	this.rotator.start(x, y);
-	this.dragging = true;
+	if (this.active)
+	{
+		this.xRotator.start(x, y);
+		this.yRotator.start(x, y);
+		this.dragging = true;
+	}
 }
 
 SB.ModelControllerScript.prototype.onMouseUp = function(x, y)
 {
-	this.dragger.stop(x, y);
-	this.rotator.stop(x, y);
-	this.dragging = false;
-	this.lastdx = 0;
+	if (this.active)
+	{
+		this.xRotator.stop(x, y);
+		this.yRotator.stop(x, y);
+		this.dragging = false;
+		this.lastdx = 0;
+		this.lastdy = 0;
+	}
 }
 
 SB.ModelControllerScript.prototype.onMouseScroll = function(delta)
 {
-	this.moveDir.set(0, 0, -delta);
-	this.move(this.moveDir);
+	this.zoom(-delta);
 }
 
 SB.ModelControllerScript.prototype.onKeyDown = function(keyCode, charCode)
@@ -5517,107 +5908,76 @@ SB.ModelControllerScript.prototype.onKeyPress = function(keyCode, charCode)
 {
 }
 
-SB.ModelControllerScript.prototype.onRotatorRotate = function(axis, delta)
+SB.ModelControllerScript.prototype.onXRotatorRotate = function(axis, delta)
 {
-	delta *= .666;
+//	console.log("Rotator delta = ", delta);
+
+	delta *= 1;
 	
 	if (delta != 0)
 	{
-		// this.controllerScript.transform.rotation.y -= delta;
-		this.turnDir.set(0, -delta, 0);
-		this.turn(this.lookDir);
+		this.rotateX(delta);
+		this.lastdy = delta;
+	}
+	else if (false) // this.lastdy)
+	{
+		this.rotateX(this.lastdy);
 	}
 }
 
-SB.ModelControllerScript.prototype.onDraggerMove = function(dx, dy)
+SB.ModelControllerScript.prototype.onYRotatorRotate = function(axis, delta)
 {
-	if (Math.abs(dx) <= 2)
-		dx = 0;
-	
-	dx *= .002;
-	
-	if (dx)
-	{
-		this.lastdx = dx;
-	}
-	else if (this.lastdx && this.dragging)
-	{
-		dx = this.lastdx;
-	}
+//	console.log("Rotator delta = ", delta);
 
-	if (dx != 0)
+	delta *= 2;
+	
+	if (delta != 0)
 	{
-		// this.controllerScript.transform.position.z -= dx;
-		this.turnDir.set(0, dx, 0);
-		this.turn(this.turnDir);
-	}	
+		this.rotateY(delta);
+		this.lastdy = delta;
+	}
+	else if (false) // this.lastdy)
+	{
+		this.rotateY(this.lastdy);
+	}
 }
 
 SB.ModelControllerScript.prototype.onTimeChanged = function(t)
 {
-	var turnfraction = .0416;
-	var movefraction = .1666;
-	var turnamount = 0;
-	var moveamount = 0;
+	var yFraction = .333;
+	var xFraction = .333;
+	var yRotateAmount = 0;
+	var xRotateAmount = 0;
 	var handled = false;
 	
 	switch (this.whichKeyDown)
 	{
     	case SB.Keyboard.KEY_LEFT : 
-    		turnamount = +1 * turnfraction * this.turnSpeed;
+    		yRotateAmount = -1 * yFraction * this.rotateSpeed;
 			handled = true;
     		break;
     	case SB.Keyboard.KEY_UP : 
-    		moveamount = -1 * movefraction * this.walkSpeed;
+    		xRotateAmount = -1 * xFraction * this.rotateSpeed;
 			handled = true;
     		break;
     	case SB.Keyboard.KEY_RIGHT : 
-    		turnamount = -1 * turnfraction * this.turnSpeed;
+    		yRotateAmount = +1 * yFraction * this.rotateSpeed;
 			handled = true;
     		break;
     	case SB.Keyboard.KEY_DOWN : 
-    		moveamount = +1 * movefraction * this.walkSpeed;
+    		xRotateAmount = +1 * xFraction * this.rotateSpeed;
 			handled = true;
     		break;
 	}
 
-	if (!handled)
+	if (yRotateAmount)
 	{
-		switch (String.fromCharCode(this.whichKeyDown))
-		{
-	    	case 'A' :
-	    		turnamount = +1 * turnfraction * this.turnSpeed;
-	    		handled = true;
-	    		break;
-	    		
-	    	case 'W' :
-	    		moveamount = -1 * movefraction * this.walkSpeed;
-	    		handled = true;
-	    		break;
-	    	case 'D' :
-	    		turnamount = -1 * turnfraction * this.turnSpeed;
-				handled = true;
-	    		break;
-	    	case 'S' :
-	    		moveamount = +1 * movefraction * this.walkSpeed;
-				handled = true;
-	    		break;
-	    		
-	    	default : 
-	    		break;
-		}
-	}
-
-	if (moveamount)
-	{
-		this.moveDir.set(0, 0, moveamount);
-		this.move(this.moveDir);
+		this.rotateY(yRotateAmount);
 	}
 	
-	if (turnamount)
+	if (xRotateAmount)
 	{
-		this.turnDir.set(0, turnamount, 0);
-		this.turn(this.turnDir);
+		this.rotateX(xRotateAmount);
 	}
 }
 
@@ -5626,6 +5986,11 @@ SB.ModelControllerScript.prototype.onTimeFractionChanged = function(fraction)
 	this.turnFraction = fraction;
 }
 
+SB.ModelControllerScript.default_radius = 5;
+SB.ModelControllerScript.MAX_X_ROTATION = 0; // Math.PI / 12;
+SB.ModelControllerScript.MIN_X_ROTATION = -Math.PI / 2;
+SB.ModelControllerScript.MAX_Y_ROTATION = Math.PI * 2;
+SB.ModelControllerScript.MIN_Y_ROTATION = -Math.PI * 2;
 /**
  * @fileoverview A rectangle visual
  * @author Tony Parisi
@@ -5971,6 +6336,7 @@ SB.KeyFrameAnimator = function(param)
 	param = param || {};
 	
 	this.interpdata = param.interps || [];
+	this.animationData = param.animations;
 	this.running = false;
 	this.duration = param.duration ? param.duration : SB.KeyFrameAnimator.default_duration;
 	this.loop = param.loop ? param.loop : false;
@@ -5985,7 +6351,21 @@ SB.KeyFrameAnimator.prototype.realize = function()
 	if (this.interpdata)
 	{
 		this.createInterpolators(this.interpdata);
-	}	    		
+	}
+	
+	if (this.animationData)
+	{
+		this.animations = [];
+		var i, len = this.animationData.length;
+		for (i = 0; i < len; i++)
+		{
+			var animdata = this.animationData[i];
+			THREE.AnimationHandler.add(animdata);
+			var animation = new THREE.KeyFrameAnimation(animdata.node, animdata.name);
+//			animation.timeScale = .01; // why?
+			this.animations.push(animation);
+		}
+	}
 }
 
 SB.KeyFrameAnimator.prototype.createInterpolators = function(interpdata)
@@ -6009,13 +6389,33 @@ SB.KeyFrameAnimator.prototype.start = function()
 		return;
 	
 	this.startTime = Date.now();
+	this.lastTime = this.startTime;
 	this.running = true;
+	
+	if (this.animations)
+	{
+		var i, len = this.animations.length;
+		for (i = 0; i < len; i++)
+		{
+			this.animations[i].play(this.loop, 0);
+		}
+	}
 }
 
 SB.KeyFrameAnimator.prototype.stop = function()
 {
 	this.running = false;
 	this.publish("complete");
+
+	if (this.animations)
+	{
+		var i, len = this.animations.length;
+		for (i = 0; i < len; i++)
+		{
+			this.animations[i].stop();
+		}
+	}
+
 }
 
 // Update - drive key frame evaluation
@@ -6023,6 +6423,12 @@ SB.KeyFrameAnimator.prototype.update = function()
 {
 	if (!this.running)
 		return;
+	
+	if (this.animations)
+	{
+		this.updateAnimations();
+		return;
+	}
 	
 	var now = Date.now();
 	var deltat = (now - this.startTime) % this.duration;
@@ -6049,6 +6455,19 @@ SB.KeyFrameAnimator.prototype.update = function()
 		}
 	}
 }
+
+SB.KeyFrameAnimator.prototype.updateAnimations = function()
+{
+	var now = Date.now();
+	var deltat = now - this.lastTime;
+	var i, len = this.animations.length;
+	for (i = 0; i < len; i++)
+	{
+		this.animations[i].update(deltat);
+	}
+	this.lastTime = now;	
+}
+
 // Statics
 SB.KeyFrameAnimator.default_duration = 1000;
 goog.provide('SB.PerspectiveCamera');
@@ -6253,65 +6672,72 @@ SB.Interpolator.prototype.tween = function(from, to, fract)
 	return value;
 }
 /**
- * @fileoverview Rotator - converts x,y mouse motion into rotation about an axis (event-driven)
- * 
+ * @fileoverview General-purpose key frame animation
  * @author Tony Parisi
  */
-goog.provide('SB.Rotator');
+goog.provide('SB.MeshAnimator');
 goog.require('SB.Component');
 
-SB.Rotator = function(param)
+// MeshAnimator class
+// Construction/initialization
+SB.MeshAnimator = function(param) 
 {
-    SB.Component.call(this);
-    this.target = (param && param.target) ? param.target : null;
-    this.axis = (param && param.axis) ? param.axis : 'y';
-    this.lastx = SB.Mouse.NO_POSITION;
-    this.lasty = SB.Mouse.NO_POSITION;
-    this.x = SB.Mouse.NO_POSITION;
-    this.y = SB.Mouse.NO_POSITION;
-    this.running = false;
+    SB.Component.call(this, param);
+	    		
+	param = param || {};
+	
+	this.skins = param.skins || [];
+	this.running = false;
+	this.frame = 0;
+	this.duration = param.duration ? param.duration : SB.MeshAnimator.default_duration;
+	this.frameRate = SB.MeshAnimator.default_frame_rate;
+	this.loop = param.loop ? param.loop : false;
 }
 
-goog.inherits(SB.Rotator, SB.Component);
-	        
-SB.Rotator.prototype.start = function(x, y)
+goog.inherits(SB.MeshAnimator, SB.Component);
+
+// Start/stop
+SB.MeshAnimator.prototype.start = function()
 {
-    this.lastx = x;
-    this.lasty = y;
-    this.x = this.lastx;
-    this.y = this.lasty;
-    this.running = true;
+	if (this.running)
+		return;
+	
+	this.startTime = Date.now();
+	this.running = true;
 }
 
-SB.Rotator.prototype.set = function(x, y)
+SB.MeshAnimator.prototype.stop = function()
 {
-    this.x = x;
-    this.y = y;
+	this.running = false;
+	this.publish("complete");
 }
 
-SB.Rotator.prototype.stop = function(x, y)
+// Update - drive key frame evaluation
+SB.MeshAnimator.prototype.update = function()
 {
-    this.x = x;
-    this.y = y;
+	if (!this.running)
+		return;
+		
+	var skin = this.skins[0];
+	
+	if ( skin )
+	{
+    	var now = Date.now();
+    	var deltat = (now - this.startTime) / 1000;
+    	var fract = deltat - Math.floor(deltat);
+    	this.frame = fract * this.frameRate;
+		
+		for ( var i = 0; i < skin.morphTargetInfluences.length; i++ )
+		{
+			skin.morphTargetInfluences[ i ] = 0;
+		}
 
-    this.running = false;
+		skin.morphTargetInfluences[ Math.floor( this.frame ) ] = 1;
+	}	
 }
-
-SB.Rotator.prototype.update = function()
-{
-    if (!this.running)
-    {
-        return;
-    }
-
-    var dx = this.x - this.lastx;
-    var dy = this.y - this.lasty;
-
-    this.publish("rotate", this.axis, dx * 0.01);
-
-    this.lastx = this.x;
-    this.lasty = this.y;
-}
+// Statics
+SB.MeshAnimator.default_duration = 1000;
+SB.MeshAnimator.default_frame_rate = 30;
 /**
  * @fileoverview ScreenTracker - converts x,y mouse motion into rotation about an axis (event-driven)
  * 
@@ -6764,6 +7190,7 @@ goog.require('SB.Config');
 goog.require('SB.Interpolator');
 goog.require('SB.KeyFrame');
 goog.require('SB.KeyFrameAnimator');
+goog.require('SB.MeshAnimator');
 goog.require('SB.Camera');
 goog.require('SB.PerspectiveCamera');
 goog.require('SB.WalkthroughControllerScript');
@@ -6813,7 +7240,6 @@ goog.require('SB.View');
 goog.require('SB.SceneUtils');
 goog.require('SB.ScreenTracker');
 goog.require('SB.Tracker');
-goog.require('SB.Viewer');
 goog.require('SB.ColladaModel');
 goog.require('SB.JsonModel');
 goog.require('SB.JsonScene');
@@ -6824,6 +7250,7 @@ goog.require('SB.Mesh');
 goog.require('SB.Model');
 goog.require('SB.Pane');
 goog.require('SB.PointSet');
+goog.require('SB.SceneVisual');
 goog.require('SB.Visual');
 
 goog.require('SB.Shaders');
